@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduAlert — Hệ thống Quản trị Đào tạo & Cảnh báo sớm Nguy cơ Học tập</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="theme-navy-white">
+
+  <!-- Main App Layout Container -->
+  <div class="app-layout">
+
+    <!-- ======================================================== -->
+    <!-- SIDEBAR (MENU ĐIỀU HƯỚNG & GIẢ LẬP NGƯỜI DÙNG)          -->
+    <!-- ======================================================== -->
+    <aside class="app-sidebar">
+      
+      <!-- Brand & Logo -->
+      <div class="sidebar-brand">
+        <div class="brand-logo-box">EA</div>
+        <div class="brand-info">
+          <h1 class="brand-name">EduAlert</h1>
+          <span class="brand-sub">ĐH Mở TP.HCM & TT 08/2021</span>
+        </div>
+      </div>
+
+      <!-- User Simulator Widget (Phần Giả Lập User) -->
+      <div class="sidebar-user-simulator">
+        <div class="sim-header">
+          <span class="sim-title">GIẢ LẬP NGƯỜI DÙNG</span>
+          <span class="sim-badge" id="sim-active-role-tag">CVHT</span>
+        </div>
+
+        <!-- Role Switch Buttons with Unified SVGs -->
+        <div class="sim-role-buttons">
+          <button id="sim-role-cvht" class="sim-role-btn active" title="Cố vấn học tập">
+            <svg class="role-svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="sim-role-text">CVHT</span>
+          </button>
+          <button id="sim-role-student" class="sim-role-btn" title="Sinh viên">
+            <svg class="role-svg" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <span class="sim-role-text">Sinh Viên</span>
+          </button>
+          <button id="sim-role-admin" class="sim-role-btn" title="Quản trị / Ban chủ nhiệm Khoa">
+            <svg class="role-svg" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>
+            <span class="sim-role-text">Khoa</span>
+          </button>
+        </div>
+
+        <!-- Persona Display Card -->
+        <div class="sim-persona-card">
+          <div class="persona-avatar-box" id="sim-persona-avatar">CV</div>
+          <div class="persona-details">
+            <div class="persona-name" id="sim-persona-name">ThS. Nguyễn Hoàng Nam</div>
+            <div class="persona-role" id="sim-persona-desc">Cố vấn học tập · Khoa CNTT</div>
+          </div>
+        </div>
+
+        <!-- Student Selector (Hiện khi chọn Sinh Viên hoặc đổi demo) -->
+        <div class="sim-student-picker" id="sim-student-picker-container" style="display: none;">
+          <label for="sim-student-select">Chọn tài khoản demo:</label>
+          <select id="sim-student-select" class="form-control-sm">
+            <!-- Populated via JS -->
+          </select>
+          <div class="sim-student-quick-stat" id="sim-student-quick-stat">
+            <span>GPA: <strong id="sim-quick-gpa" class="text-primary">3.10</strong></span>
+            <span>Nợ: <strong id="sim-quick-debt" class="text-success">0 TC</strong></span>
+            <span id="sim-quick-badge" class="badge badge-success">Bình thường</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Menu Groups with Unified SVG Icons -->
+      <nav class="sidebar-nav">
+        
+        <!-- Nhóm 1: Giám Sát & Cảnh Báo -->
+        <div class="nav-group">
+          <div class="nav-group-title">GIÁM SÁT & CẢNH BÁO</div>
+          
+          <button class="nav-item-btn active" data-tab="tab-warning">
+            <svg class="nav-svg" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="nav-btn-content">
+              <span class="nav-text">Cảnh Báo Sớm Nguy Cơ</span>
+            </div>
+            <span class="nav-badge badge-danger" id="nav-badge-warning-count">5</span>
+          </button>
+
+          <button class="nav-item-btn" data-tab="tab-planner">
+            <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            <div class="nav-btn-content">
+              <span class="nav-text">Smart Academic Planner</span>
+            </div>
+            <span class="nav-badge badge-primary">SV</span>
+          </button>
+        </div>
+
+        <!-- Nhóm 2: Đào Tạo & Học Vụ -->
+        <div class="nav-group">
+          <div class="nav-group-title">QUẢN LÝ ĐÀO TẠO & HỌC VỤ</div>
+
+          <button class="nav-item-btn" data-tab="tab-faculties-majors">
+            <svg class="nav-svg" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <div class="nav-btn-content">
+              <span class="nav-text">Quản Lý Khoa &amp; Ngành</span>
+              <span class="nav-subtext">Khoa · Ngành · CTĐT · Lớp</span>
+            </div>
+          </button>
+
+          <button class="nav-item-btn" data-tab="tab-course-grades">
+            <svg class="nav-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            <div class="nav-btn-content">
+              <span class="nav-text">Quản Lý Bảng Điểm</span>
+              <span class="nav-subtext">Giảng viên nhập điểm theo lớp</span>
+            </div>
+          </button>
+        </div>
+
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="sys-status">
+          <span class="status-dot online"></span>
+          <span>Quy chế 2021 · Online</span>
+        </div>
+        <div class="sys-version">v2.1</div>
+      </div>
+    </aside>
+
+    <!-- ======================================================== -->
+    <!-- MAIN CONTENT AREA (BÊN PHẢI SIDEBAR)                     -->
+    <!-- ======================================================== -->
+    <div class="app-main-wrapper">
+      
+      <!-- Top Bar Header -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <div class="breadcrumb" id="app-breadcrumb">
+            <span class="bc-root">EduAlert</span>
+            <span class="bc-sep">/</span>
+            <span class="bc-current" id="bc-current-title">Cảnh Báo Sớm Nguy Cơ Học Tập</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Academic Term Tag -->
+          <div class="term-pill">
+            <span>Năm học: <strong>2023 - 2024</strong> (Học kỳ 3)</span>
+          </div>
+
+          <!-- Quick Actions -->
+          <button id="btn-quick-guide" class="btn btn-outline-navy btn-sm" title="Hướng dẫn sử dụng">
+            Hướng Dẫn
+          </button>
+          
+          <div class="current-user-badge">
+            <span class="persona-avatar-box" id="topbar-avatar" style="width:24px; height:24px; font-size:0.7rem;">CV</span>
+            <span class="user-display-name" id="topbar-name">ThS. Nguyễn Hoàng Nam</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dynamic Content Body -->
+      <main class="app-content-body">
+
+        <!-- ====================================================== -->
+        <!-- TAB 1: CẢNH BÁO SỚM NGUY CƠ (CVHT / BAN ĐÀO TẠO)      -->
+        <!-- ====================================================== -->
+        <section id="tab-warning" class="tab-pane active">
+          
+          <!-- Top Warning Metrics -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span class="metric-label">Sĩ số Sinh viên Lớp</span>
+              <span class="metric-val" id="metric-total-students">40 SV</span>
+              <span class="metric-sub">Lớp DH21IT01 (Khóa 2021)</span>
+            </div>
+            <div class="metric-card success">
+              <span class="metric-label">Học tập Bình thường</span>
+              <span class="metric-val" id="metric-normal-students" style="color: var(--success);">25 SV</span>
+              <span class="metric-sub">GPA an toàn, không nợ nhiều</span>
+            </div>
+            <div class="metric-card warning">
+              <span class="metric-label">Cảnh Báo Sớm</span>
+              <span class="metric-val" id="metric-early-warning" style="color: var(--warning);">10 SV</span>
+              <span class="metric-sub">Chạm 1 điều kiện TT 08</span>
+            </div>
+            <div class="metric-card danger">
+              <span class="metric-label">Nguy Cơ Cao (Kỷ luật)</span>
+              <span class="metric-val" id="metric-high-risk" style="color: var(--danger);">5 SV</span>
+              <span class="metric-sub">Vi phạm $\ge 2$ điều kiện hoặc tái diễn</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">ĐTB Tích Lũy Lớp</span>
+              <span class="metric-val" id="metric-avg-gpa">2.62</span>
+              <span class="metric-sub">Thang điểm 4.0</span>
+            </div>
+            <div class="metric-card warning">
+              <span class="metric-label">Tỷ lệ SV Nợ Tín Chỉ</span>
+              <span class="metric-val" id="metric-debt-ratio">37.5%</span>
+              <span class="metric-sub">15/40 SV có môn F chưa trả</span>
+            </div>
+          </div>
+
+          <!-- Warning Table Card -->
+          <div class="content-card">
+            <div class="card-header-row">
+              <div>
+                <h2 class="card-title">Danh Sách Xếp Hạng Ưu Tiên Cảnh Báo &amp; Can Thiệp Học Vụ</h2>
+                <p class="card-subtitle">Áp dụng Rule Engine theo 4 điều kiện Thông tư 08/2021/TT-BGDĐT và Quy chế ĐH Mở TP.HCM</p>
+              </div>
+              <div class="header-actions">
+                <button id="btn-export-warning-list" class="btn btn-outline-navy btn-sm">Xuất Báo Cáo</button>
+              </div>
+            </div>
+
+            <!-- Hierarchical Major & Class Filter Bar -->
+            <div style="display: grid; grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) minmax(180px, 1fr); gap: 12px; padding: 12px 14px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 14px;">
+              <div>
+                <label style="display: block; font-size: 0.74rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 4px;">
+                  1. Chọn Ngành Đào Tạo:
+                </label>
+                <select id="warning-major-filter" class="form-control-sm" style="width: 100%; font-weight: 600;">
+                  <!-- Populated via JS -->
+                </select>
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 0.74rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 4px;">
+                  2. Chọn Lớp Học:
+                </label>
+                <select id="warning-class-filter" class="form-control-sm" style="width: 100%; font-weight: 600;">
+                  <!-- Populated via JS -->
+                </select>
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 0.74rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 4px;">
+                  3. Lọc Mức Nguy Cơ:
+                </label>
+                <select id="warning-level-filter" class="form-control-sm" style="width: 100%; font-weight: 600;">
+                  <option value="ALL">Tất cả mức nguy cơ</option>
+                  <option value="HIGH_RISK">Nguy cơ cao (Kỷ luật)</option>
+                  <option value="EARLY_WARNING">Cảnh báo sớm</option>
+                  <option value="NORMAL">Bình thường</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Mã SV</th>
+                    <th>Họ và Tên</th>
+                    <th>Lớp</th>
+                    <th>Ngành Đào Tạo</th>
+                    <th>ĐTB Tích Lũy</th>
+                    <th>Tín Chỉ Nợ</th>
+                    <th>Điểm Rủi Ro</th>
+                    <th>Mức Cảnh Báo</th>
+                    <th style="text-align: right; min-width: 170px;">Hành Động</th>
+                  </tr>
+                </thead>
+                <tbody id="early-warning-table-body">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ====================================================== -->
+        <!-- TAB 2: SMART ACADEMIC PLANNER & SIMULATION (TÍNH NĂNG CHUNG) -->
+        <!-- ====================================================== -->
+        <section id="tab-planner" class="tab-pane">
+          
+          <!-- Universal Student Lookup Bar -->
+          <div class="content-card" style="padding: 16px 20px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+              <div>
+                <h2 style="font-size: 1.18rem; font-weight: 800; color: var(--text-main); margin: 0;">
+                  Tính Năng Mô Phỏng &amp; Đối Chiếu Điểm Học Vụ Toàn Diện
+                </h2>
+                <p style="font-size: 0.82rem; color: var(--text-dim); margin: 2px 0 0 0;">
+                  Nhập mã số sinh viên (MSSV) để biết sinh viên này lớp nào, ngành gì, toàn bộ bảng điểm đã lưu, còn mấy môn trong CTĐT, rớt môn gì và dự báo kết quả.
+                </p>
+              </div>
+              <span class="badge badge-primary">Mô Phỏng Học Vụ</span>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+              <div style="flex: 1; min-width: 280px; display: flex; gap: 8px;">
+                <input id="sim-mssv-input" type="text" placeholder="Nhập MSSV (ví dụ: 2151010005, 2151010001, 2151010003...)" class="form-control" style="font-weight: 700;">
+                <button id="sim-btn-search-mssv" class="btn btn-primary" type="button" style="white-space: nowrap;">
+                  Tra Cứu Sinh Viên
+                </button>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 280px;">
+                <span style="font-size: 0.82rem; color: var(--text-dim); white-space: nowrap;">
+                  Hoặc chọn nhanh:
+                </span>
+                <select id="sim-student-quick-select" class="form-control" style="font-weight: 600;">
+                  <!-- Populated via JS -->
+                </select>
+              </div>
+            </div>
+
+            <div id="sim-search-error-msg" style="display: none; margin-top: 10px; padding: 8px 12px; background: var(--danger-soft); border: 1px solid var(--danger-border); color: var(--danger-dark); borderRadius: 6px; font-size: 0.82rem;"></div>
+          </div>
+
+          <!-- Student Banner -->
+          <div class="planner-hero-card" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); margin-bottom: 18px;">
+            <div class="hero-left">
+              <div class="persona-avatar-box" style="width:44px; height:44px; font-size:1rem; background:rgba(255,255,255,0.15); color:#ffffff; border-color:rgba(255,255,255,0.25);">SV</div>
+              <div>
+                <h2 class="hero-name">
+                  <span id="planner-student-banner-name">Nguyễn Văn An</span>
+                  <span class="hero-tag" id="planner-student-banner-tag">Sinh viên Năm 3</span>
+                </h2>
+                <p class="hero-sub" id="planner-student-banner-info">Ngành: Công nghệ thông tin | Khóa: 2021 - 2025 | Lớp: DH21IT01</p>
+              </div>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat-item">
+                <span class="stat-lbl">GPA TÍCH LŨY</span>
+                <span class="stat-num" id="planner-student-banner-gpa">3.10</span>
+              </div>
+              <div class="hero-stat-item">
+                <span class="stat-lbl">TÍN CHỈ ĐÃ ĐẠT</span>
+                <span class="stat-num text-success" id="planner-student-banner-earned">82 / 141</span>
+              </div>
+              <div class="hero-stat-item">
+                <span class="stat-lbl">NỢ ĐỌNG TÍN CHỈ</span>
+                <span class="stat-num text-danger" id="planner-student-banner-debt">0 TC</span>
+              </div>
+              <div class="hero-stat-item">
+                <span class="stat-lbl">CTĐT CÒN LẠI</span>
+                <span class="stat-num" style="color: #fef08a;" id="planner-student-banner-remaining">23 môn</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Segmented Subtabs Control for Simulation Module -->
+          <div class="segmented-pills-bar" style="margin-bottom: 16px;">
+            <button class="segmented-pill-btn active" id="sim-subtab-btn-audit" data-subtab="audit">
+              1. Đối Chiếu CTĐT (Môn Đạt, Môn Rớt F &amp; Môn Còn Lại)
+            </button>
+            <button class="segmented-pill-btn" id="sim-subtab-btn-transcript" data-subtab="transcript">
+              2. Toàn Bộ Bảng Điểm Đã Lưu
+            </button>
+            <button class="segmented-pill-btn" id="sim-subtab-btn-simulate" data-subtab="simulate">
+              3. Mô Phỏng Học Tập &amp; Dự Báo Kết Quả (What-If)
+            </button>
+          </div>
+
+          <!-- PANE 1: ĐỐI CHIẾU CHƯƠNG TRÌNH ĐÀO TẠO -->
+          <div id="sim-pane-audit" class="sim-subtab-pane">
+            <!-- Populated via JS -->
+          </div>
+
+          <!-- PANE 2: BẢNG ĐIỂM ĐÃ LƯU -->
+          <div id="sim-pane-transcript" class="sim-subtab-pane" style="display: none;">
+            <!-- Populated via JS -->
+          </div>
+
+          <!-- PANE 3: MÔ PHỎNG & DỰ BÁO KẾT QUẢ -->
+          <div id="sim-pane-simulate" class="sim-subtab-pane" style="display: none;">
+            <!-- Populated via JS -->
+          </div>
+
+        </section>
+
+        <!-- ====================================================== -->
+        <!-- TAB 3: QUẢN LÝ LỘ TRÌNH (CRUD THEO NGÀNH, MÃ NGÀNH)     -->
+        <!-- ====================================================== -->
+        <!-- ====================================================== -->
+        <!-- TAB 3: QUẢN LÝ KHOA & NGÀNH (KHOA -> NGÀNH -> CTĐT + LỚP & SV) -->
+        <!-- ====================================================== -->
+        <section id="tab-faculties-majors" class="tab-pane">
+          
+          <div class="content-card" id="majors-list-view-container">
+            <div class="card-header-row">
+              <div>
+                <h2 class="card-title">Quản Lý Ngành Đào Tạo Thuộc Khoa</h2>
+                <p class="card-subtitle">
+                  Hệ thống phân cấp quản trị: <strong>Khoa</strong> &rarr; <strong>Ngành đào tạo</strong> &rarr; <strong>(Chương trình đào tạo: Môn &amp; Tín chỉ)</strong> + <strong>(Lớp học &rarr; Danh sách sinh viên)</strong>.
+                </p>
+              </div>
+              <div class="header-actions">
+                <button id="btn-open-create-major-modal" class="btn btn-primary">
+                  <svg class="btn-svg" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Tạo Ngành Mới
+                </button>
+              </div>
+            </div>
+
+            <!-- Faculty Filter Bar -->
+            <div style="margin-bottom: 14px;">
+              <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+                1. Chọn Khoa trực thuộc (Khoa có sẵn):
+              </div>
+              <div class="faculties-pills-bar" id="faculties-filter-container">
+                <!-- Dynamically populated via JS -->
+              </div>
+            </div>
+
+            <!-- Search and View Toggle Bar for Majors -->
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 260px;">
+                <input id="major-search-input" type="text" placeholder="Tìm kiếm ngành theo tên hoặc mã ngành..." class="form-control">
+              </div>
+
+              <!-- View Switcher: Bảng Danh Sách (Mặc định) vs Dạng Thẻ Grid -->
+              <div class="view-mode-toggle">
+                <button type="button" class="view-mode-btn active" id="btn-view-mode-table" data-mode="table" title="Xem dạng Bảng">
+                  <svg class="btn-svg" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                  Bảng Danh Sách
+                </button>
+                <button type="button" class="view-mode-btn" id="btn-view-mode-grid" data-mode="grid" title="Xem dạng Thẻ">
+                  <svg class="btn-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  Dạng Thẻ
+                </button>
+              </div>
+
+              <span id="majors-count-badge" class="pill-badge" style="font-weight: 600;">8 Ngành</span>
+            </div>
+
+            <!-- 1. BẢNG DANH SÁCH NGÀNH (TABLE VIEW - MẶC ĐỊNH THEO YÊU CẦU) -->
+            <div id="majors-table-wrapper" class="table-responsive" style="margin-bottom: 22px;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 45px;">STT</th>
+                    <th>Mã Ngành</th>
+                    <th>Tên Ngành Đào Tạo</th>
+                    <th>Khoa Trực Thuộc</th>
+                    <th>Chuẩn Tín Chỉ</th>
+                    <th>CTĐT (Môn)</th>
+                    <th>Quy Mô (Lớp / SV)</th>
+                    <th>Trạng Thái</th>
+                    <th style="text-align: right; width: 160px;">Hành Động</th>
+                  </tr>
+                </thead>
+                <tbody id="majors-table-tbody">
+                  <!-- Rendered dynamically via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 2. DẠNG THẺ GRID (CARDS VIEW) -->
+            <div class="majors-grid" id="majors-cards-container" style="display: none;">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div> <!-- End #majors-list-view-container -->
+
+          <!-- ==================================================== -->
+          <!-- DEDICATED MAJOR DETAIL PAGE VIEW                     -->
+          <!-- ==================================================== -->
+          <div id="major-detail-page-container" style="display: none;">
+            <!-- Detail Page Header with Back Button -->
+            <div class="detail-page-header">
+              <button id="btn-back-to-majors-list" type="button" class="btn btn-outline-navy btn-sm" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px;">
+                <svg class="btn-svg" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Quay Lại Danh Sách Ngành
+              </button>
+              <div id="ws-detail-breadcrumb" style="font-size: 0.86rem; color: var(--text-dim);">
+                Khoa, Ngành / <strong id="ws-breadcrumb-major-title" style="color: var(--text-main);">Chi Tiết Ngành</strong>
+              </div>
+            </div>
+
+            <!-- ACTIVE MAJOR WORKSPACE (KHÔNG GIAN LÀM VIỆC CỦA NGÀNH)-->
+            <div class="major-workspace" id="major-active-workspace" style="margin-top: 0;">
+              
+              <!-- Workspace Banner with Status and Actions -->
+              <div class="major-info-banner" style="margin-bottom: 16px;">
+                <div class="major-meta" style="flex: 1; min-width: 280px;">
+                  <div style="display:flex; align-items:center; gap:8px; flex-wrap: wrap;">
+                    <span class="major-code-tag" id="ws-major-code">7480201</span>
+                    <span class="pill-badge" id="ws-major-faculty">Khoa Công nghệ thông tin</span>
+                    <span class="badge badge-success" id="ws-major-status-badge">Đang hoạt động</span>
+                  </div>
+                  <h3 id="ws-major-name" style="margin-top: 6px;">Ngành: Công nghệ thông tin</h3>
+                  <p id="ws-major-desc">Đào tạo kỹ sư, cử nhân CNTT chuyên sâu về phần mềm, an toàn thông tin, trí tuệ nhân tạo.</p>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                  <div class="major-stat-pills">
+                    <span class="pill-badge">Chuẩn: <strong id="ws-major-total-tc">141</strong> TC</span>
+                    <span class="pill-badge">Số môn CTĐT: <strong id="ws-major-course-count">31</strong> môn</span>
+                    <span class="pill-badge success">Số lớp: <strong id="ws-major-class-count">3</strong> lớp</span>
+                    <span class="pill-badge">Tổng SV: <strong id="ws-major-student-count">68</strong> SV</span>
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                    <button id="btn-edit-active-major" class="btn btn-outline-navy btn-sm" title="Chỉnh sửa thông tin ngành">
+                      Chỉnh Sửa Ngành
+                    </button>
+                    <button id="btn-toggle-active-major-status" class="btn btn-outline-navy btn-sm" title="Vô hiệu hóa hoặc Kích hoạt ngành">
+                      Vô Hiệu Hóa
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Segmented Subtabs Control -->
+              <div class="segmented-pills-bar">
+                <button class="segmented-pill-btn active" id="subtab-btn-curriculum" data-subtab="curriculum">
+                  Chương Trình Đào Tạo (Môn Học &amp; Tín Chỉ)
+                </button>
+                <button class="segmented-pill-btn" id="subtab-btn-classes" data-subtab="classes">
+                  Danh Sách Lớp &amp; Sinh Viên
+                </button>
+              </div>
+
+              <!-- ================================================== -->
+              <!-- SUBTAB 1: CHƯƠNG TRÌNH ĐÀO TẠO (MÔN & TÍN CHỈ)    -->
+              <!-- ================================================== -->
+              <div id="subtab-pane-curriculum" class="major-subtab-pane">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+                  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <select id="ws-curriculum-semester-filter" class="form-control" style="width: auto;">
+                      <option value="ALL">Tất cả các học kỳ (1 - 8)</option>
+                      <option value="1">Học kỳ 1</option>
+                      <option value="2">Học kỳ 2</option>
+                      <option value="3">Học kỳ 3</option>
+                      <option value="4">Học kỳ 4</option>
+                      <option value="5">Học kỳ 5</option>
+                      <option value="6">Học kỳ 6</option>
+                      <option value="7">Học kỳ 7</option>
+                      <option value="8">Học kỳ 8 (Tốt nghiệp)</option>
+                    </select>
+                    <input id="ws-curriculum-search" type="text" placeholder="Tìm kiếm môn học..." class="form-control" style="width: 220px;">
+                  </div>
+                  <div>
+                    <button id="ws-btn-add-course" class="btn btn-primary btn-sm">
+                      <svg class="btn-svg" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Thêm Môn Vào CTĐT
+                    </button>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>STT</th>
+                        <th>Mã Môn</th>
+                        <th>Tên Học Phần</th>
+                        <th>Số TC</th>
+                        <th>Nhóm Học Phần</th>
+                        <th>Môn Tiên Quyết</th>
+                        <th>HK Chuẩn</th>
+                        <th>Tính Chất</th>
+                        <th>Thao Tác</th>
+                      </tr>
+                    </thead>
+                    <tbody id="ws-curriculum-tbody">
+                      <!-- Rendered via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- ================================================== -->
+              <!-- SUBTAB 2: DANH SÁCH LỚP & SINH VIÊN               -->
+              <!-- ================================================== -->
+              <div id="subtab-pane-classes" class="major-subtab-pane" style="display: none;">
+                <!-- Class Pills Bar -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+                  <div>
+                    <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 6px;">
+                      Danh sách các lớp trong ngành:
+                    </div>
+                    <div class="class-pills-bar" id="ws-class-pills-container">
+                      <!-- Rendered via JS -->
+                    </div>
+                  </div>
+                  <div>
+                    <button id="ws-btn-add-class" class="btn btn-outline-navy btn-sm">
+                      <svg class="btn-svg" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Tạo Lớp Mới Trong Ngành
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Selected Class Summary Header -->
+                <div class="class-summary-card" id="ws-selected-class-banner" style="background:#f8fafc; border-style:dashed;">
+                  <div class="class-summary-left">
+                    <div class="persona-avatar-box" style="width:40px; height:40px; font-size:0.85rem;">LH</div>
+                    <div>
+                      <h3 id="ws-class-title">Lớp: DH21IT01</h3>
+                      <div class="class-meta-line" id="ws-class-meta">
+                        <span>Niên khóa: <strong>2021 - 2025</strong></span> · 
+                        <span>CVHT: <strong>ThS. Nguyễn Hoàng Nam</strong></span> · 
+                        <span>Phòng: <strong>A302 - Cơ sở 371 Nguyễn Kiệm</strong></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="class-summary-right">
+                    <div class="metric-mini">
+                      <span class="lbl">SĨ SỐ LỚP</span>
+                      <span class="val" id="ws-class-count">10 SV</span>
+                    </div>
+                    <div class="metric-mini">
+                      <span class="lbl">ĐTB LỚP</span>
+                      <span class="val text-primary" id="ws-class-gpa">2.62</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Class Students Action Row -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin: 14px 0 10px;">
+                  <div style="flex: 1; max-width: 320px;">
+                    <input id="ws-student-search-input" type="text" placeholder="Tìm sinh viên trong lớp theo tên / MSSV..." class="form-control form-control-sm">
+                  </div>
+                  <button id="ws-btn-add-student" class="btn btn-primary btn-sm">
+                    <svg class="btn-svg" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Thêm Sinh Viên Vào Lớp
+                  </button>
+                </div>
+
+                <!-- Table of Students in the Selected Class -->
+                <div class="table-responsive">
+                  <table class="data-table">
+              <section id="tab-course-grades" class="tab-pane">
+          
+          <!-- ==================================================== -->
+          <!-- 1. VIEW 1: DANH SÁCH BẢNG ĐIỂM (DEFAULT MASTER VIEW) -->
+          <!-- ==================================================== -->
+          <div id="grade-view-list" class="content-card">
+            <div class="card-header-row">
+              <div>
+                <h2 class="card-title">Quản Lý Bảng Điểm (Lớp Học Phần &amp; Giảng Viên)</h2>
+                <p class="card-subtitle">
+                  Danh sách toàn bộ bảng điểm các lớp học phần theo Khoa, Ngành và Giảng viên. Chọn nút <strong>"Nhập Điểm"</strong> để mở bảng điểm chi tiết nhập điểm quá trình (40%) và thi (60%).
+                </p>
+              </div>
+              <div class="header-actions">
+                <button id="btn-list-download-template" class="btn btn-outline-navy btn-sm">📥 Tải Mẫu Excel</button>
+                <button id="btn-list-import-excel" class="btn btn-outline-navy btn-sm">📤 Import Excel</button>
+                <button id="btn-open-new-sheet-modal" class="btn btn-primary btn-sm" style="font-weight: 700;">
+                  <svg class="btn-svg" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  + Mở Bảng Điểm Mới
+                </button>
+              </div>
+            </div>
+
+            <!-- 4 Thẻ Thống Kê Nhanh (KPI Cards) -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+              <div class="summary-card" style="padding: 14px 18px; border-left: 4px solid var(--primary);">
+                <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">
+                  TỔNG BẢNG ĐIỂM
+                </div>
+                <div id="metric-sheet-total" style="font-size: 1.55rem; fontWeight: 800; color: var(--primary); margin-top: 2px;">
+                  10 <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-dim);">Lớp học phần</span>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">
+                  Học kỳ 3 (Năm học 2023 - 2024)
+                </div>
+              </div>
+
+              <div class="summary-card" style="padding: 14px 18px; border-left: 4px solid var(--success);">
+                <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">
+                  ĐÃ HOÀN TẤT / CHỐT ĐIỂM
+                </div>
+                <div id="metric-sheet-completed" style="font-size: 1.55rem; fontWeight: 800; color: var(--success); margin-top: 2px;">
+                  6 <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-dim);">(60%)</span>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">
+                  Đã chốt &amp; đồng bộ hồ sơ SV
+                </div>
+              </div>
+
+              <div class="summary-card" style="padding: 14px 18px; border-left: 4px solid #f59e0b;">
+                <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">
+                  ĐANG NHẬP DỞ DANG
+                </div>
+                <div id="metric-sheet-inprogress" style="font-size: 1.55rem; fontWeight: 800; color: #f59e0b; margin-top: 2px;">
+                  3 <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-dim);">Bảng điểm</span>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">
+                  Đang chấm thi / nhập điểm QT
+                </div>
+              </div>
+
+              <div class="summary-card" style="padding: 14px 18px; border-left: 4px solid #64748b;">
+                <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">
+                  CHƯA NHẬP ĐIỂM
+                </div>
+                <div id="metric-sheet-pending" style="font-size: 1.55rem; fontWeight: 800; color: #64748b; margin-top: 2px;">
+                  1 <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-dim);">Bảng điểm</span>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">
+                  Chưa có dữ liệu điểm thi
+                </div>
+              </div>
+            </div>
+
+            <!-- BỘ LỌC DANH SÁCH BẢNG ĐIỂM -->
+            <div style="background: #f8fafc; padding: 14px 18px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 16px;">
+              <div style="font-size: 0.74rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">
+                Bộ lọc danh mục: Lọc theo Khoa, Ngành, Lớp, Học kỳ &amp; Trạng thái nhập điểm
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 10px;">
+                <div>
+                  <label for="list-filter-faculty" style="font-size: 0.72rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">
+                    KHOA TRỰC THUỘC:
+                  </label>
+                  <select id="list-filter-faculty" class="form-control" style="font-weight: 600; font-size: 0.85rem;">
+                    <!-- Populated via JS -->
+                  </select>
+                </div>
+
+                <div>
+                  <label for="list-filter-major" style="font-size: 0.72rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">
+                    NGÀNH ĐÀO TẠO:
+                  </label>
+                  <select id="list-filter-major" class="form-control" style="font-weight: 600; font-size: 0.85rem;">
+                    <!-- Populated via JS -->
+                  </select>
+                </div>
+
+                <div>
+                  <label for="list-filter-class" style="font-size: 0.72rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">
+                    LỚP HỌC PHẦN:
+                  </label>
+                  <select id="list-filter-class" class="form-control" style="font-weight: 600; font-size: 0.85rem;">
+                    <!-- Populated via JS -->
+                  </select>
+                </div>
+
+                <div>
+                  <label for="list-filter-semester" style="font-size: 0.72rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">
+                    HỌC KỲ:
+                  </label>
+                  <select id="list-filter-semester" class="form-control" style="font-weight: 600; font-size: 0.85rem;">
+                    <option value="ALL">-- Tất Cả Học Kỳ --</option>
+                    <option value="HK3">Học kỳ 3</option>
+                    <option value="HK2">Học kỳ 2</option>
+                    <option value="HK1">Học kỳ 1</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="list-filter-status" style="font-size: 0.72rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">
+                    TRẠNG THÁI:
+                  </label>
+                  <select id="list-filter-status" class="form-control" style="font-weight: 600; font-size: 0.85rem;">
+                    <option value="ALL">-- Tất Cả Trạng Thái --</option>
+                    <option value="COMPLETED">✓ Đã hoàn tất</option>
+                    <option value="IN_PROGRESS">⏳ Đang nhập dở dang</option>
+                    <option value="PENDING">⚠️ Chưa nhập điểm</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Ô Search & Đếm số lượng -->
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="flex: 1;">
+                  <input id="list-search-input" type="text" class="form-control form-control-sm" placeholder="🔍 Tìm kiếm nhanh bảng điểm theo tên môn, mã môn, mã lớp, tên giảng viên...">
+                </div>
+                <span id="list-count-badge" class="pill-badge" style="font-weight: 700; white-space: nowrap;">10 Bảng điểm</span>
+                <button id="btn-reset-list-filter" class="btn btn-outline-navy btn-sm">Đặt lại bộ lọc</button>
+              </div>
+            </div>
+
+            <!-- BẢNG DANH SÁCH CÁC BẢNG ĐIỂM -->
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 45px;">STT</th>
+                    <th>Học Phần / Môn Học</th>
+                    <th>Lớp Học Phần</th>
+                    <th>Khoa &amp; Ngành</th>
+                    <th>Giảng Viên Phụ Trách</th>
+                    <th>Học Kỳ</th>
+                    <th>Sĩ Số</th>
+                    <th>Tiến Độ Nhập Điểm</th>
+                    <th>Kết Quả</th>
+                    <th style="text-align: center; min-width: 130px;">Hành Động</th>
+                  </tr>
+                </thead>
+                <tbody id="grade-sheets-table-body">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ==================================================== -->
+          <!-- 2. VIEW 2: CHI TIẾT NHẬP ĐIỂM (DETAIL / ENTRY VIEW)  -->
+          <!-- ==================================================== -->
+          <div id="grade-view-detail" class="content-card" style="display: none;">
+            <div class="card-header-row" style="margin-bottom: 12px;">
+              <div>
+                <button id="btn-back-to-grade-list" class="btn btn-outline-navy btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                  <svg class="btn-svg" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                  Quay Lại Danh Sách Bảng Điểm
+                </button>
+                <h2 class="card-title" style="margin-top: 4px;">Chi Tiết Bảng Điểm &amp; Nhập Điểm Trực Tiếp</h2>
+              </div>
+              <div class="header-actions">
+                <button id="btn-download-course-template" class="btn btn-outline-navy btn-sm">📥 Tải File Mẫu</button>
+                <button id="btn-import-course-excel" class="btn btn-outline-navy btn-sm">📤 Import Excel</button>
+                <button id="btn-save-course-scores" class="btn btn-primary btn-sm" style="font-weight: 700;">💾 Lưu Bảng Điểm</button>
+              </div>
+            </div>
+
+            <!-- BỘ CHUYỂN NHANH 4 CẤP: KHOA -> NGÀNH -> LỚP -> MÔN HỌC & HỌC KỲ -->
+            <div style="background: #f8fafc; padding: 14px 18px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 16px;">
+              <div style="font-size: 0.74rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">
+                Chuyển bảng điểm: Chọn Khoa &rarr; Ngành &rarr; Lớp &rarr; Môn học cần nhập điểm
+              </div>
+              <div style="display: grid; grid-template-columns: minmax(160px, 1fr) minmax(180px, 1.2fr) minmax(160px, 1fr) minmax(200px, 1.3fr) 130px; gap: 10px; align-items: flex-end; margin-bottom: 10px;">
+                <div>
+                  <label for="grade-faculty-select" style="font-size: 0.74rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">
+                    1. KHOA TRỰC THUỘC:
+                  </label>
+                  <select id="grade-faculty-select" class="form-control" style="font-weight: 600;">
+                    <!-- Populated via JS -->
+                  </select>
+                </div>
+
+                <div>
+                  <label for="grade-major-select" style="font-size: 0.74rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">
+                    2. NGÀNH ĐÀO TẠO:
+                  </label>
+                  <select id="grade-major-select" class="form-control" style="font-weight: 600;">
+                    <!-- Populated via JS -->
+                  </select>
+                </div>
+
+                <div>
+                  <label for="grade-class-select" style="font-size: 0.74rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">
+                    3. LỚP HỌC PHẦN:
+                  </label>
+                  <select id="grade-class-select" class="form-control" style="font-weight: 600;">
+                    <!-- Populated via JS -->
+                  </select>
+                </div>
+
+                <div>
+                  <label for="grade-course-select" style="font-size: 0.74rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">
+                    4. MÔN HỌC / HỌC PHẦN:
+                  </label>
+                  <select id="grade-course-select" class="form-control" style="font-weight: 600;">
+                    <!-- Populated via JS -->
+                  </select>
+                </div>
+
+                <div>
+                  <label for="grade-semester-select" style="font-size: 0.74rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">
+                    5. HỌC KỲ:
+                  </label>
+                  <select id="grade-semester-select" class="form-control" style="font-weight: 600;">
+                    <option value="HK3">Học kỳ 3</option>
+                    <option value="HK2">Học kỳ 2</option>
+                    <option value="HK1">Học kỳ 1</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Ô Tìm kiếm sinh viên trong lớp học phần -->
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="flex: 1; max-width: 420px;">
+                  <input id="grade-search-student-input" type="text" class="form-control form-control-sm" placeholder="🔍 Tìm kiếm sinh viên theo tên hoặc MSSV trong lớp này...">
+                </div>
+                <span id="grade-student-count-badge" class="pill-badge" style="font-weight: 700;">10 Sinh viên</span>
+              </div>
+            </div>
+
+            <!-- Course Info & Grade Distribution Bar -->
+            <div class="course-meta-card" style="background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); border-color: #bfdbfe; margin-bottom: 16px;">
+              <div class="course-meta-left">
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                  <span class="major-code-tag" id="course-meta-code">COSC2302</span>
+                  <span class="pill-badge" id="course-meta-class" style="background: var(--primary); color: #ffffff; font-weight: 700;">Lớp DH21IT01</span>
+                  <span class="badge badge-success">Đang mở nhập điểm</span>
+                </div>
+                <h3 id="course-meta-title" style="margin: 4px 0; font-size: 1.22rem; font-weight: 800;">Môn: Cơ sở dữ liệu (3 Tín Chỉ)</h3>
+                <div class="course-meta-tags" style="margin-top: 6px;">
+                  <span class="tag-pill">👨‍🏫 Giảng viên: <strong id="course-meta-lecturer" style="color: var(--primary);">TS. Đỗ Hồng Quân</strong></span>
+                  <span class="tag-pill">Khoa phụ trách: <strong id="course-meta-faculty">Khoa CNTT</strong></span>
+                  <span class="tag-pill">Tỷ lệ đánh giá: <strong>QT 40% — Thi 60%</strong></span>
+                  <span class="tag-pill">Quy chế OU: <strong>Điểm TK10 = 0.4&times;QT + 0.6&times;Thi</strong></span>
+                </div>
+              </div>
+              <div class="course-stats-right">
+                <div class="metric-mini">
+                  <span class="lbl">SĨ SỐ LỚP</span>
+                  <span class="val" id="metric-course-total">10 SV</span>
+                </div>
+                <div class="metric-mini">
+                  <span class="lbl">ĐẠT (TK10 $\ge$ 4.0)</span>
+                  <span class="val text-success" id="metric-course-passed">8 (80%)</span>
+                </div>
+                <div class="metric-mini">
+                  <span class="lbl">RỚT MÔN (F)</span>
+                  <span class="val text-danger" id="metric-course-failed">2 (20%)</span>
+                </div>
+                <div class="metric-mini">
+                  <span class="lbl">ĐTB MÔN HỌC</span>
+                  <span class="val text-primary" id="metric-course-avg">6.45/10</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grade Table with Inline Edit -->
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 40px;">STT</th>
+                    <th>Mã SV</th>
+                    <th>Họ và Tên</th>
+                    <th>Lớp Sinh Hoạt</th>
+                    <th style="width: 130px;">Điểm QT (40%) ✏️</th>
+                    <th style="width: 130px;">Điểm Thi (60%) ✏️</th>
+                    <th style="width: 95px;">Điểm TK10</th>
+                    <th style="width: 95px;">Điểm Chữ</th>
+                    <th style="width: 85px;">Hệ 4</th>
+                    <th>Kết Quả</th>
+                  </tr>
+                </thead>
+                <tbody id="course-grades-table-body">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="table-footer-note" style="margin-top: 14px;">
+              💡 <em>Hướng dẫn Giảng viên: Bạn có thể chỉnh sửa trực tiếp <strong>Điểm QT</strong> hoặc <strong>Điểm Thi</strong> trên từng dòng sinh viên; hệ thống tự động tính lại tức thì Điểm TK10, Điểm Chữ và Hệ 4 theo Quy chế ĐH Mở TP.HCM. Bấm <strong>"Lưu Bảng Điểm"</strong> để chốt điểm chính thức.</em>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: HỒ SƠ CHI TIẾT & BIÊN BẢN TƯ VẤN SINH VIÊN        -->
+  <!-- ======================================================== -->
+  <div id="student-dossier-modal" class="modal-overlay">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3 id="modal-student-name">Trần Minh Tú (2151010005) - Lớp DH21IT01</h3>
+          <span id="modal-student-badge" class="badge badge-danger">Nguy cơ cao (Diện kỷ luật)</span>
+        </div>
+        <button id="close-modal-btn" class="modal-close-btn">&times;</button>
+      </div>
+
+      <!-- Result Stamp & 4 TT08 Rule Checks -->
+      <div class="modal-body-content">
+        <div class="modal-stamp-section">
+          <div class="stamp-box" id="modal-stamp-badge">
+            <span class="stamp-org">ĐẠI HỌC MỞ TP.HCM</span>
+            <div class="stamp-verdict" id="modal-stamp-text">NGUY CƠ CAO</div>
+            <div class="stamp-score" id="modal-stamp-score">92</div>
+            <span class="stamp-lbl">ĐIỂM RỦI RO HỌC VỤ</span>
+          </div>
+          <div class="stamp-meta">
+            <h4>ĐỐI CHIẾU 4 ĐIỀU KIỆN QUY CHẾ (THÔNG TƯ 08/2021 & ĐH MỞ):</h4>
+            <div id="modal-rule-checks" class="rule-check-list">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+        <div id="modal-reason-explain" class="reason-explain-card"></div>
+
+        <!-- Counseling Notebook Section -->
+        <div class="counseling-section">
+          <h4 class="section-title">Sổ Tay Tư Vấn Của Cố Vấn Học Tập (CVHT):</h4>
+          
+          <div class="form-grid-counseling">
+            <div>
+              <label for="counseling-status-select">Trạng thái can thiệp:</label>
+              <select id="counseling-status-select" class="form-control">
+                <option value="Chưa liên hệ">Chưa liên hệ</option>
+                <option value="Đã liên hệ">Đã liên hệ</option>
+                <option value="Đang hỗ trợ" selected>Đang hỗ trợ</option>
+                <option value="Đã cải thiện">Đã cải thiện</option>
+              </select>
+            </div>
+            <div>
+              <label for="counseling-note-input">Nội dung buổi làm việc / Khuyến nghị can thiệp:</label>
+              <textarea id="counseling-note-input" class="form-control" rows="3" placeholder="Nhập ghi chú tư vấn, lý do học yếu (làm thêm, tài chính, mất định hướng) hoặc cam kết trả nợ môn..."></textarea>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+            <button id="btn-save-counseling" class="btn btn-primary btn-sm">Lưu Biên Bản Tư Vấn</button>
+          </div>
+
+          <h5 class="sub-title" style="margin-top: 14px;">Lịch sử các đợt tư vấn trước:</h5>
+          <div id="counseling-history-list" class="history-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: TẠO NGÀNH MỚI THUỘC KHOA                         -->
+  <!-- ======================================================== -->
+  <div id="modal-add-major" class="modal-overlay">
+    <div class="modal-box modal-md">
+      <div class="modal-header">
+        <h3>Tạo Ngành Mới Thuộc Khoa</h3>
+        <button id="close-major-modal-btn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body-content">
+        <form id="major-form">
+          <div>
+            <label for="major-form-khoa">Thuộc Khoa (*):</label>
+            <select id="major-form-khoa" class="form-control" required>
+              <option value="FIT">Khoa Công nghệ thông tin</option>
+              <option value="FECO">Khoa Kinh tế</option>
+              <option value="FAAF">Khoa Kế toán - Kiểm toán</option>
+              <option value="FBA">Khoa Quản trị kinh doanh</option>
+              <option value="FFL">Khoa Ngoại ngữ</option>
+            </select>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 12px;">
+            <div>
+              <label for="major-form-ma-nganh">Mã ngành (*):</label>
+              <input id="major-form-ma-nganh" type="text" class="form-control" placeholder="Ví dụ: 7480202" required>
+            </div>
+            <div>
+              <label for="major-form-ten-nganh">Tên ngành (*):</label>
+              <input id="major-form-ten-nganh" type="text" class="form-control" placeholder="Ví dụ: An toàn thông tin" required>
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 12px;">
+            <div>
+              <label for="major-form-tong-tc">Tổng tín chỉ chuẩn (*):</label>
+              <input id="major-form-tong-tc" type="number" min="100" max="200" value="140" class="form-control" required>
+            </div>
+            <div>
+              <label for="major-form-he-dt">Hệ đào tạo:</label>
+              <select id="major-form-he-dt" class="form-control">
+                <option value="Chính quy">Chính quy</option>
+                <option value="Chất lượng cao">Chất lượng cao</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top: 12px;">
+            <label for="major-form-mota">Mô tả định hướng ngành:</label>
+            <textarea id="major-form-mota" class="form-control" rows="2" placeholder="Mô tả mục tiêu đào tạo, chuẩn đầu ra..."></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" id="btn-cancel-major" class="btn btn-outline-navy">Hủy</button>
+            <button type="submit" class="btn btn-primary">Lưu Ngành Mới</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: CHỈNH SỬA THÔNG TIN NGÀNH ĐÀO TẠO                 -->
+  <!-- ======================================================== -->
+  <div id="modal-edit-major" class="modal-overlay">
+    <div class="modal-box modal-md">
+      <div class="modal-header">
+        <h3 id="modal-edit-major-title">Chỉnh Sửa Thông Tin Ngành Đào Tạo</h3>
+        <button id="close-edit-major-modal-btn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body-content">
+        <form id="edit-major-form">
+          <input type="hidden" id="edit-major-ma-nganh">
+
+          <div>
+            <label>Khoa trực thuộc:</label>
+            <input type="text" id="edit-major-khoa-display" class="form-control" disabled style="background:#f1f5f9; color:var(--text-muted);">
+          </div>
+
+          <div class="form-row-2" style="margin-top: 12px;">
+            <div>
+              <label for="edit-major-ten-nganh">Tên ngành đào tạo (*):</label>
+              <input id="edit-major-ten-nganh" type="text" class="form-control" required>
+            </div>
+            <div>
+              <label for="edit-major-tong-tc">Tổng tín chỉ chuẩn (*):</label>
+              <input id="edit-major-tong-tc" type="number" min="100" max="200" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 12px;">
+            <div>
+              <label for="edit-major-he-dt">Hệ đào tạo:</label>
+              <select id="edit-major-he-dt" class="form-control">
+                <option value="Chính quy">Chính quy</option>
+                <option value="Chất lượng cao">Chất lượng cao</option>
+              </select>
+            </div>
+            <div>
+              <label for="edit-major-status">Trạng thái hoạt động:</label>
+              <select id="edit-major-status" class="form-control">
+                <option value="ACTIVE">Đang hoạt động</option>
+                <option value="INACTIVE">Đã vô hiệu hóa (Tạm ngưng)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top: 12px;">
+            <label for="edit-major-mota">Mô tả định hướng ngành:</label>
+            <textarea id="edit-major-mota" class="form-control" rows="3" placeholder="Mô tả mục tiêu đào tạo, chuẩn đầu ra..."></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" id="btn-cancel-edit-major" class="btn btn-outline-navy">Hủy</button>
+            <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: THÊM / SỬA MÔN HỌC VÀO LỘ TRÌNH ĐÀO TẠO (CRUD)   -->
+  <!-- ======================================================== -->
+  <div id="curriculum-modal" class="modal-overlay">
+    <div class="modal-box modal-md">
+      <div class="modal-header">
+        <h3 id="curriculum-modal-title">Thêm Môn Học Vào Lộ Trình</h3>
+        <button id="close-curriculum-modal-btn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body-content">
+        <form id="curriculum-form">
+          <input type="hidden" id="curriculum-edit-index" value="-1">
+
+          <div class="form-row-2">
+            <div>
+              <label for="curr-ma-mon">Mã học phần (*):</label>
+              <input id="curr-ma-mon" type="text" class="form-control" placeholder="Ví dụ: COSC3309" required>
+            </div>
+            <div>
+              <label for="curr-ten-mon">Tên học phần (*):</label>
+              <input id="curr-ten-mon" type="text" class="form-control" placeholder="Ví dụ: Xử lý ngôn ngữ tự nhiên" required>
+            </div>
+          </div>
+
+          <div class="form-row-3" style="margin-top: 12px;">
+            <div>
+              <label for="curr-so-tc">Số tín chỉ (*):</label>
+              <input id="curr-so-tc" type="number" min="1" max="15" value="3" class="form-control" required>
+            </div>
+            <div>
+              <label for="curr-hk">Học kỳ chuẩn (*):</label>
+              <select id="curr-hk" class="form-control" required>
+                <option value="1">Học kỳ 1</option>
+                <option value="2">Học kỳ 2</option>
+                <option value="3">Học kỳ 3</option>
+                <option value="4">Học kỳ 4</option>
+                <option value="5">Học kỳ 5</option>
+                <option value="6">Học kỳ 6</option>
+                <option value="7">Học kỳ 7</option>
+                <option value="8">Học kỳ 8</option>
+              </select>
+            </div>
+            <div>
+              <label for="curr-nhom">Nhóm học phần:</label>
+              <select id="curr-nhom" class="form-control">
+                <option value="Đại cương">Đại cương</option>
+                <option value="Cơ sở ngành">Cơ sở ngành</option>
+                <option value="Chuyên ngành">Chuyên ngành</option>
+                <option value="Đồ án">Đồ án</option>
+                <option value="Thực tập">Thực tập</option>
+                <option value="Tốt nghiệp">Tốt nghiệp</option>
+                <option value="Môn điều kiện">Môn điều kiện</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 12px;">
+            <div>
+              <label for="curr-tien-quyet">Môn tiên quyết (nếu có):</label>
+              <input id="curr-tien-quyet" type="text" class="form-control" placeholder="Ví dụ: COSC1301 hoặc để trống">
+            </div>
+            <div>
+              <label for="curr-loai">Tính chất học phần:</label>
+              <select id="curr-loai" class="form-control">
+                <option value="true">Bắt buộc</option>
+                <option value="false">Tự chọn</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" id="btn-cancel-curriculum" class="btn btn-outline-navy">Hủy</button>
+            <button type="submit" class="btn btn-primary">Lưu Học Phần</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: THÊM LỚP HỌC MỚI                                  -->
+  <!-- ======================================================== -->
+  <div id="class-modal" class="modal-overlay">
+    <div class="modal-box modal-md">
+      <div class="modal-header">
+        <h3>Thêm Lớp Học Mới</h3>
+        <button id="close-class-modal-btn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body-content">
+        <form id="class-form">
+          <div class="form-row-2">
+            <div>
+              <label for="class-form-ma-lop">Mã lớp (*):</label>
+              <input id="class-form-ma-lop" type="text" class="form-control" placeholder="Ví dụ: DH22IT02" required>
+            </div>
+            <div>
+              <label for="class-form-ten-lop">Tên lớp (*):</label>
+              <input id="class-form-ten-lop" type="text" class="form-control" placeholder="Ví dụ: ĐH CNTT Khóa 2022 - Lớp 02" required>
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 12px;">
+            <div>
+              <label for="class-form-nien-khoa">Niên khóa:</label>
+              <input id="class-form-nien-khoa" type="text" class="form-control" value="2022 - 2026" required>
+            </div>
+            <div>
+              <label for="class-form-cvht">Cố vấn học tập (CVHT):</label>
+              <input id="class-form-cvht" type="text" class="form-control" placeholder="Ví dụ: ThS. Trần Văn Minh" required>
+            </div>
+          </div>
+
+          <div style="margin-top: 12px;">
+            <label for="class-form-phong">Phòng học / Văn phòng khoa:</label>
+            <input id="class-form-phong" type="text" class="form-control" value="Cơ sở 371 Nguyễn Kiệm, Gò Vấp">
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" id="btn-cancel-class" class="btn btn-outline-navy">Hủy</button>
+            <button type="submit" class="btn btn-primary">Tạo Lớp Học</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: THÊM SINH VIÊN VÀO LỚP                           -->
+  <!-- ======================================================== -->
+  <div id="student-modal" class="modal-overlay">
+    <div class="modal-box modal-md">
+      <div class="modal-header">
+        <h3>Thêm Sinh Viên Vào Lớp</h3>
+        <button id="close-student-modal-btn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body-content">
+        <form id="student-form">
+          <div class="form-row-2">
+            <div>
+              <label for="stu-form-ma-sv">Mã số sinh viên (*):</label>
+              <input id="stu-form-ma-sv" type="text" class="form-control" placeholder="Ví dụ: 2151010045" required>
+            </div>
+            <div>
+              <label for="stu-form-ho-ten">Họ và tên (*):</label>
+              <input id="stu-form-ho-ten" type="text" class="form-control" placeholder="Ví dụ: Nguyễn Gia Huy" required>
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 12px;">
+            <div>
+              <label for="stu-form-gioi-tinh">Giới tính:</label>
+              <select id="stu-form-gioi-tinh" class="form-control">
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+              </select>
+            </div>
+            <div>
+              <label for="stu-form-ngay-sinh">Ngày sinh:</label>
+              <input id="stu-form-ngay-sinh" type="text" class="form-control" placeholder="DD/MM/YYYY" value="10/10/2003">
+            </div>
+          </div>
+
+          <div class="form-row-2" style="margin-top: 12px;">
+            <div>
+              <label for="stu-form-gpa">GPA tích lũy ban đầu (Hệ 4):</label>
+              <input id="stu-form-gpa" type="number" step="0.05" min="0" max="4" value="2.80" class="form-control">
+            </div>
+            <div>
+              <label for="stu-form-tc">Tín chỉ tích lũy:</label>
+              <input id="stu-form-tc" type="number" min="0" max="150" value="65" class="form-control">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" id="btn-cancel-student" class="btn btn-outline-navy">Hủy</button>
+            <button type="submit" class="btn btn-primary">Thêm Vào Lớp</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
