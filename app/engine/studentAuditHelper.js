@@ -5,9 +5,13 @@
 
 import { OUGradeEngine } from './OUGradeEngine.js';
 
+/**
+ * Lấy hoặc sinh tự động toàn bộ bảng điểm học phần đã lưu của sinh viên
+ */
 export function getStudentTranscript(student, curriculumByMajor = {}) {
   if (!student) return [];
 
+  // Nếu sinh viên đã có danh sách completedCourses chi tiết
   if (student.completedCourses && student.completedCourses.length > 0) {
     return student.completedCourses.map((c) => {
       const conv = c.letter ? { grade4: c.grade4, letter: c.letter, pass: c.pass } : OUGradeEngine.convertGrade(c.diemTK10);
@@ -30,6 +34,7 @@ export function getStudentTranscript(student, curriculumByMajor = {}) {
     });
   }
 
+  // Nếu chưa có, lấy các môn thuộc CTĐT ngành của sinh viên (học kỳ 1 - 4) để tạo bảng điểm tương ứng với GPA
   const majorCode = student.maNganh || '7480201';
   const majorCourses = curriculumByMajor[majorCode] || curriculumByMajor['7480201'] || [];
   const takenCourses = majorCourses.filter((c) => c.hkDuKien <= 4).slice(0, 10);
@@ -42,6 +47,7 @@ export function getStudentTranscript(student, curriculumByMajor = {}) {
     let diemTK10, letter, grade4, pass, diemQT, diemThi;
 
     if (debtCount > 0 && idx >= takenCourses.length - debtCount) {
+      // Môn rớt (F)
       diemQT = 4.0;
       diemThi = 2.5;
       diemTK10 = 3.1;
@@ -49,6 +55,7 @@ export function getStudentTranscript(student, curriculumByMajor = {}) {
       grade4 = 0.0;
       pass = false;
     } else {
+      // Môn đạt
       if (targetGPA >= 3.2) {
         diemQT = 8.5;
         diemThi = 8.0;
@@ -86,6 +93,9 @@ export function getStudentTranscript(student, curriculumByMajor = {}) {
   });
 }
 
+/**
+ * Đối chiếu tiến độ hoàn thành Chương trình đào tạo của ngành
+ */
 export function auditStudentCurriculum(student, curriculumByMajor = {}) {
   if (!student) return null;
 
@@ -93,12 +103,17 @@ export function auditStudentCurriculum(student, curriculumByMajor = {}) {
   const allCurriculumCourses = curriculumByMajor[majorCode] || curriculumByMajor['7480201'] || [];
   const transcript = getStudentTranscript(student, curriculumByMajor);
 
+  // Môn đã đạt
   const passedCourses = transcript.filter((c) => c.pass === true);
   const passedCodes = new Set(passedCourses.map((c) => c.maMon));
 
+  // Môn rớt (F) cần trả nợ
   const failedCourses = transcript.filter((c) => c.pass === false || c.letter === 'F');
+
+  // Môn còn lại chưa học trong CTĐT
   const remainingCourses = allCurriculumCourses.filter((c) => !passedCodes.has(c.maMon));
 
+  // Thống kê
   const totalCourses = allCurriculumCourses.length;
   const totalCredits = allCurriculumCourses.reduce((sum, c) => sum + (c.soTC || 0), 0);
 
@@ -128,6 +143,11 @@ export function auditStudentCurriculum(student, curriculumByMajor = {}) {
   };
 }
 
+/**
+ * Mô phỏng kết quả học tập dự báo (What-If Academic Simulator)
+ * @param student
+ * @param simulationItems: Danh sách môn được chọn mô phỏng [{ maMon, tenMon, soTC, isRetake, oldGrade4, targetGrade4, targetLetter }]
+ */
 export function simulateStudentPlan(student, simulationItems = []) {
   if (!student) return null;
 
@@ -148,6 +168,8 @@ export function simulateStudentPlan(student, simulationItems = []) {
 
     if (item.isRetake) {
       retakeCount++;
+      // Khi trả nợ môn rớt: Điểm mới thay thế hoàn toàn điểm 0 cũ
+      // Số tín chỉ tích lũy tăng thêm (vì trước đó môn F chưa được cộng vào TC tích lũy)
       addedCredits += credits;
       addedPoints += targetGrade * credits;
       reducedDebt += credits;
@@ -164,6 +186,7 @@ export function simulateStudentPlan(student, simulationItems = []) {
   const predictedDebt = Math.max(0, currentDebt - reducedDebt);
   const diffGPA = Math.round((predictedGPA - currentGPA) * 100) / 100;
 
+  // Đánh giá trạng thái nguy cơ mới theo Thông tư 08
   const evalResult = OUGradeEngine.evaluateAcademicWarning({
     year: student.namHoc || 3,
     isFirstSem: false,

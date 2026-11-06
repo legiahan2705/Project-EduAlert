@@ -5,10 +5,6 @@
  */
 
 export const OUGradeEngine = {
-  /**
-   * Tính điểm tổng kết môn học (thang 10) từ điểm quá trình và điểm thi
-   * Mặc định: QT 40%, Thi 60% (làm tròn 1 chữ số thập phân)
-   */
   calcDiemTK10(diemQT, diemThi, wQT = 0.4, wThi = 0.6) {
     if (diemQT === null || diemQT === undefined || diemThi === null || diemThi === undefined) {
       return null;
@@ -17,9 +13,6 @@ export const OUGradeEngine = {
     return Math.round(raw * 10) / 10;
   },
 
-  /**
-   * Quy đổi thang điểm 10 sang Điểm Chữ và Thang điểm 4 chuẩn ĐH Mở TP.HCM
-   */
   convertGrade(score10) {
     if (score10 === null || score10 === undefined || isNaN(score10)) {
       return { grade4: 0, letter: 'F', pass: false, desc: 'Chưa có điểm' };
@@ -36,10 +29,10 @@ export const OUGradeEngine = {
     return { grade4: 0.0, letter: 'F', pass: false, desc: 'Kém (Không đạt)' };
   },
 
-  /**
-   * Tính GPA Học kỳ (hệ 4)
-   * Áp dụng cho mọi môn có tính điểm trong học kỳ (kể cả F)
-   */
+  computeOUGrade(score10) {
+    return this.convertGrade(score10);
+  },
+
   calcSemesterGPA(semesterSubjects) {
     let totalPoints = 0;
     let totalCredits = 0;
@@ -68,14 +61,7 @@ export const OUGradeEngine = {
     };
   },
 
-  /**
-   * Tính GPA Tích Lũy toàn khóa
-   * QUY TẮC BẮT BUỘC:
-   * 1. Bỏ qua môn điều kiện (isTichLuy === false) như GDTC, GDQP-AN.
-   * 2. Môn học lại/cải thiện: Lấy điểm của lần học sau cùng để thay thế.
-   */
   calcCumulativeGPA(allSubjectsHistory) {
-    // Nhóm theo mã môn để lấy lần học sau cùng
     const latestSubjectMap = new Map();
     for (const sub of allSubjectsHistory) {
       latestSubjectMap.set(sub.maMon, sub);
@@ -89,18 +75,15 @@ export const OUGradeEngine = {
       const conv = sub.grade4 !== undefined ? { grade4: sub.grade4, pass: sub.pass } : this.convertGrade(sub.diemTK10);
       const tc = sub.soTC || 0;
 
-      // Nợ tín chỉ nếu lần học gần nhất vẫn rớt
       if (!conv.pass) {
         debtCredits += tc;
       }
 
-      // Chỉ cộng vào GPA tích lũy nếu là môn tính điểm tích lũy
       if (sub.isTichLuy !== false) {
         if (conv.pass) {
           totalPoints += conv.grade4 * tc;
           totalAccumulatedCredits += tc;
         } else {
-          // Môn F vẫn tính vào tích lũy nếu chưa trả nợ
           totalPoints += 0;
           totalAccumulatedCredits += tc;
         }
@@ -115,9 +98,6 @@ export const OUGradeEngine = {
     };
   },
 
-  /**
-   * Rule Engine đánh giá cảnh báo học vụ theo Thông tư 08 & ĐH Mở TP.HCM
-   */
   evaluateAcademicWarning({ year, isFirstSem, semesterCredits, failedCreditsInSem, gpaSem, gpaCumulative, debtCreditsTotal, hadPreviousWarning = false }) {
     const minGPA_TL = year <= 1 ? 1.2 : year <= 2 ? 1.4 : year <= 3 ? 1.6 : 1.8;
     const minGPA_Sem = isFirstSem ? 0.8 : 1.0;
@@ -155,7 +135,7 @@ export const OUGradeEngine = {
     ];
 
     const hitRules = checks.filter(c => c.hit);
-    let level = 'NORMAL'; // NORMAL | EARLY_WARNING | HIGH_RISK
+    let level = 'NORMAL';
     let levelText = 'Bình thường';
     let levelBadge = 'badge-success';
 
@@ -169,7 +149,6 @@ export const OUGradeEngine = {
       levelBadge = 'badge-warning';
     }
 
-    // Điểm rủi ro mô phỏng 0 - 100 để xếp thứ tự ưu tiên tư vấn
     let riskScore = 15;
     if (hitRules.length > 0) riskScore += hitRules.length * 20;
     if (debtCreditsTotal > 10) riskScore += Math.min(25, debtCreditsTotal);
@@ -190,9 +169,61 @@ export const OUGradeEngine = {
   },
 
   /**
-   * Smart Academic Planner:
-   * Tính GPA cần đạt trên số tín chỉ còn lại để chạm GPA mục tiêu
+   * Phân tầng can thiệp 4 nhóm của CVHT (xem docs/02_Quy_Tac_Tinh_Diem_OU.md, mục 5b).
+   * Kết hợp kết quả Rule Engine (học kỳ gần nhất trong historySemesters) với lịch sử CBHV (warningCount).
+   *  - DROP_OUT_RISK : đã bị CBHV >= 2 lần liên tiếp
+   *  - WARNING       : vi phạm >= 1 Rule (bị CBHV lần 1)
+   *  - EARLY_SIGNAL  : chưa vi phạm Rule nào nhưng GPA tích lũy <= 1.70
+   *  - SAFE          : còn lại
+   * Trả về cả kết quả Rule Engine (warningEval) vì hai cách phân loại có thể khác nhau,
+   * ví dụ sinh viên CBHV lần 1 nhưng vi phạm nhiều Rule vẫn là mức HIGH_RISK theo Rule Engine.
    */
+  classifyStudent(student) {
+    const history = student.historySemesters || [];
+    const last = history.length > 0 ? history[history.length - 1] : null;
+
+    const warningEval = this.evaluateAcademicWarning({
+      year: student.namHoc || 3,
+      isFirstSem: history.length === 1,
+      semesterCredits: last ? last.tcDK : 0,
+      failedCreditsInSem: last ? last.tcKD : 0,
+      gpaSem: last ? last.gpaHK : (student.gpaHK ?? student.gpaTL),
+      gpaCumulative: student.gpaTL,
+      debtCreditsTotal: student.tcNo || 0,
+      hadPreviousWarning: student.hadPrevWarning || false
+    });
+
+    const warningCount = student.warningCount || 0;
+    let level;
+    let levelText;
+
+    if (warningCount >= 2) {
+      level = 'DROP_OUT_RISK';
+      levelText = 'Nguy cơ Buộc thôi học (Mức 3)';
+    } else if (warningEval.hitRules.length >= 1) {
+      level = 'WARNING';
+      levelText = 'Cảnh báo học vụ (CBHV Mức 1)';
+    } else if (student.gpaTL <= 1.70) {
+      level = 'EARLY_SIGNAL';
+      levelText = 'Tín hiệu sớm (Nguy cơ rớt môn)';
+    } else {
+      level = 'SAFE';
+      levelText = student.gpaTL >= 3.6 ? 'Xuất sắc'
+        : student.gpaTL >= 3.2 ? 'Giỏi'
+        : student.gpaTL >= 2.5 ? 'Khá / Bình thường'
+        : 'Bình thường';
+    }
+
+    return {
+      level,
+      levelText,
+      engineLevel: warningEval.level,
+      engineLevelText: warningEval.levelText,
+      hitRuleCount: warningEval.hitRules.length,
+      warningEval
+    };
+  },
+
   calcTargetGPANeeded(gpaCurrent, tcCurrent, gpaTarget, tcRemaining) {
     if (tcRemaining <= 0) return { possible: false, gpaNeeded: 0, reason: 'Không còn tín chỉ để cải thiện' };
     const totalPointsTarget = gpaTarget * (tcCurrent + tcRemaining);
@@ -212,10 +243,6 @@ export const OUGradeEngine = {
     };
   },
 
-  /**
-   * Smart Academic Planner:
-   * Tính mức tăng GPA tích lũy khi học cải thiện 1 môn
-   */
   calcImprovementImpact(subject, targetGrade4, gpaCurrent, totalTCCurrent) {
     const currentGrade4 = subject.grade4 !== undefined ? subject.grade4 : this.convertGrade(subject.diemTK10).grade4;
     const deltaPoints = (targetGrade4 - currentGrade4) * subject.soTC;

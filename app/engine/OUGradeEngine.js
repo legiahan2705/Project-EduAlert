@@ -29,6 +29,10 @@ export const OUGradeEngine = {
     return { grade4: 0.0, letter: 'F', pass: false, desc: 'Kém (Không đạt)' };
   },
 
+  computeOUGrade(score10) {
+    return this.convertGrade(score10);
+  },
+
   calcSemesterGPA(semesterSubjects) {
     let totalPoints = 0;
     let totalCredits = 0;
@@ -161,6 +165,62 @@ export const OUGradeEngine = {
       riskScore,
       minGPA_TL,
       minGPA_Sem
+    };
+  },
+
+  /**
+   * Phân tầng can thiệp 4 nhóm của CVHT (xem docs/02_Quy_Tac_Tinh_Diem_OU.md, mục 5b).
+   * Kết hợp kết quả Rule Engine (học kỳ gần nhất trong historySemesters) với lịch sử CBHV (warningCount).
+   *  - DROP_OUT_RISK : đã bị CBHV >= 2 lần liên tiếp
+   *  - WARNING       : vi phạm >= 1 Rule (bị CBHV lần 1)
+   *  - EARLY_SIGNAL  : chưa vi phạm Rule nào nhưng GPA tích lũy <= 1.70
+   *  - SAFE          : còn lại
+   * Trả về cả kết quả Rule Engine (warningEval) vì hai cách phân loại có thể khác nhau,
+   * ví dụ sinh viên CBHV lần 1 nhưng vi phạm nhiều Rule vẫn là mức HIGH_RISK theo Rule Engine.
+   */
+  classifyStudent(student) {
+    const history = student.historySemesters || [];
+    const last = history.length > 0 ? history[history.length - 1] : null;
+
+    const warningEval = this.evaluateAcademicWarning({
+      year: student.namHoc || 3,
+      isFirstSem: history.length === 1,
+      semesterCredits: last ? last.tcDK : 0,
+      failedCreditsInSem: last ? last.tcKD : 0,
+      gpaSem: last ? last.gpaHK : (student.gpaHK ?? student.gpaTL),
+      gpaCumulative: student.gpaTL,
+      debtCreditsTotal: student.tcNo || 0,
+      hadPreviousWarning: student.hadPrevWarning || false
+    });
+
+    const warningCount = student.warningCount || 0;
+    let level;
+    let levelText;
+
+    if (warningCount >= 2) {
+      level = 'DROP_OUT_RISK';
+      levelText = 'Nguy cơ Buộc thôi học (Mức 3)';
+    } else if (warningEval.hitRules.length >= 1) {
+      level = 'WARNING';
+      levelText = 'Cảnh báo học vụ (CBHV Mức 1)';
+    } else if (student.gpaTL <= 1.70) {
+      level = 'EARLY_SIGNAL';
+      levelText = 'Tín hiệu sớm (Nguy cơ rớt môn)';
+    } else {
+      level = 'SAFE';
+      levelText = student.gpaTL >= 3.6 ? 'Xuất sắc'
+        : student.gpaTL >= 3.2 ? 'Giỏi'
+        : student.gpaTL >= 2.5 ? 'Khá / Bình thường'
+        : 'Bình thường';
+    }
+
+    return {
+      level,
+      levelText,
+      engineLevel: warningEval.level,
+      engineLevelText: warningEval.levelText,
+      hitRuleCount: warningEval.hitRules.length,
+      warningEval
     };
   },
 

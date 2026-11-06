@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import QuickGuideModal from '@/components/QuickGuideModal';
@@ -11,6 +11,8 @@ import SmartPlannerTab from '@/components/SmartPlanner/SmartPlannerTab';
 import FacultyManagementTab from '@/components/FacultyManagement/FacultyManagementTab';
 import FacultyMajorManagement from '@/components/FacultyMajorManagement/FacultyMajorManagement';
 import CourseGradesTab from '@/components/CourseGrades/CourseGradesTab';
+
+import { eduAlertApi } from '@/services/api';
 
 import {
   MOCK_FACULTIES,
@@ -26,7 +28,7 @@ export default function EduAlertApp() {
   const [currentTab, setCurrentTab] = useState('tab-warning'); 
   const [currentStudentId, setCurrentStudentId] = useState('2251050001'); // Nguyễn Văn An (Nguy cơ buộc thôi học)
 
-  // Core Data State
+  // Core Data State (Khởi tạo bằng mock data, tự động đồng bộ từ NestJS Backend)
   const [faculties, setFaculties] = useState(MOCK_FACULTIES);
   const [majors, setMajors] = useState(MOCK_MAJORS);
   const [selectedMajorCode, setSelectedMajorCode] = useState('FIT2200001'); // Khoa học máy tính
@@ -36,6 +38,27 @@ export default function EduAlertApp() {
   const [classes, setClasses] = useState(MOCK_CLASSES);
   const [students, setStudents] = useState(MOCK_STUDENTS);
   const [courseGrades, setCourseGrades] = useState(MOCK_COURSE_GRADES);
+
+  // Tải dữ liệu từ NestJS Backend API khi ứng dụng khởi chạy
+  useEffect(() => {
+    async function loadBackendData() {
+      const [facList, majList, stuList, clsList, grdList] = await Promise.all([
+        eduAlertApi.getFaculties(MOCK_FACULTIES),
+        eduAlertApi.getMajors(MOCK_MAJORS),
+        eduAlertApi.getStudents(MOCK_STUDENTS),
+        eduAlertApi.getClasses(MOCK_CLASSES),
+        eduAlertApi.getCourseGrades(MOCK_COURSE_GRADES)
+      ]);
+
+      if (facList) setFaculties(facList);
+      if (majList) setMajors(majList);
+      if (stuList) setStudents(stuList);
+      if (clsList) setClasses(clsList);
+      if (grdList) setCourseGrades(grdList);
+    }
+
+    loadBackendData();
+  }, []);
 
   // Modals
   const [isGuideOpen, setIsGuideOpen] = useState(false);
@@ -47,7 +70,8 @@ export default function EduAlertApp() {
     setIsDossierOpen(true);
   };
 
-  const handleSaveCounselingNote = (maSV, noteObj) => {
+  const handleSaveCounselingNote = async (maSV, noteObj) => {
+    // 1. Cập nhật state nội bộ
     setStudents((prev) =>
       prev.map((s) => {
         if (s.maSV === maSV) {
@@ -63,6 +87,9 @@ export default function EduAlertApp() {
         counselingLog: prev.counselingLog ? [noteObj, ...prev.counselingLog] : [noteObj]
       }));
     }
+
+    // 2. Lưu trực tiếp về NestJS Backend JSON DB
+    await eduAlertApi.addCounselingNote(maSV, noteObj);
   };
 
   const currentStudent = students.find((s) => s.maSV === currentStudentId) || students[0];
