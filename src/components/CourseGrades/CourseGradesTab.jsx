@@ -546,7 +546,7 @@ export default function CourseGradesTab({
                                           <p className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
                                             {sheet.maLop}
                                             {sheet.maLop === 'DH22CS01C' && (
-                                              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">
+                                              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-px rounded">
                                                 Lớp Trọng Điểm
                                               </span>
                                             )}

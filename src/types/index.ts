@@ -115,8 +115,13 @@ export interface Student {
   gpaHK: number;
   tcTichLuy: number;
   tcNo: number;
+  /** Nhóm can thiệp của CVHT — do OUGradeEngine.classifyStudent tính, không nhập tay */
   level: 'DROP_OUT_RISK' | 'WARNING' | 'EARLY_SIGNAL' | 'SAFE';
   levelText: string;
+  /** Mức theo Rule Engine (số Rule vi phạm), có thể khác `level` */
+  engineLevel?: 'NORMAL' | 'EARLY_WARNING' | 'HIGH_RISK';
+  engineLevelText?: string;
+  hitRuleCount?: number;
   riskScore: number;
   hadPrevWarning: boolean;
   warningCount: number;
@@ -124,6 +129,14 @@ export interface Student {
   email: string;
   sdt: string;
   notes?: string;
+  /** Lịch sử từng học kỳ; phần tử cuối là kỳ vừa qua (dùng chấm Rule 1 & Rule 3) */
+  historySemesters?: Array<{
+    hk: string;
+    tcDK: number;   // tín chỉ đăng ký
+    tcKD: number;   // tín chỉ không đạt
+    gpaHK: number;
+    gpaTL: number;
+  }>;
   counselingLog?: Array<{
     date: string;
     type?: string;

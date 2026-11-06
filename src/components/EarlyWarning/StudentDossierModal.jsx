@@ -21,16 +21,14 @@ export default function StudentDossierModal({ student, isOpen, onClose, onSaveCo
 
   if (!isOpen || !student) return null;
 
-  const warningEval = OUGradeEngine.evaluateAcademicWarning({
-    year: student.namHoc || 3,
-    isFirstSem: false,
-    semesterCredits: 14,
-    failedCreditsInSem: student.tcNo > 5 ? 6 : 0,
-    gpaSem: student.gpaTL,
-    gpaCumulative: student.gpaTL,
-    debtCreditsTotal: student.tcNo,
-    hadPreviousWarning: student.hadPrevWarning
-  });
+  // Một nguồn duy nhất cho việc chấm Rule 1–4 (Rule 1 & 3 theo học kỳ gần nhất trong lịch sử) và xếp nhóm
+  const { warningEval, level, levelText } = OUGradeEngine.classifyStudent(student);
+  const levelBadgeClass = {
+    DROP_OUT_RISK: 'badge-danger',
+    WARNING: 'badge-warning',
+    EARLY_SIGNAL: 'badge-warning',
+    SAFE: 'badge-success'
+  }[level] || '';
 
   const handleAddNote = (e) => {
     e.preventDefault();
@@ -110,8 +108,11 @@ export default function StudentDossierModal({ student, isOpen, onClose, onSaveCo
               <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', textTransform: 'uppercase', display: 'block', fontWeight: 700 }}>
                 MỨC ĐỘ NGUY CƠ
               </span>
-              <span className={`badge ${student.levelBadge}`} style={{ marginTop: '4px', display: 'inline-block' }}>
-                {student.levelText}
+              <span className={`badge ${levelBadgeClass}`} style={{ marginTop: '4px', display: 'inline-block' }}>
+                {levelText}
+              </span>
+              <span style={{ display: 'block', marginTop: '4px', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                Rule Engine: {warningEval.levelText} ({warningEval.hitRules.length}/4 quy tắc vi phạm)
               </span>
             </div>
           </div>

@@ -67,6 +67,12 @@ export default function EduAlertApp() {
 
   const currentStudent = students.find((s) => s.maSV === currentStudentId) || students[0];
 
+  // Thông báo: sinh viên đang bị cảnh báo (không tính nhóm an toàn / tín hiệu sớm), rủi ro cao xếp trước
+  const WARNING_LEVELS = ['DROP_OUT_RISK', 'HIGH_RISK', 'WARNING', 'EARLY_WARNING'];
+  const notifications = students
+    .filter((s) => WARNING_LEVELS.includes(s.level))
+    .sort((a, b) => (b.riskScore || 0) - (a.riskScore || 0));
+
   return (
     <div className="app-layout">
       {/* Sidebar Navigation */}
@@ -79,7 +85,10 @@ export default function EduAlertApp() {
       <main className="app-main-wrapper">
         <Header
           currentTab={currentTab}
-          onOpenGuide={() => setIsGuideOpen(false)}
+          onOpenGuide={() => setIsGuideOpen(true)}
+          notifications={notifications}
+          onSelectNotification={handleOpenDossier}
+          onViewAllNotifications={() => setCurrentTab('tab-warning')}
         />
 
         <div className="app-content-body">

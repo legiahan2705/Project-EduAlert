@@ -1,17 +1,54 @@
 'use client';
 
-import { 
-  Calendar, 
-  HelpCircle, 
-  Layers, 
+import { useEffect, useRef, useState } from 'react';
+import {
+  Calendar,
+  HelpCircle,
+  Layers,
   Bell,
   ChevronRight
 } from 'lucide-react';
 
+const MAX_NOTIFICATIONS_SHOWN = 6;
+
+const isDropOut = (level) => level === 'DROP_OUT_RISK' || level === 'HIGH_RISK';
+
 export default function Header({
   currentTab,
-  onOpenGuide
+  onOpenGuide,
+  notifications = [],
+  onSelectNotification,
+  onViewAllNotifications
 }) {
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [hasUnread, setHasUnread] = useState(true);
+  const notifRef = useRef(null);
+
+  // Đóng danh sách khi bấm ra ngoài hoặc nhấn Escape
+  useEffect(() => {
+    if (!isNotifOpen) return undefined;
+    const handleClickOutside = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) setIsNotifOpen(false);
+    };
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setIsNotifOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isNotifOpen]);
+
+  const toggleNotifications = () => {
+    setIsNotifOpen((open) => !open);
+    setHasUnread(false);
+  };
+
+  const shownNotifications = notifications.slice(0, MAX_NOTIFICATIONS_SHOWN);
+  const hiddenCount = Math.max(0, notifications.length - shownNotifications.length);
+
   const getTabLabel = () => {
     switch (currentTab) {
       case 'tab-warning':
@@ -61,13 +98,76 @@ export default function Header({
         </button>
 
         {/* Notification Bell */}
-        <button 
-          className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
-          title="Thông báo mới"
-        >
-          <Bell size={17} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
+        <div className="notif-wrapper" ref={notifRef}>
+          <button
+            type="button"
+            className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
+            title="Thông báo mới"
+            aria-label="Thông báo"
+            aria-haspopup="true"
+            aria-expanded={isNotifOpen}
+            onClick={toggleNotifications}
+          >
+            <Bell size={17} />
+            {hasUnread && notifications.length > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+            )}
+          </button>
+
+          {isNotifOpen && (
+            <div className="notif-panel" role="menu">
+              <div className="notif-panel-header">
+                <strong>Thông báo</strong>
+                <span>{notifications.length} sinh viên cần chú ý</span>
+              </div>
+
+              {shownNotifications.length === 0 ? (
+                <div className="notif-empty">Không có cảnh báo nào.</div>
+              ) : (
+                <ul className="notif-list">
+                  {shownNotifications.map((s) => (
+                    <li key={s.maSV}>
+                      <button
+                        type="button"
+                        className="notif-item"
+                        role="menuitem"
+                        onClick={() => {
+                          setIsNotifOpen(false);
+                          if (onSelectNotification) onSelectNotification(s);
+                        }}
+                      >
+                        <span className={`notif-dot ${isDropOut(s.level) ? 'danger' : 'warning'}`} />
+                        <span className="notif-text">
+                          <span className="notif-title">
+                            {s.hoTen} <small>({s.maSV})</small>
+                          </span>
+                          <span className="notif-desc">
+                            {s.levelText} · GPA TL {Number(s.gpaTL).toFixed(2)} · Nợ {s.tcNo} TC
+                          </span>
+                        </span>
+                        <span className="notif-risk">{s.riskScore}%</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <div className="notif-panel-footer">
+                {hiddenCount > 0 && <span>và {hiddenCount} sinh viên khác</span>}
+                <button
+                  type="button"
+                  className="notif-viewall"
+                  onClick={() => {
+                    setIsNotifOpen(false);
+                    if (onViewAllNotifications) onViewAllNotifications();
+                  }}
+                >
+                  Xem tất cả
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Real User Profile Badge (No mock switcher) */}
         <div className="user-profile-badge">

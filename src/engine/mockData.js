@@ -8,6 +8,8 @@
  * 5. Bảng điểm: Group by Môn -> Expand Lớp, mã tự sinh BD-[Lớp]-[Môn]
  */
 
+import { OUGradeEngine } from './OUGradeEngine.js';
+
 // 1. DANH SÁCH KHOA (Mã: OU + YYMMDD + XXX)
 export const MOCK_FACULTIES = [
   {
@@ -385,6 +387,41 @@ export const MOCK_CLASSES = [
 ];
 
 // Helper sinh 45 sinh viên cho lớp DH22CS01C với 4 nhóm rõ rệt
+// Lịch sử 3 học kỳ (HK1, HK2 năm 2022-2023; HK3 năm 2023-2024), HK3 là kỳ vừa qua dùng để chấm Rule 1 & Rule 3.
+// Ràng buộc để số liệu khớp nhau:
+//  - Σ tcDK = tcTichLuy + tcNo và Σ tcKD = tcNo (chưa học lại môn nào)
+//  - HK3 lấy đúng gpaHK / gpaTL của sinh viên
+//  - GPA HK1 = gpaTL + 0.25, GPA HK2 suy ra để GPA tích lũy cuối kỳ khớp gpaTL (môn F tính 0 điểm, có cộng tín chỉ)
+//  - flat = true: GPA mọi kỳ bằng nhau (dùng cho nhóm an toàn)
+const SEMESTER_LABELS = ['HK1 (2022-2023)', 'HK2 (2022-2023)', 'HK3 (2023-2024)'];
+const round2 = (n) => Math.round(n * 100) / 100;
+
+const buildHistory = ({ dk, kd, gpaHK, gpaTL, flat = false }) => {
+  const totalCredits = dk[0] + dk[1] + dk[2];
+  let gpaBySem;
+  if (flat) {
+    gpaBySem = [gpaHK, gpaHK, gpaHK];
+  } else {
+    const gpa1 = Math.min(4, round2(gpaTL + 0.25));
+    const points2 = gpaTL * totalCredits - gpa1 * dk[0] - gpaHK * dk[2];
+    gpaBySem = [gpa1, Math.max(0, Math.min(4, round2(points2 / dk[1]))), gpaHK];
+  }
+
+  let points = 0;
+  let credits = 0;
+  return dk.map((tc, i) => {
+    points += gpaBySem[i] * tc;
+    credits += tc;
+    return {
+      hk: SEMESTER_LABELS[i],
+      tcDK: tc,
+      tcKD: kd[i],
+      gpaHK: gpaBySem[i],
+      gpaTL: i === dk.length - 1 ? gpaTL : round2(points / credits)
+    };
+  });
+};
+
 const generateDH22CS01CStudents = () => {
   const students = [];
 
@@ -402,8 +439,6 @@ const generateDH22CS01CStudents = () => {
     gpaHK: 0.82,
     tcTichLuy: 28,
     tcNo: 26,
-    level: 'DROP_OUT_RISK',
-    levelText: 'Nguy cơ Buộc thôi học (Mức 3)',
     riskScore: 96,
     hadPrevWarning: true,
     warningCount: 2,
@@ -411,6 +446,8 @@ const generateDH22CS01CStudents = () => {
     email: '2251050001an@ou.edu.vn',
     sdt: '0903111222',
     notes: 'Bị CBHV 2 kỳ liên tiếp. Nợ 26 TC chuỗi tiên quyết. Cần can thiệp khẩn cấp!',
+    // HK2 rớt 12/22 TC (54.5% > 50%) -> CBHV lần 1; HK3 GPA HK 0.82 < 1.0 -> CBHV lần 2
+    historySemesters: buildHistory({ dk: [18, 22, 14], kd: [8, 12, 6], gpaHK: 0.82, gpaTL: 1.15 }),
     counselingLog: [
       { date: '20/10/2026', type: 'Gặp trực tiếp', note: 'CVHT cảnh báo nguy cơ bị buộc thôi học theo TT 08/2021. Yêu cầu làm đơn cam kết học lại môn COSC1301 và MATH1303 ở HK tới.' }
     ]
@@ -429,8 +466,6 @@ const generateDH22CS01CStudents = () => {
     gpaHK: 0.95,
     tcTichLuy: 32,
     tcNo: 28,
-    level: 'DROP_OUT_RISK',
-    levelText: 'Nguy cơ Buộc thôi học (Mức 3)',
     riskScore: 92,
     hadPrevWarning: true,
     warningCount: 2,
@@ -438,6 +473,7 @@ const generateDH22CS01CStudents = () => {
     email: '2251050015bao@ou.edu.vn',
     sdt: '0903333444',
     notes: 'Vi phạm tiêu chí nợ > 24 TC và CPA Năm 2 < 1.40.',
+    historySemesters: buildHistory({ dk: [20, 22, 18], kd: [8, 12, 8], gpaHK: 0.95, gpaTL: 1.28 }),
     counselingLog: []
   });
 
@@ -454,8 +490,6 @@ const generateDH22CS01CStudents = () => {
     gpaHK: 0.78,
     tcTichLuy: 30,
     tcNo: 25,
-    level: 'DROP_OUT_RISK',
-    levelText: 'Nguy cơ Buộc thôi học (Mức 3)',
     riskScore: 90,
     hadPrevWarning: true,
     warningCount: 2,
@@ -463,16 +497,19 @@ const generateDH22CS01CStudents = () => {
     email: '2251050032long@ou.edu.vn',
     sdt: '0903555666',
     notes: 'Kỳ 3 rớt 60% số tín chỉ đăng ký. Thuộc diện xem xét buộc thôi học.',
+    // HK3 rớt 9/15 TC = 60%; HK2 rớt 12/22 TC (54.5%) -> CBHV lần 1
+    historySemesters: buildHistory({ dk: [18, 22, 15], kd: [4, 12, 9], gpaHK: 0.78, gpaTL: 1.32 }),
     counselingLog: []
   });
 
   // NHÓM 2: CẢNH BÁO HỌC VỤ TT08 (5 SINH VIÊN - CAM)
   const group2 = [
-    { mssv: '2251050008', ten: 'Phạm Minh Tuấn', gpa: 1.36, hk: 0.85, no: 15, lyDo: 'GPA TL Năm 2 < 1.40 và GPA HK < 1.00' },
-    { mssv: '2251050019', ten: 'Đỗ Thanh Hà', gpa: 1.38, hk: 1.10, no: 12, lyDo: 'GPA TL Năm 2 dưới ngưỡng 1.40' },
-    { mssv: '2251050024', ten: 'Vũ Anh Khoa', gpa: 1.45, hk: 0.90, no: 18, lyDo: 'Rớt > 50% tín chỉ trong học kỳ vừa qua' },
-    { mssv: '2251050036', ten: 'Hoàng Trọng Nghĩa', gpa: 1.39, hk: 1.05, no: 14, lyDo: 'GPA TL Năm 2 chạm ngưỡng cảnh báo' },
-    { mssv: '2251050041', ten: 'Bùi Thu Trang', gpa: 1.42, hk: 0.88, no: 16, lyDo: 'GPA HK < 1.00 vi phạm ĐK2 TT08' }
+    // dk / kd: TC đăng ký / TC không đạt của HK1, HK2, HK3 (HK3 = kỳ vừa qua)
+    { mssv: '2251050008', ten: 'Phạm Minh Tuấn', gpa: 1.36, hk: 0.85, no: 15, dk: [18, 18, 21], kd: [1, 2, 12], lyDo: 'GPA TL Năm 2 < 1.40 và GPA HK < 1.00' },
+    { mssv: '2251050019', ten: 'Đỗ Thanh Hà', gpa: 1.38, hk: 1.10, no: 12, dk: [17, 19, 18], kd: [2, 2, 8], lyDo: 'GPA TL Năm 2 dưới ngưỡng 1.40' },
+    { mssv: '2251050024', ten: 'Vũ Anh Khoa', gpa: 1.45, hk: 0.90, no: 18, dk: [20, 22, 18], kd: [4, 4, 10], lyDo: 'Rớt > 50% tín chỉ trong học kỳ vừa qua' },
+    { mssv: '2251050036', ten: 'Hoàng Trọng Nghĩa', gpa: 1.39, hk: 1.05, no: 14, dk: [20, 20, 16], kd: [4, 5, 5], lyDo: 'GPA TL Năm 2 chạm ngưỡng cảnh báo' },
+    { mssv: '2251050041', ten: 'Bùi Thu Trang', gpa: 1.42, hk: 0.88, no: 16, dk: [21, 22, 15], kd: [5, 5, 6], lyDo: 'GPA HK < 1.00 vi phạm ĐK2 TT08' }
   ];
 
   group2.forEach((item, idx) => {
@@ -489,8 +526,6 @@ const generateDH22CS01CStudents = () => {
       gpaHK: item.hk,
       tcTichLuy: 42,
       tcNo: item.no,
-      level: 'WARNING',
-      levelText: 'Cảnh báo học vụ (CBHV Mức 1)',
       riskScore: 72,
       hadPrevWarning: false,
       warningCount: 1,
@@ -498,6 +533,7 @@ const generateDH22CS01CStudents = () => {
       email: `${item.mssv}@ou.edu.vn`,
       sdt: `091200000${idx}`,
       notes: item.lyDo,
+      historySemesters: buildHistory({ dk: item.dk, kd: item.kd, gpaHK: item.hk, gpaTL: item.gpa }),
       counselingLog: []
     });
   });
@@ -518,8 +554,6 @@ const generateDH22CS01CStudents = () => {
       gpaHK: Number((1.50 + (i * 0.05)).toFixed(2)),
       tcTichLuy: 48,
       tcNo: 6,
-      level: 'EARLY_SIGNAL',
-      levelText: 'Tín hiệu sớm (Nguy cơ rớt môn)',
       riskScore: 48,
       hadPrevWarning: false,
       warningCount: 0,
@@ -527,6 +561,12 @@ const generateDH22CS01CStudents = () => {
       email: `2251050${idNum}@ou.edu.vn`,
       sdt: `0934000${idNum}`,
       notes: 'Rớt 1 môn tiên quyết (Kỹ thuật lập trình hoặc Giải tích 2). GPA tiệm cận ngưỡng.',
+      historySemesters: buildHistory({
+        dk: [18, 18, 18],
+        kd: [0, 3, 3],
+        gpaHK: Number((1.50 + (i * 0.05)).toFixed(2)),
+        gpaTL: Number((1.45 + (i * 0.03)).toFixed(2))
+      }),
       counselingLog: []
     });
   }
@@ -543,6 +583,8 @@ const generateDH22CS01CStudents = () => {
     const idNum = 200 + i;
     const name = namesSafe[i - 1] || `Sinh Viên Khá Giỏi ${i}`;
     const gpa = Number((2.55 + ((i % 15) * 0.09)).toFixed(2));
+    const tcTL = 56 + (i % 6);
+    const tcSem = Math.round(tcTL / 3);
     students.push({
       maSV: `2251050${idNum}`,
       hoTen: name,
@@ -554,10 +596,8 @@ const generateDH22CS01CStudents = () => {
       namHoc: 2,
       gpaTL: gpa > 4.0 ? 3.85 : gpa,
       gpaHK: gpa > 4.0 ? 3.90 : gpa,
-      tcTichLuy: 56 + (i % 6),
+      tcTichLuy: tcTL,
       tcNo: 0,
-      level: 'SAFE',
-      levelText: gpa >= 3.6 ? 'Xuất sắc' : gpa >= 3.2 ? 'Giỏi' : 'Khá / Bình thường',
       riskScore: 8,
       hadPrevWarning: false,
       warningCount: 0,
@@ -565,6 +605,13 @@ const generateDH22CS01CStudents = () => {
       email: `2251050${idNum}@ou.edu.vn`,
       sdt: `0978000${idNum}`,
       notes: 'Tiến độ học tập tốt, đạt chuẩn CTĐT.',
+      historySemesters: buildHistory({
+        dk: [tcSem, tcSem, tcTL - 2 * tcSem],
+        kd: [0, 0, 0],
+        gpaHK: gpa > 4.0 ? 3.90 : gpa,
+        gpaTL: gpa > 4.0 ? 3.85 : gpa,
+        flat: true
+      }),
       counselingLog: []
     });
   }
@@ -573,7 +620,12 @@ const generateDH22CS01CStudents = () => {
 };
 
 // 5. TẬP HỢP TOÀN BỘ SINH VIÊN (45 SV Lớp DH22CS01C + SV lớp khác)
-export const MOCK_STUDENTS = generateDH22CS01CStudents();
+// level / levelText / engineLevel do OUGradeEngine.classifyStudent tính từ dữ liệu (lịch sử học kỳ + warningCount),
+// không gán cứng. riskScore hiện vẫn là số mẫu cố định (xem tracking D5).
+export const MOCK_STUDENTS = generateDH22CS01CStudents().map((student) => {
+  const { warningEval, ...classification } = OUGradeEngine.classifyStudent(student);
+  return { ...student, ...classification };
+});
 
 // 6. DANH SÁCH BẢNG ĐIỂM (GROUP BY THEO MÃ MÔN HỌC -> EXPAND LỚP HỌC)
 export const MOCK_COURSE_GRADES = [
