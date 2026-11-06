@@ -4,7 +4,7 @@
 > **Tên tính năng:** Quản Lý Danh Sách Bảng Điểm Phân Cấp (Group By Môn $\to$ Expand Lớp) & Nhập Điểm Học Phần  
 > **Phân hệ:** Quản Lý Đào Tạo & Đánh Giá Điểm Số (Grading System)  
 > **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, TypeScript)  
-> **Trạng thái:** Baseline / Đã triển khai & Kiểm thử thành công  
+> **Trạng thái:** Đã triển khai trên dữ liệu mẫu (mock, chưa có backend); chưa có kiểm thử tự động  
 
 ---
 
@@ -24,10 +24,10 @@
 2. **Quy tắc sinh mã bảng điểm tự động tối giản:**
    $$\text{Mã Bảng Điểm} = \text{"BD-"} + \text{[Mã Lớp]} + \text{"-"} + \text{[Mã Môn]}$$
    * Ví dụ: Bảng điểm của lớp `DH22CS01C` cho môn `COSC1301` có mã: `BD-DH22CS01C-COSC1301`.
-   * Đơn giản, trực quan, không bao giờ trùng lặp và dễ dàng định danh.
+   * Đơn giản, trực quan và dễ định danh. Mã cơ bản chỉ phân biệt theo (Lớp, Môn); khi cùng lớp mở lại cùng môn ở học kỳ khác (học lại), mã cơ bản đã tồn tại nên **thêm hậu tố học kỳ**: `BD-DH22CS01C-COSC1301-2324HK3`. *(Hậu tố là đặc tả; code hiện chưa xử lý.)*
 3. **Quy tắc tính điểm chuẩn ĐH Mở TP.HCM:**
    $$\text{Điểm TK (hệ 10)} = (\text{Điểm QT} \times 0.4) + (\text{Điểm Thi} \times 0.6) \quad (\text{Làm tròn 1 chữ số thập phân})$$
-   * Điều kiện Đạt môn: Điểm $\text{TK} \ge 4.0$ và Điểm thi không bị điểm liệt ($> 0$).
+   * Điều kiện Đạt môn: Điểm $\text{TK} \ge 4.0$ (đúng với `OUGradeEngine`). Ngưỡng "điểm liệt" của điểm thi chưa được áp dụng — xem `02_Quy_Tac_Tinh_Diem_OU.md`, mục 1.
    * Tự động quy đổi sang Điểm Chữ ($A^+ \to F$) và Thang 4 ($4.0 \to 0.0$).
 
 ---
@@ -97,7 +97,7 @@ sequenceDiagram
 
 * **AC-03.1:** Toàn bộ bảng điểm học phần phải được tự động nhóm theo `maMon`. Khi tải trang hoặc lọc, các môn có bảng điểm phải được tổng hợp chính xác số lớp trực thuộc.
 * **AC-03.2:** Người dùng có thể click vào bất kỳ vị trí nào trên thanh tiêu đề môn học để Đóng (Collapse) hoặc Mở rộng (Expand) danh sách các lớp của môn đó.
-* **AC-03.3:** Mã bảng điểm mới khi tạo phải luôn tuân thủ cấu trúc tự sinh `BD-[Mã Lớp]-[Mã Môn]`, không bị trùng lặp.
+* **AC-03.3:** Mã bảng điểm mới khi tạo phải tuân thủ cấu trúc tự sinh `BD-[Mã Lớp]-[Mã Môn]` (kèm hậu tố học kỳ nếu mã cơ bản đã tồn tại), không bị trùng lặp.
 * **AC-03.4:** Trong Workspace nhập điểm, khi giảng viên thay đổi điểm QT hoặc Thi, các cột TK10, Điểm chữ và Thang 4 phải nhảy số thời gian thực mà không có độ trễ.
 * **AC-03.5:** Khi điểm TK10 $< 4.0$, hệ thống phải tự động gán điểm chữ $F$, thang $4 = 0.0$ và gắn badge đỏ `Rớt`.
 
@@ -105,6 +105,6 @@ sequenceDiagram
 
 ## 6. Quy Tắc Nghiệp Vụ (Business Rules)
 
-1. **BR-03.1 (Quy tắc mở bảng điểm simple):** Một lớp học phần chỉ có duy nhất 1 bảng điểm chính thức cho mỗi môn học trong một học kỳ. Không được tạo 2 bảng điểm trùng cặp `(Lớp, Môn, Học kỳ)`.
+1. **BR-03.1 (Quy tắc mở bảng điểm simple):** Một lớp học phần chỉ có duy nhất 1 bảng điểm chính thức cho mỗi môn học trong một học kỳ. Không được tạo 2 bảng điểm trùng cặp `(Lớp, Môn, Học kỳ)`. Mã bảng điểm phải đủ để phân biệt các cặp này (xem hậu tố học kỳ ở mục 2).
 2. **BR-03.2 (Bảo vệ điểm đã chốt):** Bảng điểm sau khi được xác nhận "Đã hoàn tất" sẽ được đồng bộ trực tiếp sang Động cơ Cảnh báo sớm (US-04) và Hồ sơ tích lũy của sinh viên (US-05).
 

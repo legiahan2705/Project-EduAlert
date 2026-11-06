@@ -4,7 +4,7 @@
 > **Tên tính năng:** Quản Lý Ngành Đào Tạo, Mã Tự Sinh & Không Gian Chi Tiết 4 Tab Đa Ngành  
 > **Phân hệ:** Quản Trị Cơ Cấu Đào Tạo (Core Administration)  
 > **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, TypeScript)  
-> **Trạng thái:** Baseline / Đã triển khai & Kiểm thử thành công  
+> **Trạng thái:** Đã triển khai trên dữ liệu mẫu (mock, chưa có backend); chưa có kiểm thử tự động  
 
 ---
 
@@ -26,6 +26,7 @@
    $$\text{Mã Ngành} = \text{[Ký hiệu viết tắt của Khoa]} + \text{YYMM} + \text{XXX}$$
    * Ví dụ Khoa CNTT (`FIT`) tạo ngành vào tháng 11/2026: `FIT2611001` (Khoa học máy tính), `FIT2611002` (Công nghệ thông tin)...
    * Ví dụ Khoa Kinh tế (`FECO`): `FECO2611001` (Kinh tế học)...
+   * **Lưu ý:** các ngành mẫu `FIT2200001` (Khoa học máy tính), `FIT2200002`, `FIT2200003` là mã seed có sẵn và **không** theo công thức (`2200` không phải `YYMM` hợp lệ). Mã sinh mới từ giao diện luôn theo đúng công thức.
 2. **Nhu cầu đào tạo liên ngành (Interdisciplinary Curriculum):**
    * Trong xu thế đào tạo hiện đại, một sinh viên ngành *Khoa học máy tính* cần học thêm các môn tự chọn từ Khoa Kế toán (`ACCT1301 - Nguyên lý kế toán doanh nghiệp`) hoặc Khoa Kinh tế (`ECON1301 - Kinh tế vi mô`).
    * Hệ thống cho phép chọn môn từ Kho toàn trường (`GLOBAL_COURSE_POOL`) để nạp vào khung CTĐT của ngành này một cách liền mạch.

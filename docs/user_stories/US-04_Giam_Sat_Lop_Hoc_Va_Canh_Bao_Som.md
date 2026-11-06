@@ -4,7 +4,7 @@
 > **Tên tính năng:** Giám Sát Học Tập Theo Lớp Sinh Hoạt, Phân Tầng 4 Nhóm Rủi Ro (TT 08/2021) & Can Thiệp Cá Nhân Hóa  
 > **Phân hệ:** Giám Sát & Cảnh Báo Sớm Học Vụ (Early Warning System)  
 > **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, TypeScript)  
-> **Trạng thái:** Baseline / Đã triển khai & Kiểm thử thành công  
+> **Trạng thái:** Đã triển khai trên dữ liệu mẫu (mock, chưa có backend); chưa có kiểm thử tự động  
 
 ---
 
@@ -21,7 +21,7 @@
 * **Lớp:** `DH22CS01C` (ĐH Khoa học máy tính Khóa 2022 - Lớp 01C).
 * **Ngành:** Khoa học máy tính (Mã: `FIT2200001` - Chuẩn 141 tín chỉ) thuộc Khoa Công nghệ thông tin (`FIT`).
 * **Sĩ số:** **45 sinh viên**.
-* **Thời điểm theo dõi:** Năm thứ 2, Học kỳ 3/4.
+* **Thời điểm theo dõi:** Năm thứ 2, rà soát sau khi kết thúc HK3 (năm học 2023–2024), trước HK4.
 * **Cố vấn học tập:** ThS. Nguyễn Hoàng Nam.
 
 ### 2.1. Ma Trận Phân Tầng 4 Nhóm Sinh Viên Trong Lớp
@@ -36,9 +36,9 @@ pie title Phân Bổ 45 Sinh Viên Lớp DH22CS01C
 
 | Phân Nhóm | Sĩ số | Đặc điểm nhận diện học vụ theo TT 08/2021 | Sinh viên tiêu biểu trong lớp |
 | :--- | :---: | :--- | :--- |
-| **Nhóm 1: Nguy cơ Buộc thôi học (Mức 3)** | **3 SV** | • Bị CBHV 2 lần liên tiếp.<br/>• GPA tích lũy Năm 2 $< 1.40$.<br/>• Tín chỉ nợ F $> 24$ TC (gãy chuỗi môn tiên quyết). | 1. Nguyễn Văn An (`2251050001` - CPA 1.15, Nợ 26 TC)<br/>2. Trần Quốc Bảo (`2251050015` - CPA 1.28, Nợ 28 TC)<br/>3. Lê Hoàng Long (`2251050032` - CPA 1.32, Nợ 25 TC) |
-| **Nhóm 2: Cảnh báo học vụ (CBHV Mức 1 & 2)** | **5 SV** | • Vi phạm 1 trong các điều kiện TT08:<br/>- Tín chỉ rớt trong kỳ $> 50\%$ ĐK.<br/>- GPA học kỳ $< 1.00$.<br/>- GPA tích lũy Năm 2 $< 1.40$. | 1. Phạm Minh Tuấn (`2251050008` - GPA HK: 0.85)<br/>2. Đỗ Thanh Hà (`2251050019` - CPA 1.38)<br/>3. Vũ Anh Khoa (`2251050024` - Rớt 18 TC)<br/>4. Hoàng Trọng Nghĩa (`2251050036`)<br/>5. Bùi Thu Trang (`2251050041`) |
-| **Nhóm 3: Tín hiệu sớm (Nguy cơ rớt môn)** | **8 SV** | • GPA tích lũy tiệm cận ngưỡng nguy hiểm ($1.45 - 1.70$).<br/>• Rớt 1 môn tiên quyết quan trọng (Toán rời rạc hoặc Kỹ thuật lập trình). | Sinh viên nhóm này nếu kỳ tới tiếp tục rớt môn sẽ lập tức rơi vào Nhóm 2. |
+| **Nhóm 1: Nguy cơ Buộc thôi học (Mức 3)** | **3 SV** | • **Tiêu chí xếp nhóm:** đã bị CBHV $\ge 2$ lần liên tiếp.<br/>• Thường đi kèm: $\text{GPA}_{\text{TL}}$ Năm 2 $< 1.40$ (Rule 4), nợ $> 24$ TC (Rule 2, gãy chuỗi môn tiên quyết). | 1. Nguyễn Văn An (`2251050001` - CPA 1.15, Nợ 26 TC)<br/>2. Trần Quốc Bảo (`2251050015` - CPA 1.28, Nợ 28 TC)<br/>3. Lê Hoàng Long (`2251050032` - CPA 1.32, Nợ 25 TC) |
+| **Nhóm 2: Cảnh báo học vụ (CBHV Mức 1 & 2)** | **5 SV** | • **Tiêu chí xếp nhóm:** bị CBHV lần 1, tức vi phạm $\ge 1$ Rule (xem `02_Quy_Tac_Tinh_Diem_OU.md`):<br/>- Rule 1: tín chỉ rớt trong kỳ $> 50\%$ ĐK.<br/>- Rule 3: GPA học kỳ $< 1.00$.<br/>- Rule 4: GPA tích lũy Năm 2 $< 1.40$. | 1. Phạm Minh Tuấn (`2251050008` - GPA HK: 0.85, CPA 1.36)<br/>2. Đỗ Thanh Hà (`2251050019` - CPA 1.38)<br/>3. Vũ Anh Khoa (`2251050024` - Rớt $> 50\%$ TC kỳ vừa qua, nợ 18 TC)<br/>4. Hoàng Trọng Nghĩa (`2251050036`)<br/>5. Bùi Thu Trang (`2251050041`) |
+| **Nhóm 3: Tín hiệu sớm (Nguy cơ rớt môn)** | **8 SV** | • Chưa vi phạm Rule nào nhưng GPA tích lũy tiệm cận ngưỡng nguy hiểm ($1.45 - 1.70$).<br/>• Rớt 1 môn tiên quyết quan trọng (Toán rời rạc hoặc Kỹ thuật lập trình). | Sinh viên nhóm này nếu kỳ tới tiếp tục rớt môn sẽ lập tức rơi vào Nhóm 2. |
 | **Nhóm 4: An toàn & Khá Giỏi** | **29 SV** | • GPA tích lũy $\ge 2.50$, tiến độ tích lũy đạt chuẩn CTĐT, không nợ môn cốt lõi. | Lê Gia Hân, Trần Bảo Ngọc, Nguyễn Thị Minh Châu... |
 
 ---
@@ -50,11 +50,11 @@ pie title Phân Bổ 45 Sinh Viên Lớp DH22CS01C
 * **Giải pháp can thiệp của CVHT & Hệ thống:**
   1. *Giới hạn tín chỉ:* Khống chế tối đa không quá $14$ tín chỉ ở kỳ kế tiếp.
   2. *Chiến lược trả nợ F:* Buộc phải đăng ký học lại ngay 2 môn: *Nhập môn lập trình (3 TC)* và *Toán rời rạc (3 TC)*.
-  3. *Hiệu ứng thế điểm F:* Khi trả nợ đạt điểm $C$ (2.0), theo quy chế HCMCOU điểm mới sẽ thế hoàn toàn điểm 0 cũ, giúp CPA nhảy từ $1.15 \to 1.52$, **vượt qua ngưỡng $1.40$**, cứu sinh viên thoát khỏi quyết định buộc thôi học!
+  3. *Hiệu ứng thế điểm F:* Khi trả nợ đạt điểm $B$ (2.5) cho cả 2 môn, theo quy chế HCMCOU điểm mới thế hoàn toàn điểm 0 cũ. Mẫu số CPA không đổi ($28 + 26 = 54$ TC), tổng điểm $62.1 \to 77.1$, nên CPA tăng $1.15 \to 1.43$, **vượt ngưỡng $1.40$**, tín chỉ nợ giảm $26 \to 20$ TC (dưới trần 24). *(Chỉ đạt $C$ (1.5) thì CPA $\approx 1.32$, chưa đủ.)*
   4. *Biên bản tư vấn:* CVHT hẹn gặp trực tiếp, phân tích lộ trình và lập biên bản cam kết có chữ ký của sinh viên.
 
 #### Trường hợp 2: Sinh viên Phạm Minh Tuấn (MSSV: `2251050008`) - Cảnh báo học vụ lần 1
-* **Vấn đề cốt lõi:** Kỳ vừa qua đăng ký 21 tín chỉ nhưng đi làm thêm ca đêm, vắng học dẫn đến rớt 4 môn (12 TC $> 50\%$ số đăng ký), GPA học kỳ tụt xuống $0.85$.
+* **Vấn đề cốt lõi:** Kỳ vừa qua đăng ký 21 tín chỉ nhưng đi làm thêm ca đêm, vắng học dẫn đến rớt 4 môn (12 TC $\approx 57\% > 50\%$ số đăng ký), GPA học kỳ tụt xuống $0.85$, CPA $1.36$, nợ tích lũy 15 TC. Rule Engine cho mức **Nguy cơ cao** (vi phạm nhiều Rule) nhưng đây là lần CBHV đầu tiên nên thuộc **Nhóm 2**.
 * **Giải pháp can thiệp:**
   1. Rút kinh nghiệm giảm tải xuống 15 tín chỉ.
   2. Chọn môn F có số tín chỉ cao nhất (Cơ sở dữ liệu - 4 TC) để học lại trước.
@@ -79,7 +79,7 @@ sequenceDiagram
     CV->>UI: 2. Nhấp vào dòng SV Nguyễn Văn An (Risk Score 96%) -> Bấm [Xem Hồ Sơ & Tư Vấn]
     UI->>DOS: 3. Mở StudentDossierModal
     DOS->>DOS: Đối chiếu 4 điều kiện TT08:
-    note over DOS: ĐK1: Nợ 26 TC (>24) -> VI PHẠM<br/>ĐK2: GPA HK 0.82 (<1.0) -> VI PHẠM<br/>ĐK3: CPA 1.15 (<1.40) -> VI PHẠM<br/>ĐK4: CBHV 2 lần liên tiếp -> NGUY CƠ THÔI HỌC
+    note over DOS: Rule 1: Rớt trong kỳ > 50% TC đăng ký -> kiểm tra theo dữ liệu kỳ<br/>Rule 2: Nợ 26 TC (>24) -> VI PHẠM<br/>Rule 3: GPA HK 0.82 (<1.0) -> VI PHẠM<br/>Rule 4: CPA 1.15 (<1.40) -> VI PHẠM<br/>Lịch sử: CBHV 2 lần liên tiếp -> NGUY CƠ THÔI HỌC (Nhóm 1)
     
     CV->>DOS: 4. Nhập Biên bản tư vấn can thiệp:
     note over CV,DOS: Hình thức: Gặp trực tiếp<br/>Kế hoạch: Buộc học lại COSC1301 & MATH1303 để thế điểm F<br/>Mục tiêu GPA: Đạt >= 2.0 kỳ tới
@@ -106,12 +106,13 @@ sequenceDiagram
 ---
 
 ### 4.2. Modal Hồ Sơ Học Vụ Sinh Viên (`StudentDossierModal.jsx`)
-* **Khối 1 (Đánh giá 4 điều kiện Thông tư 08/2021):**
-  * Điều kiện 1: Tín chỉ không đạt ($>50\%$ số đăng ký hoặc $>24$ TC nợ tích lũy).
-  * Điều kiện 2: GPA học kỳ ($<0.8$ HK đầu hoặc $<1.0$ các HK sau).
-  * Điều kiện 3: GPA tích lũy tối thiểu theo năm đào tạo (Năm 2: $<1.40$).
-  * Điều kiện 4: Số lần bị cảnh báo học vụ liên tiếp.
-* **Khối 2 (Lịch sử học kỳ & Diễn biến GPA):** Bảng điểm từng học kỳ, chỉ số tín chỉ rớt.
+* **Khối 1 (Đánh giá 4 Rule Thông tư 08/2021 — đánh số theo `02_Quy_Tac_Tinh_Diem_OU.md`):**
+  * Rule 1: Tín chỉ không đạt trong kỳ $> 50\%$ số đăng ký.
+  * Rule 2: Nợ tín chỉ toàn khóa $> 24$ TC.
+  * Rule 3: GPA học kỳ ($<0.8$ HK đầu hoặc $<1.0$ các HK sau).
+  * Rule 4: GPA tích lũy dưới sàn theo năm đào tạo (Năm 2: $<1.40$).
+  * *Thông tin bổ sung (không phải Rule):* Số lần CBHV liên tiếp, dùng để xếp nhóm can thiệp.
+* **Khối 2 (Lịch sử học kỳ & Diễn biến GPA):** Bảng từng học kỳ gồm TC đăng ký, TC không đạt, GPA học kỳ, GPA tích lũy. **Học kỳ gần nhất trong bảng là nguồn dữ liệu để chấm Rule 1 (rớt $> 50\%$) và Rule 3 (GPA học kỳ).** Ràng buộc dữ liệu: tổng TC đăng ký các kỳ $=$ TC tích lũy $+$ TC nợ; tổng TC không đạt $=$ TC nợ (khi chưa học lại).
 * **Khối 3 (Sổ tay tư vấn & Biên bản can thiệp CVHT):**
   * Danh sách các biên bản can thiệp trước đó.
   * Form ghi nhận can thiệp mới: Chọn hình thức (Gặp trực tiếp, Gọi điện, Email), Nội dung tư vấn, Mục tiêu GPA kỳ kế tiếp, Nút `[ Lưu Biên Bản Tư Vấn ]`.
@@ -122,7 +123,7 @@ sequenceDiagram
 
 * **AC-04.1:** Khi chọn lớp `DH22CS01C`, hệ thống phải nạp đủ 45 sinh viên và phân loại chính xác 3 sinh viên nhóm 1, 5 sinh viên nhóm 2, 8 sinh viên nhóm 3 và 29 sinh viên nhóm 4.
 * **AC-04.2:** Bảng xếp hạng rủi ro phải hiển thị sinh viên có Risk Score cao nhất (Nguyễn Văn An - 96%) ở dòng đầu tiên.
-* **AC-04.3:** Trong Modal Hồ sơ học vụ sinh viên, trạng thái vi phạm của 4 điều kiện quy chế phải được gắn badge màu rõ rệt (Đỏ: Vi phạm / Xanh: An toàn).
+* **AC-04.3:** Trong Modal Hồ sơ học vụ sinh viên, trạng thái vi phạm của 4 Rule quy chế phải được gắn badge màu rõ rệt (Đỏ: Vi phạm / Xanh: An toàn).
 * **AC-04.4:** Khi CVHT nhập và lưu biên bản can thiệp, dữ liệu phải được lưu vết ngay lập tức vào hồ sơ của sinh viên mà không bị mất khi đóng modal.
 
 ---

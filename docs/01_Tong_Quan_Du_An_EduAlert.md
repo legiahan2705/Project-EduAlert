@@ -1,3 +1,9 @@
+> ⚠️ **DEPRECATED — tài liệu phiên bản v1 (MVP 14 ngày), chỉ giữ để tham khảo lịch sử.**
+> Nội dung dưới đây **không còn khớp** với hệ thống hiện hành: lớp mẫu `DH21IT01` 40 SV, giả lập chuyển vai trò CVHT/SV, mockup tĩnh cổng 3030, PostgreSQL ở lộ trình.
+> Dùng thay thế: [`00_Kien_Truc_Tong_Quan_Du_An_EduAlert_V2.md`](./00_Kien_Truc_Tong_Quan_Du_An_EduAlert_V2.md), [`02_Quy_Tac_Tinh_Diem_OU.md`](./02_Quy_Tac_Tinh_Diem_OU.md) và thư mục [`user_stories/`](./user_stories/README.md).
+
+---
+
 # EduAlert – Hệ Thống Phân Tích & Cảnh Báo Sớm Nguy Cơ Học Tập Đa Cấp Độ
 > **Chuẩn quy chế đào tạo theo hệ thống tín chỉ — Trường Đại học Mở TP.HCM (HCMCOU)**  
 > **Lộ trình triển khai MVP Demo:** 14 ngày | **Đối tượng:** Cố vấn học tập (CVHT) & Sinh viên

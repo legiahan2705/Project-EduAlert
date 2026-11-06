@@ -4,7 +4,7 @@
 > **Tên tính năng:** Trợ Lý Kế Hoạch Học Tập Thông Minh, Đối Chiếu 141 Tín Chỉ & Mô Phỏng What-If Cho Sinh Viên  
 > **Phân hệ:** Trợ Lý Học Tập Sinh Viên (Student Self-Service)  
 > **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, TypeScript)  
-> **Trạng thái:** Baseline / Đã triển khai & Kiểm thử thành công  
+> **Trạng thái:** Đã triển khai trên dữ liệu mẫu (mock, chưa có backend); chưa có kiểm thử tự động  
 
 ---
 
@@ -59,11 +59,11 @@ sequenceDiagram
     rect rgb(254, 242, 242)
         note over SV,ENG: Phân đoạn 3: Phòng Thí Nghiệm What-If Sandbox
         SV->>UI: 4. Bấm [+ Thêm Môn Vào Kịch Bản Mô Phỏng]
-        SV->>UI: Chọn môn nợ F (COSC1301 - Nhập môn lập trình)
-        SV->>UI: Kéo chọn điểm số dự kiến đạt được: B+ (3.5)
+        SV->>UI: Chọn 2 môn nợ F (COSC1301 - Nhập môn lập trình, MATH1303 - Toán rời rạc; mỗi môn 3 TC)
+        SV->>UI: Chọn điểm dự kiến đạt được cho cả hai: B (2.5)
         UI->>ENG: Gọi hàm simulateWhatIfScenario()
-        ENG-->>UI: Điểm B+ mới THAY THẾ hoàn toàn điểm F cũ
-        ENG-->>UI: CPA mới tăng từ 1.15 -> 1.52 (+0.37 điểm) -> Thoát nguy cơ thôi học!
+        ENG-->>UI: Điểm B mới THAY THẾ hoàn toàn điểm F cũ (mẫu số CPA không đổi: 54 TC)
+        ENG-->>UI: CPA mới tăng từ 1.15 -> 1.43 (+0.28), nợ 26 -> 20 TC -> Vượt ngưỡng 1.40, dưới trần nợ 24!
         UI->>SV: Biểu đồ trực quan: So sánh CPA Trước và Sau khi trả nợ môn
     end
 ```
@@ -112,7 +112,7 @@ Màn hình Smart Planner gồm 4 phân đoạn chức năng liên hoàn:
 
 ## 5. Tiêu Chuẩn Chấp Thuận (Acceptance Criteria)
 
-* **AC-05.1:** Khi chuyển sang tài khoản sinh viên khác, toàn bộ tiến độ 141 tín chỉ, các môn nợ F và kịch bản mô phỏng phải đồng bộ chính xác theo sinh viên đó.
+* **AC-05.1:** Khi mở Smart Planner cho một sinh viên khác (CVHT mở từ nút `[ Lập Kế Hoạch Smart Planner ]` trong bảng cảnh báo; sinh viên thì luôn chỉ thấy dữ liệu của chính mình theo tài khoản đăng nhập), toàn bộ tiến độ 141 tín chỉ, các môn nợ F và kịch bản mô phỏng phải đồng bộ chính xác theo sinh viên đó.
 * **AC-05.2:** Thuật toán tính toán Target GPA phải phản hồi tức thì dưới 50ms khi người dùng thay đổi giá trị điểm mục tiêu.
 * **AC-05.3:** Trong mô phỏng What-If, đối với môn nợ F được chọn học lại, hệ thống phải thực hiện đúng quy chế thay thế điểm: Lấy điểm mới thế vào vị trí điểm cũ để tính lại CPA, phản ánh sự nhảy vọt của điểm tích lũy.
 * **AC-05.4:** Tất cả các thao tác trên phòng thí nghiệm What-If hoàn toàn chạy trên client memory, không làm sai lệch bảng điểm thực tế đã lưu.

@@ -4,7 +4,7 @@
 > **Tên tính năng:** Quản Lý Danh Mục Khoa, Sinh Mã Tự Động & Kiểm Toán Vết (Faculty Lifecycle & Audit Log)  
 > **Phân hệ:** Quản Trị Cơ Cấu Đào Tạo (Core Administration)  
 > **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, TypeScript)  
-> **Trạng thái:** Baseline / Đã triển khai & Kiểm thử thành công  
+> **Trạng thái:** Đã triển khai trên dữ liệu mẫu (mock, chưa có backend); chưa có kiểm thử tự động  
 
 ---
 

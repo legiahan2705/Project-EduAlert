@@ -77,7 +77,7 @@ Loại bỏ hoàn toàn tính năng giả lập vai trò trên giao diện ngư�
 
 * **Ngành:** Khoa học máy tính (Mã: `FIT2200001` / Chuẩn: 141 tín chỉ)
 * **Khoa:** Công nghệ thông tin (Ký hiệu: `FIT`)
-* **Khóa tuyển sinh:** 2022 (Sinh viên hiện đang học năm thứ 2, học kỳ 4)
+* **Khóa tuyển sinh:** 2022 (Sinh viên năm thứ 2; đợt rà soát hiện tại là **sau khi kết thúc HK3, năm học 2023–2024**, sắp bước vào HK4 — khớp với dữ liệu mẫu và thanh header của ứng dụng)
 * **Quy mô:** 45 sinh viên
 * **CVHT phụ trách:** ThS. Nguyễn Hoàng Nam
 
@@ -93,9 +93,9 @@ pie title Phân Bổ Học Lực & Rủi Ro Lớp DH22CS01C (45 Sinh Viên)
 
 | Phân nhóm | Số lượng | Tiêu chí nhận diện (TT 08/2021 & HCMCOU) | Danh sách sinh viên tiêu biểu |
 | :--- | :---: | :--- | :--- |
-| **Nhóm 1: Nguy cơ Buộc thôi học (Mức rất cao)** | **3 SV** (6.7%) | • Bị CBHV 2 lần liên tiếp.<br/>• GPA tích lũy Năm 2 $< 1.40$.<br/>• Tín chỉ nợ F $> 24$ TC. | 1. Nguyễn Văn An (`2251050001` - CPA: 1.15, Nợ 26 TC, CBHV lần 2)<br/>2. Trần Quốc Bảo (`2251050015` - CPA: 1.28, Nợ 28 TC, CBHV lần 2)<br/>3. Lê Hoàng Long (`2251050032` - CPA: 1.32, Nợ 25 TC, Rớt 60% TC kỳ rồi) |
-| **Nhóm 2: Cảnh báo học vụ (Mức cao)** | **5 SV** (11.1%) | • Vi phạm 1 trong các điều kiện TT08:<br/>- Tín chỉ rớt trong kỳ $> 50\%$ ĐK.<br/>- GPA học kỳ $< 1.00$.<br/>- GPA tích lũy $< 1.40$ (Năm 2). | 1. Phạm Minh Tuấn (`2251050008` - GPA HK: 0.85, Nợ F 12 TC)<br/>2. Đỗ Thanh Hà (`2251050019` - CPA: 1.38, Rớt 8 TC kỳ rồi)<br/>3. Vũ Anh Khoa (`2251050024` - Rớt môn Giải tích 2 & Cấu trúc dữ liệu)<br/>4. Hoàng Trọng Nghĩa (`2251050036`)<br/>5. Bùi Thu Trang (`2251050041`) |
-| **Nhóm 3: Tín hiệu sớm (Mức trung bình)** | **8 SV** (17.8%) | • Điểm GPA tích lũy tiệm cận ngưỡng ($1.40 - 1.70$).<br/>• Rớt 1 môn tiên quyết quan trọng (VD: Lập trình hướng đối tượng).<br/>• Điểm rèn luyện thấp ($< 60$). | Nhóm sinh viên có nguy cơ tuột dốc nếu kỳ tới không trả nợ môn kịp thời. |
+| **Nhóm 1: Nguy cơ Buộc thôi học (Mức rất cao)** | **3 SV** (6.7%) | • **Tiêu chí xếp nhóm:** đã bị CBHV $\ge 2$ lần liên tiếp.<br/>• Thường đi kèm: GPA tích lũy Năm 2 $< 1.40$, nợ $> 24$ TC. | 1. Nguyễn Văn An (`2251050001` - CPA: 1.15, Nợ 26 TC, CBHV lần 2)<br/>2. Trần Quốc Bảo (`2251050015` - CPA: 1.28, Nợ 28 TC, CBHV lần 2)<br/>3. Lê Hoàng Long (`2251050032` - CPA: 1.32, Nợ 25 TC, Rớt 60% TC kỳ rồi) |
+| **Nhóm 2: Cảnh báo học vụ (Mức cao)** | **5 SV** (11.1%) | • **Tiêu chí xếp nhóm:** bị CBHV lần 1, tức vi phạm $\ge 1$ Rule (xem `02_Quy_Tac_Tinh_Diem_OU.md`, mục 4–5):<br/>- Rule 1: tín chỉ rớt trong kỳ $> 50\%$ ĐK.<br/>- Rule 3: GPA học kỳ $< 1.00$.<br/>- Rule 4: GPA tích lũy $< 1.40$ (Năm 2). | 1. Phạm Minh Tuấn (`2251050008` - GPA HK: 0.85, CPA 1.36, Nợ 15 TC)<br/>2. Đỗ Thanh Hà (`2251050019` - CPA: 1.38, Rớt 8 TC kỳ rồi)<br/>3. Vũ Anh Khoa (`2251050024` - Rớt môn Giải tích 2 & Cấu trúc dữ liệu)<br/>4. Hoàng Trọng Nghĩa (`2251050036`)<br/>5. Bùi Thu Trang (`2251050041`) |
+| **Nhóm 3: Tín hiệu sớm (Mức trung bình)** | **8 SV** (17.8%) | • Chưa vi phạm Rule nào nhưng GPA tích lũy tiệm cận ngưỡng ($1.45 - 1.70$).<br/>• Rớt 1 môn tiên quyết quan trọng (VD: Lập trình hướng đối tượng).<br/>• Điểm rèn luyện thấp ($< 60$). | Nhóm sinh viên có nguy cơ tuột dốc nếu kỳ tới không trả nợ môn kịp thời. |
 | **Nhóm 4: An toàn & Khá Giỏi** | **29 SV** (64.4%) | • CPA $\ge 2.50$, tiến độ đạt chuẩn CTĐT, không nợ môn cốt lõi. | Nhóm sinh viên phát triển bình thường, tập trung vào tính năng định hướng tốt nghiệp Xuất sắc / Giỏi. |
 
 ---
@@ -103,15 +103,15 @@ pie title Phân Bổ Học Lực & Rủi Ro Lớp DH22CS01C (45 Sinh Viên)
 ### 4.2. Hướng Phân Tích & Giải Pháp Can Thiệp Hỗ Trợ Từng Cá Nhân Cụ Thể
 
 #### Đối với Sinh viên Nguyễn Văn An (MSSV: `2251050001`) - Nhóm 1 (Nguy cơ Buộc thôi học)
-* **Chẩn đoán nguyên nhân:** Sinh viên nợ 26 tín chỉ, trong đó có chuỗi môn tiên quyết bị đứt: *Nhập môn lập trình (F) $\to$ Kỹ thuật lập trình (F) $\to$ Cấu trúc dữ liệu & giải thuật (Chưa thể đăng ký)*. Bị CBHV lần 1 ở HK2 năm nhất, tiếp tục vi phạm GPA HK3 ($0.92$).
+* **Chẩn đoán nguyên nhân:** Sinh viên nợ 26 tín chỉ, trong đó có chuỗi môn tiên quyết bị đứt: *Nhập môn lập trình (F) $\to$ Kỹ thuật lập trình (F) $\to$ Cấu trúc dữ liệu & giải thuật (Chưa thể đăng ký)*. Bị CBHV lần 1 ở HK2 năm nhất, tiếp tục vi phạm GPA HK3 ($0.82$).
 * **Giải pháp hỗ trợ của CVHT & Hệ thống:**
   1. **Khống chế số tín chỉ đăng ký kỳ 4:** Áp dụng quy chế giới hạn không quá $14$ tín chỉ trong kỳ này.
   2. **Ưu tiên 100% kịch bản trả nợ F:** Hệ thống tự động đẩy 2 môn: *Nhập môn lập trình (3 TC)* và *Toán rời rạc (3 TC)* vào giỏ mô phỏng What-If.
-  3. **Kích hoạt cơ chế thế điểm F:** Khi đạt điểm $C$ (2.0) cho 2 môn này, CPA sẽ nhảy vọt từ $1.15 \to 1.52$, lập tức **vượt qua ngưỡng $1.40$**, cứu sinh viên khỏi quyết định buộc thôi học!
+  3. **Kích hoạt cơ chế thế điểm F:** Khi đạt điểm $B$ (2.5) cho cả 2 môn này, điểm mới thế điểm $F$ cũ (mẫu số CPA không đổi: $28 + 26 = 54$ TC; tổng điểm $1.15 \times 54 = 62.1 \to 77.1$), CPA tăng từ $1.15 \to 1.43$, **vượt ngưỡng $1.40$** và tín chỉ nợ giảm $26 \to 20$ TC (dưới trần 24). *(Nếu chỉ đạt $C$ (1.5) thì CPA mới $\approx 1.32$, chưa vượt ngưỡng.)*
   4. **Kế hoạch can thiệp:** CVHT đặt lịch hẹn trực tiếp, yêu cầu sinh viên ký cam kết học tập và cử 1 sinh viên giỏi kèm cặp (Peer Tutoring).
 
 #### Đối với Sinh viên Phạm Minh Tuấn (MSSV: `2251050008`) - Nhóm 2 (Cảnh báo học vụ lần 1)
-* **Chẩn đoán nguyên nhân:** Sinh viên có năng lực nhưng đăng ký quá tải kỳ trước (21 tín chỉ) dẫn đến thi trượt 3 môn chuyên ngành (9 tín chỉ $> 50\%$ số đăng ký).
+* **Chẩn đoán nguyên nhân:** Sinh viên có năng lực nhưng đăng ký quá tải kỳ trước (21 tín chỉ) dẫn đến thi trượt 4 môn (12 tín chỉ $\approx 57\% > 50\%$ số đăng ký), GPA học kỳ $0.85$.
 * **Giải pháp hỗ trợ:**
   1. Hướng dẫn sinh viên giảm tải, chỉ đăng ký $15$ tín chỉ ở kỳ kế tiếp.
   2. Chọn học lại 1 môn $F$ có số tín chỉ cao nhất (Cơ sở dữ liệu - 4 TC).
@@ -125,9 +125,11 @@ pie title Phân Bổ Học Lực & Rủi Ro Lớp DH22CS01C (45 Sinh Viên)
 * **Mã Khoa:** `OU` + `YYMMDD` + `XXX`
   * Ví dụ tạo ngày 04/11/2026: `OU261104001`, `OU261104002`...
 * **Mã Ngành:** `[Ký hiệu viết tắt của Khoa]` + `YYMM` + `XXX`
-  * Ví dụ Khoa CNTT (`FIT`) tạo ngành tháng 11/2026: `FIT2611001`, `FIT2611002`...
-* **Mã Bảng Điểm:** `BD` + `[Mã Lớp]` + `[Mã Môn]`
-  * Ví dụ: `BD-DH22CS01C-IT102`.
+  * Ví dụ (minh họa cách sinh mã) Khoa CNTT (`FIT`) tạo ngành tháng 11/2026: `FIT2611001`, `FIT2611002`...
+  * **Lưu ý dữ liệu khởi tạo:** các ngành mẫu `FIT2200001`, `FIT2200002`, `FIT2200003` là mã seed có sẵn, **không** theo công thức (phần `2200` không phải `YYMM` hợp lệ). Chỉ ngành tạo mới trong ứng dụng mới sinh mã đúng công thức.
+* **Mã Bảng Điểm:** `BD-` + `[Mã Lớp]` + `-` + `[Mã Môn]`
+  * Ví dụ: `BD-DH22CS01C-COSC1301`.
+  * Mỗi (Lớp, Môn, Học kỳ) chỉ có 1 bảng điểm. Khi cùng một lớp mở lại cùng môn ở học kỳ khác (học lại), mã cơ bản đã tồn tại nên **thêm hậu tố học kỳ**: `BD-DH22CS01C-COSC1301-2324HK3`. *(Quy tắc hậu tố này là đặc tả; code hiện chưa xử lý.)*
 
 ### 5.2. Quy tắc Audit Log (Nhật ký kiểm toán)
 Mọi thao tác chỉnh sửa (Tên khoa, Tên tiếng Anh, Ký hiệu, Trạng thái) hoặc thao tác thêm/xóa môn trong CTĐT phải được ghi lại vết với định dạng:

@@ -1,62 +1,76 @@
-# EduAlert — Hệ thống Phân tích, Dự báo & Cảnh báo sớm Nguy cơ Học tập Đa cấp độ
-> **Quy chế tín chỉ Trường Đại học Mở TP.HCM (HCMCOU) & Thông tư 08/2021/TT-BGDĐT**  
-> **Phiên bản MVP 14 ngày:** Hoàn thiện 4 phân hệ cốt lõi + Bộ tính điểm `OUGradeEngine` độc lập + Web App Mockup tương tác cao.
+# EduAlert — Hệ thống Quản lý Đào tạo, Giám sát Học vụ & Cảnh báo sớm Nguy cơ Sinh viên
+
+> **Đơn vị ứng dụng mẫu:** Trường Đại học Mở TP.HCM (HCMCOU)
+> **Căn cứ:** Quy chế đào tạo tín chỉ & Thông tư 08/2021/TT-BGDĐT
+> **Phiên bản:** 2.5 — Next.js 16 (App Router), React 19, Tailwind CSS 4
+> **Hiện trạng:** chạy hoàn toàn trên **dữ liệu mẫu (mock) trong bộ nhớ trình duyệt**, chưa có backend/database, chưa có đăng nhập thật, chưa có kiểm thử tự động.
 
 ---
 
-## 📂 Cấu Trúc Thư Mục Dự Án
+## 🚀 Chạy local
+
+Yêu cầu: Node.js 20 trở lên.
+
+```bash
+npm install      # lần đầu hoặc khi package.json thay đổi
+npm run dev      # http://localhost:3000
+```
+
+| Lệnh | Tác dụng |
+| :--- | :--- |
+| `npm run dev` | Chạy chế độ phát triển, cổng 3000 |
+| `npm run build` | Build production |
+| `npm start` | Chạy bản đã build, cổng 3000 |
+
+Không cần `.env` hay database.
+
+---
+
+## 🧩 5 phân hệ (tương ứng User Story US-01 … US-05)
+
+| Mã | Phân hệ | Màn hình trên sidebar |
+| :-: | :--- | :--- |
+| US-01 | Quản lý Khoa (mã tự sinh, Audit Log) | Quản Lý Khoa |
+| US-02 | Quản lý Ngành & CTĐT (workspace 4 tab) | Quản Lý Ngành & CTĐT |
+| US-03 | Quản lý Bảng điểm (Group by Môn → Lớp) | Quản Lý Bảng Điểm |
+| US-04 | Giám sát lớp & Cảnh báo sớm (lớp `DH22CS01C`, 45 SV) | Cảnh Báo Sớm Nguy Cơ |
+| US-05 | Smart Academic Planner (Target GPA, What-If) | Smart Academic Planner |
+
+---
+
+## 📂 Cấu trúc thư mục
 
 ```
 Project-EduAlert/
-├── docs/                                 # Tài liệu kỹ thuật & Đặc tả nghiệp vụ
-│   ├── 01_Tong_Quan_Du_An_EduAlert.md   # Kiến trúc hệ thống, 4 phân hệ, lộ trình 14 ngày
-│   └── 02_Quy_Tac_Tinh_Diem_OU.md        # Thang điểm, công thức GPA và 4 luật cảnh báo TT 08
-│
-├── engine/                               # Module tính toán lõi (Pure TypeScript/JavaScript)
-│   ├── OUGradeEngine.js                 # Thuật toán tính điểm TK, quy đổi A+->F, GPA HK, GPA TL, Rule Engine
-│   └── mockData.js                      # Bộ dữ liệu mẫu: 40 sinh viên Lớp DH21IT01 & CTĐT 141 tín chỉ
-│
-└── app/                                  # Ứng dụng Web Mockup chạy được ngay
-    ├── index.html                       # Giao diện chính phân quyền CVHT & Sinh viên (4 Phân hệ)
-    ├── styles.css                       # Giao diện hiện đại (Glassmorphism, Dark UI, Responsive)
-    ├── app.js                           # Controller kết nối Engine, State và DOM events
-    └── engine/                          # Bản sao Engine nội bộ phục vụ chạy web server độc lập
+├── app/                  # Next.js App Router (layout.jsx, page.jsx, globals.css)
+│   └── index.html, app.js, styles.css, engine/   # ⚠️ Mockup tĩnh đời đầu (v1), không còn dùng cho bản Next.js
+├── src/
+│   ├── components/       # UI theo phân hệ: FacultyManagement, FacultyMajorManagement,
+│   │                     #   CourseGrades, EarlyWarning, SmartPlanner, Sidebar, Header…
+│   ├── engine/           # OUGradeEngine.js (tính điểm, Rule Engine), mockData.js, studentAuditHelper.js
+│   └── types/index.ts    # Kiểu dữ liệu
+├── engine/               # Bản engine độc lập đời đầu (v1)
+└── docs/                 # Tài liệu — xem mục dưới
 ```
 
----
-
-## 🚀 Hướng Dẫn Mở Ứng Dụng Mockup Demo
-
-Ứng dụng web mockup đang được phục vụ tại cổng nội bộ:
-👉 **URL truy cập trực tiếp:** [http://localhost:3030](http://localhost:3030)  
-*(Hoặc mở trực tiếp file `app/index.html` trong bất kỳ trình duyệt web hiện đại nào)*.
+> Thư mục `app/index.html`, `app/app.js`, `app/engine/` và `engine/` ở gốc là di sản của bản mockup v1. Nguồn đang chạy là `src/`.
 
 ---
 
-## 🎯 Kịch Bản Demo Nhanh 4 Phân Hệ
+## 📚 Tài liệu
 
-1. **Phân hệ 1: Quản lý điểm theo Lớp - Môn - Kỳ**
-   * Chọn học kỳ `HK3`, Lớp `DH21IT01`, Môn `COSC2302 - Cơ sở dữ liệu`.
-   * Bấm nút **"📁 Import Excel (Diem.xlsx)"**: Mô phỏng nạp 30 sinh viên từ file Excel xuất từ cổng `tienichsv.ou.edu.vn`.
-   * **Thử nghiệm sửa điểm trực tiếp (Inline Edit):** Click vào ô Điểm QT hoặc Điểm Thi của bất kỳ sinh viên nào $\to$ Xem điểm tổng kết hệ 10, Điểm chữ và Kết quả tự động nhảy tức thì theo công thức ĐH Mở TP.HCM.
-   * Thống kê tự động: 24 Đạt (80%), 6 Rớt môn (20%), ĐTB môn 6.45/10.
+| File | Nội dung | Trạng thái |
+| :--- | :--- | :--- |
+| [`docs/00_Kien_Truc_Tong_Quan_Du_An_EduAlert_V2.md`](docs/00_Kien_Truc_Tong_Quan_Du_An_EduAlert_V2.md) | Kiến trúc tổng quan, RBAC, case study `DH22CS01C`, quy tắc nghiệp vụ | **Hiện hành (v2.5)** |
+| [`docs/02_Quy_Tac_Tinh_Diem_OU.md`](docs/02_Quy_Tac_Tinh_Diem_OU.md) | Thang điểm, công thức GPA, 4 quy tắc cảnh báo, phân loại | **Hiện hành** |
+| [`docs/user_stories/`](docs/user_stories/README.md) | US-01 … US-05 | **Hiện hành (v2.5)** |
+| [`docs/01_Tong_Quan_Du_An_EduAlert.md`](docs/01_Tong_Quan_Du_An_EduAlert.md) | Tổng quan MVP 14 ngày | **Deprecated (v1)** — chỉ để tham khảo lịch sử |
 
-2. **Phân hệ 2: Chương trình đào tạo & Tiến độ tích lũy**
-   * Xem tiến độ hoàn thành CTĐT ngành CNTT 141 tín chỉ của sinh viên: **82 / 141 tín chỉ** (58%).
-   * Lọc danh sách môn theo trạng thái: *Tất cả*, *✓ Đã đạt (Xanh)*, *✗ Đang nợ (Đỏ)*, *⏳ Chưa học (Xám)*.
-   * Chú thích rõ ràng các môn điều kiện không tích lũy GPA: **GDTC, GDQP-AN**.
+---
 
-3. **Phân hệ 3: Phân tích & Cảnh báo sớm (CVHT)**
-   * Xem tổng quan phân bố lớp: **25 Bình thường**, **10 Cảnh báo sớm**, **5 Nguy cơ cao**.
-   * Bảng xếp hạng rủi ro ưu tiên tư vấn (0 - 100 điểm).
-   * Click vào sinh viên **Trần Minh Tú (2151010005)** để mở **Hồ sơ cảnh báo**:
-     * Kiểm tra 4 điều kiện Thông tư 08: Hiện rõ 3/4 điều kiện bị vi phạm (Rớt môn > 50%, nợ 20 TC, GPA HK 0.90 < 1.0, GPA TL 1.55 < 1.6).
-     * Giải thích nguyên nhân tự động bằng ngôn ngữ tự nhiên.
-     * **Sổ tay tư vấn CVHT:** Chọn trạng thái can thiệp (*Đang hỗ trợ*) $\to$ Nhập biên bản làm việc $\to$ Bấm lưu vào lịch sử.
+## 🎯 Kịch bản demo nhanh (dữ liệu mẫu)
 
-4. **Phân hệ 4: Smart Academic Planner (Sinh viên)**
-   * Chuyển sang vai trò **🎓 Sinh Viên** trên thanh Topbar (Tài khoản Nguyễn Văn An - GPA hiện tại 3.10).
-   * **(a) Tính GPA Mục tiêu:** Nhập GPA mong muốn `3.20` $\to$ Hệ thống tự động giải bài toán tính mức điểm cần đạt: **3.34/4.0** trên 59 tín chỉ còn lại. Thử nhập `3.90` để xem cảnh báo mục tiêu bất khả thi!
-   * **(b) Gợi ý môn cải thiện:** Xem bảng xếp hạng các môn điểm C, D mang lại mức tăng $\Delta GPA$ cao nhất khi cải thiện lên điểm A.
-   * **(c) Kịch bản GPA kỳ tới:** Nhập dự kiến kỳ tới đạt GPA `3.40` $\to$ Xem GPA tích lũy mới nhảy lên `3.15` (+0.05).
-   * **(d) Mô phỏng What-If đăng ký môn:** Tick chọn các môn dự kiến kỳ 6 $\to$ Hệ thống tính toán tải học tập (`Load`) và độ rủi ro trượt môn lịch sử (`planRisk`) để đưa ra khuyến cáo cân bằng.
+1. **Cảnh Báo Sớm Nguy Cơ** (màn mặc định): lớp `DH22CS01C` — 45 SV phân 4 nhóm: **3** nguy cơ buộc thôi học, **5** cảnh báo học vụ, **8** tín hiệu sớm, **29** an toàn. Sinh viên rủi ro cao nhất: Nguyễn Văn An (`2251050001`, Risk 96%). Mở hồ sơ để xem 4 điều kiện TT08 và lập biên bản tư vấn.
+2. **Smart Academic Planner**: đối chiếu CTĐT 141 TC, đặt GPA mục tiêu, mô phỏng What-If trả nợ môn F (xem ví dụ số liệu trong `docs/user_stories/US-05_...`).
+3. **Quản Lý Khoa / Ngành & CTĐT**: thêm khoa (mã `OU+YYMMDD+XXX`), thêm ngành (mã `[Ký hiệu khoa]+YYMM+XXX`), nạp môn liên ngành, xem Audit Log.
+4. **Quản Lý Bảng Điểm**: nhóm theo môn → mở rộng ra các lớp → nhập điểm QT 40% + Thi 60%.
