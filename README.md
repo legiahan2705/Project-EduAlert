@@ -7,25 +7,6 @@
 
 ---
 
-## 🚀 Chạy local
-
-Yêu cầu: Node.js 20 trở lên.
-
-```bash
-npm install      # lần đầu hoặc khi package.json thay đổi
-npm run dev      # http://localhost:3000
-```
-
-| Lệnh | Tác dụng |
-| :--- | :--- |
-| `npm run dev` | Chạy chế độ phát triển, cổng 3000 |
-| `npm run build` | Build production |
-| `npm start` | Chạy bản đã build, cổng 3000 |
-
-Không cần `.env` hay database.
-
----
-
 ## 🧩 5 phân hệ (tương ứng User Story US-01 … US-05)
 
 | Mã | Phân hệ | Màn hình trên sidebar |
