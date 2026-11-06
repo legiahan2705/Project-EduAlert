@@ -88,3 +88,4 @@ export const Major = mongoose.models.Major || mongoose.model('Major', MajorSchem
 export const Student = mongoose.models.Student || mongoose.model('Student', StudentSchema);
 export const GradeSheet = mongoose.models.GradeSheet || mongoose.model('GradeSheet', GradeSheetSchema);
 export const Curriculum = mongoose.models.Curriculum || mongoose.model('Curriculum', CurriculumSchema);
+
