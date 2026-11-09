@@ -576,6 +576,19 @@ export default function UserManagementTab({
                                 <span className="text-[11px] text-amber-600 italic">Chưa phân lớp</span>
                               )}
                             </div>
+                            {(u.coursesTaught || []).length > 0 && (
+                              <div className="flex flex-wrap items-center gap-1">
+                                <span className="text-[11px] text-slate-400">Môn giảng dạy:</span>
+                                {u.coursesTaught.map((co) => (
+                                  <span
+                                    key={co}
+                                    className="text-[11px] font-mono bg-sky-50 text-sky-700 px-1.5 py-0.5 rounded border border-sky-200"
+                                  >
+                                    {co}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         ) : u.role === 'student' ? (
                           <div className="text-xs text-slate-600 space-y-0.5">

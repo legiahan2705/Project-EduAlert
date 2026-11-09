@@ -96,6 +96,7 @@ const UserSchema = new mongoose.Schema({
   facultyCode: { type: String, default: '' },
   facultyName: { type: String, default: '' },
   classes: [{ type: String }], // Danh sách mã lớp phụ trách/nhập điểm/CVHT
+  coursesTaught: [{ type: String }], // Danh sách mã môn giảng dạy (vd: COSC1301)
   // Sinh viên:
   maSV: { type: String, trim: true, default: '' },
   maLop: { type: String, trim: true, default: '' },

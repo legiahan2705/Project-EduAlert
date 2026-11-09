@@ -283,6 +283,7 @@ export default function EduAlertApp() {
               faculties={faculties}
               classes={classes}
               students={students}
+              currentUser={user}
             />
           )}
 

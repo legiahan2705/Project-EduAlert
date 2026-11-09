@@ -9,6 +9,21 @@ export async function PUT(req, { params }) {
   try {
     const { sheetId } = await params;
     const sheetData = await req.json();
+
+    // Giảng viên chỉ được phép lưu điểm môn/lớp do chính mình phụ trách
+    if (auth.session.role === 'lecturer') {
+      const isOwner =
+        sheetData.giangVien === auth.session.name ||
+        (auth.session.coursesTaught || []).includes(sheetData.maMon) ||
+        (auth.session.classes || []).includes(sheetData.maLop);
+      if (!isOwner) {
+        return NextResponse.json(
+          { error: `Bạn không phải giảng viên phụ trách môn này (${sheetData.giangVien || 'khác'}). Bạn không có quyền chỉnh sửa điểm số!` },
+          { status: 403 }
+        );
+      }
+    }
+
     const conn = await connectDB();
     if (!conn) return NextResponse.json(sheetData);
 

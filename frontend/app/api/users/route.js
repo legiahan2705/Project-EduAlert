@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { User } from '@/models';
 import { authorize } from '@/lib/session';
-import { hashNewPassword, seedDefaultUsersIfEmpty } from '@/lib/users';
+import { hashNewPassword, seedDefaultUsersIfEmpty, buildAllInitialUsers } from '@/lib/users';
 
 export async function GET(req) {
   const auth = authorize(req, ['admin']);
@@ -34,15 +34,51 @@ export async function GET(req) {
       ];
     }
 
-    const users = await User.find(query)
+    let users = await User.find(query)
       .select('-passwordHash -salt')
       .sort({ createdAt: -1 })
       .lean();
 
+    if (!users || users.length === 0) {
+      const fallbackList = buildAllInitialUsers().map((u, idx) => ({
+        _id: `user-init-${idx}`,
+        username: u.username,
+        role: u.role,
+        name: u.name,
+        email: u.email,
+        phone: u.phone,
+        facultyCode: u.facultyCode,
+        facultyName: u.facultyName,
+        classes: u.classes || [],
+        coursesTaught: u.coursesTaught || [],
+        maSV: u.maSV,
+        maLop: u.maLop,
+        tenNganh: u.tenNganh,
+        status: u.status,
+      }));
+      return NextResponse.json(fallbackList);
+    }
+
     return NextResponse.json(users);
   } catch (error) {
-    console.error('Error fetching users:', error);
-    return NextResponse.json({ error: 'Lỗi khi tải danh sách người dùng' }, { status: 500 });
+    console.warn('Error fetching users from DB, returning fallback initial users:', error.message);
+    const fallbackList = buildAllInitialUsers().map((u, idx) => ({
+      _id: `user-init-${idx}`,
+      username: u.username,
+      role: u.role,
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
+      facultyCode: u.facultyCode,
+      facultyName: u.facultyName,
+      classes: u.classes || [],
+      coursesTaught: u.coursesTaught || [],
+      maSV: u.maSV,
+      maLop: u.maLop,
+      tenNganh: u.tenNganh,
+      status: u.status,
+    }));
+    return NextResponse.json(fallbackList);
   }
 }
 

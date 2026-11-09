@@ -25,6 +25,7 @@ export function createSessionToken(user) {
     name: user.name,
     maSV: user.maSV || null,
     classes: user.classes || null,
+    coursesTaught: user.coursesTaught || null,
     exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SEC,
   };
   const body = b64(JSON.stringify(payload));

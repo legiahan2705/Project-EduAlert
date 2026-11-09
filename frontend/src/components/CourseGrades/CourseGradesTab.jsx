@@ -149,11 +149,25 @@ export default function CourseGradesTab({
   curriculumByMajor,
   faculties,
   classes,
-  students
+  students,
+  currentUser = null
 }) {
   const [gradeSheets, setGradeSheets] = useState(INITIAL_GRADE_SHEETS);
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'entry'
   const [activeSheet, setActiveSheet] = useState(null);
+
+  // Kiểm tra quyền chỉnh sửa bảng điểm của người dùng hiện tại
+  const canEditSheet = (sheet) => {
+    if (!currentUser) return true;
+    if (currentUser.role === 'admin') return true;
+    if (currentUser.role === 'lecturer') {
+      const matchName = sheet.giangVien === currentUser.name;
+      const matchClass = (currentUser.classes || []).includes(sheet.maLop);
+      const matchCourse = (currentUser.coursesTaught || []).includes(sheet.maMon);
+      return matchName || matchCourse;
+    }
+    return false;
+  };
 
   // Group by Mã Môn: state lưu danh sách các môn đang được mở rộng (expanded)
   const [expandedCourses, setExpandedCourses] = useState(['COSC1301', 'COSC2301']);
@@ -601,14 +615,25 @@ export default function CourseGradesTab({
                                       </td>
                                       <td>
                                         <div className="flex items-center justify-center gap-1.5">
-                                          <button
-                                            onClick={() => handleOpenGradeEntry(sheet)}
-                                            className="btn-primary text-xs py-1 px-2.5"
-                                            title="Nhập điểm học phần"
-                                          >
-                                            <Edit3 size={13} />
-                                            Nhập Điểm
-                                          </button>
+                                          {canEditSheet(sheet) ? (
+                                            <button
+                                              onClick={() => handleOpenGradeEntry(sheet)}
+                                              className="btn-primary text-xs py-1 px-2.5 flex items-center gap-1.5"
+                                              title="Nhập và chỉnh sửa điểm học phần"
+                                            >
+                                              <Edit3 size={13} />
+                                              Nhập Điểm
+                                            </button>
+                                          ) : (
+                                            <button
+                                              onClick={() => handleOpenGradeEntry(sheet)}
+                                              className="px-2.5 py-1 text-xs rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5 font-medium transition-colors"
+                                              title="Xem điểm số (Chỉ giảng viên phụ trách môn này mới được chỉnh sửa)"
+                                            >
+                                              <Eye size={13} />
+                                              Xem Điểm
+                                            </button>
+                                          )}
                                         </div>
                                       </td>
                                     </tr>
@@ -650,20 +675,38 @@ export default function CourseGradesTab({
               >
                 <Download size={14} /> Tải Mẫu Excel
               </button>
-              <button 
-                onClick={() => alert('Import bảng điểm Excel thành công!')}
-                className="btn-outline text-xs py-1.5"
-              >
-                <Upload size={14} /> Import Excel
-              </button>
-              <button 
-                onClick={handleSaveGrades}
-                className="btn-primary text-xs py-1.5 px-4"
-              >
-                <Save size={14} /> Lưu Bảng Điểm
-              </button>
+              {canEditSheet(activeSheet) ? (
+                <>
+                  <button 
+                    onClick={() => alert('Import bảng điểm Excel thành công!')}
+                    className="btn-outline text-xs py-1.5"
+                  >
+                    <Upload size={14} /> Import Excel
+                  </button>
+                  <button 
+                    onClick={handleSaveGrades}
+                    className="btn-primary text-xs py-1.5 px-4"
+                  >
+                    <Save size={14} /> Lưu Bảng Điểm
+                  </button>
+                </>
+              ) : (
+                <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                  <AlertCircle size={14} /> Chế độ chỉ xem
+                </span>
+              )}
             </div>
           </div>
+
+          {/* Alert thông báo chỉ xem */}
+          {!canEditSheet(activeSheet) && (
+            <div className="p-3 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl text-xs font-semibold flex items-center gap-2">
+              <AlertCircle size={16} className="text-amber-700 flex-shrink-0" />
+              <span>
+                <strong>Chế độ Chỉ Xem:</strong> Bảng điểm này do giảng viên <strong>{activeSheet.giangVien}</strong> phụ trách giảng dạy. Bạn không có quyền chỉnh sửa điểm số môn/lớp này.
+              </span>
+            </div>
+          )}
 
           {/* Alert thông báo lưu */}
           {saveAlert && (
@@ -769,9 +812,10 @@ export default function CourseGradesTab({
                             step="0.1"
                             min="0"
                             max="10"
+                            disabled={!canEditSheet(activeSheet)}
                             value={row.diemQT !== null ? row.diemQT : ''}
                             onChange={(e) => handleScoreChange(row.maSV, 'diemQT', e.target.value)}
-                            className="erp-input w-20 py-1 text-center font-bold"
+                            className={`erp-input w-20 py-1 text-center font-bold ${!canEditSheet(activeSheet) ? 'bg-slate-100 cursor-not-allowed text-slate-500 border-dashed' : ''}`}
                           />
                         </td>
                         <td>
@@ -780,9 +824,10 @@ export default function CourseGradesTab({
                             step="0.1"
                             min="0"
                             max="10"
+                            disabled={!canEditSheet(activeSheet)}
                             value={row.diemThi !== null ? row.diemThi : ''}
                             onChange={(e) => handleScoreChange(row.maSV, 'diemThi', e.target.value)}
-                            className="erp-input w-20 py-1 text-center font-bold"
+                            className={`erp-input w-20 py-1 text-center font-bold ${!canEditSheet(activeSheet) ? 'bg-slate-100 cursor-not-allowed text-slate-500 border-dashed' : ''}`}
                           />
                         </td>
                         <td>
