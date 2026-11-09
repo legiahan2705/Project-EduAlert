@@ -7,15 +7,20 @@ import {
   AlertTriangle, 
   Compass, 
   ShieldCheck,
-  GraduationCap
+  GraduationCap,
+  User
 } from 'lucide-react';
 
 export default function Sidebar({
   currentTab,
-  onSelectTab
+  onSelectTab,
+  isOpen = false,
+  allowedTabs = [],
+  warningCount = 0
 }) {
+  const hide = (tab) => (allowedTabs.includes(tab) ? undefined : { display: 'none' });
   return (
-    <aside className="app-sidebar">
+    <aside className={`app-sidebar ${isOpen ? 'open' : ''}`}>
       {/* Brand Header (Emerald Box + EduAlert) */}
       <div className="sidebar-brand">
         <div className="brand-icon-box">
@@ -34,17 +39,29 @@ export default function Sidebar({
 
         <button
           type="button"
+          onClick={() => onSelectTab('tab-me')}
+          style={hide('tab-me')}
+          className={`nav-item ${currentTab === 'tab-me' ? 'active' : ''}`}
+        >
+          <User size={17} />
+          <span>Hồ Sơ Của Tôi</span>
+        </button>
+
+        <button
+          type="button"
           onClick={() => onSelectTab('tab-warning')}
+          style={hide('tab-warning')}
           className={`nav-item ${currentTab === 'tab-warning' ? 'active' : ''}`}
         >
           <AlertTriangle size={17} />
           <span>Cảnh Báo Sớm Nguy Cơ</span>
-          <span className="nav-badge danger">3</span>
+          {warningCount > 0 && <span className="nav-badge danger">{warningCount}</span>}
         </button>
 
         <button
           type="button"
           onClick={() => onSelectTab('tab-planner')}
+          style={hide('tab-planner')}
           className={`nav-item ${currentTab === 'tab-planner' ? 'active' : ''}`}
         >
           <Compass size={17} />
@@ -53,11 +70,12 @@ export default function Sidebar({
         </button>
 
         {/* NHÓM 2: QUẢN TRỊ ĐÀO TẠO */}
-        <div className="nav-section-title mt-4">Quản Trị Đào Tạo</div>
+        <div className="nav-section-title mt-4" style={['tab-faculties', 'tab-majors', 'tab-course-grades'].some((t) => allowedTabs.includes(t)) ? undefined : { display: 'none' }}>Quản Trị Đào Tạo</div>
 
         <button
           type="button"
           onClick={() => onSelectTab('tab-faculties')}
+          style={hide('tab-faculties')}
           className={`nav-item ${currentTab === 'tab-faculties' ? 'active' : ''}`}
         >
           <Building2 size={17} />
@@ -67,6 +85,7 @@ export default function Sidebar({
         <button
           type="button"
           onClick={() => onSelectTab('tab-majors')}
+          style={hide('tab-majors')}
           className={`nav-item ${currentTab === 'tab-majors' ? 'active' : ''}`}
         >
           <Layers size={17} />
@@ -76,6 +95,7 @@ export default function Sidebar({
         <button
           type="button"
           onClick={() => onSelectTab('tab-course-grades')}
+          style={hide('tab-course-grades')}
           className={`nav-item ${currentTab === 'tab-course-grades' ? 'active' : ''}`}
         >
           <FileSpreadsheet size={17} />

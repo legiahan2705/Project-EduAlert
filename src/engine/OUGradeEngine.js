@@ -149,12 +149,22 @@ export const OUGradeEngine = {
       levelBadge = 'badge-warning';
     }
 
-    let riskScore = 15;
-    if (hitRules.length > 0) riskScore += hitRules.length * 20;
-    if (debtCreditsTotal > 10) riskScore += Math.min(25, debtCreditsTotal);
-    if (gpaCumulative < 2.0) riskScore += 15;
-    if (hadPreviousWarning) riskScore += 15;
-    riskScore = Math.min(100, Math.max(0, riskScore));
+    // Các thành phần cấu thành điểm rủi ro (dùng để giải thích cho CVHT)
+    const riskBreakdown = [{ label: 'Điểm nền', points: 15, note: 'Mức cơ bản của mọi sinh viên' }];
+    if (hitRules.length > 0) {
+      riskBreakdown.push({ label: `Vi phạm ${hitRules.length} quy tắc TT 08`, points: hitRules.length * 20, note: hitRules.map(h => h.name).join('; ') });
+    }
+    if (debtCreditsTotal > 10) {
+      riskBreakdown.push({ label: 'Nợ tín chỉ', points: Math.min(25, debtCreditsTotal), note: `Nợ ${debtCreditsTotal} TC (tính tối đa 25 điểm)` });
+    }
+    if (gpaCumulative < 2.0) {
+      riskBreakdown.push({ label: 'GPA tích lũy thấp', points: 15, note: `GPA ${gpaCumulative.toFixed(2)} < 2.00` });
+    }
+    if (hadPreviousWarning) {
+      riskBreakdown.push({ label: 'Đã từng bị cảnh báo học vụ', points: 15, note: 'Có tiền sử CBHV' });
+    }
+    const riskRaw = riskBreakdown.reduce((sum, r) => sum + r.points, 0);
+    const riskScore = Math.min(100, Math.max(0, riskRaw));
 
     return {
       checks,
@@ -163,6 +173,8 @@ export const OUGradeEngine = {
       levelText,
       levelBadge,
       riskScore,
+      riskRaw,
+      riskBreakdown,
       minGPA_TL,
       minGPA_Sem
     };

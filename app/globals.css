@@ -168,6 +168,7 @@ body {
 /* ================= MAIN WRAPPER ================= */
 .app-main-wrapper {
   flex: 1;
+  min-width: 0;
   margin-left: 260px;
   display: flex;
   flex-direction: column;
@@ -875,3 +876,77 @@ body {
 /* ================= NUT CHON NHANH (Smart Planner) ================= */
 .icon-btn { cursor: pointer; font-family: inherit; transition: background-color 0.15s ease, border-color 0.15s ease; }
 .icon-btn:hover { border-color: #064e3b !important; }
+
+/* ================= RESPONSIVE (điện thoại / máy tính bảng) ================= */
+.topbar-menu-btn { display: none; }
+.sidebar-overlay { display: none; }
+
+@media (max-width: 900px) {
+  .app-layout { width: 100%; }
+
+  /* Sidebar thành ngăn kéo trượt từ trái */
+  .app-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    z-index: 70;
+  }
+  .app-sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 60;
+  }
+  .app-main-wrapper { margin-left: 0; }
+
+  .topbar-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-right: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #064e3b;
+    flex-shrink: 0;
+  }
+
+  .app-topbar { padding: 0 12px; }
+  .topbar-left { flex: 1; min-width: 0; }
+  .breadcrumb-path { min-width: 0; }
+  .breadcrumb-path > svg,
+  .breadcrumb-path > span:not(.current) { display: none; }
+  .breadcrumb-path .current {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+  .topbar-right { gap: 6px; }
+  .topbar-term-badge,
+  .topbar-right .btn-outline span,
+  .user-details { display: none; }
+  .user-profile-badge { padding-left: 8px; }
+
+  .app-content-body { padding: 12px 12px 32px; overflow-x: auto; }
+  .erp-card-header { flex-wrap: wrap; gap: 10px; padding: 12px; }
+  .summary-banner { padding: 12px 14px; }
+  .notif-panel { position: fixed; top: 60px; left: 12px; right: 12px; width: auto; max-width: none; }
+  .modal-overlay { padding: 8px; }
+  .hide-on-mobile { display: none !important; }
+}
+
+/* Hồ sơ hiển thị trực tiếp trong trang (không dạng cửa sổ nổi) — dùng cho sinh viên */
+.modal-overlay.dossier-inline {
+  position: static;
+  inset: auto;
+  background: transparent;
+  backdrop-filter: none;
+  padding: 0;
+  display: block;
+}
+.dossier-inline .modal-box { max-width: none !important; max-height: none; }
+.dossier-inline .modal-body-content { max-height: none !important; }

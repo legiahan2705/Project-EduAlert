@@ -6,8 +6,11 @@ import {
   HelpCircle,
   Layers,
   Bell,
+  Menu,
+  LogOut,
   ChevronRight
 } from 'lucide-react';
+import { ROLE_LABEL, initialsOf } from '@/lib/roles';
 
 const MAX_NOTIFICATIONS_SHOWN = 6;
 
@@ -18,7 +21,10 @@ export default function Header({
   onOpenGuide,
   notifications = [],
   onSelectNotification,
-  onViewAllNotifications
+  onViewAllNotifications,
+  onToggleSidebar,
+  user,
+  onLogout
 }) {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
@@ -53,6 +59,8 @@ export default function Header({
     switch (currentTab) {
       case 'tab-warning':
         return 'Giám Sát & Cảnh Báo Sớm Nguy Cơ (TT 08/2021)';
+      case 'tab-me':
+        return 'Hồ Sơ Học Vụ Của Tôi';
       case 'tab-planner':
         return 'Kế Hoạch Học Tập Thông Minh (Smart Planner)';
       case 'tab-faculties':
@@ -70,6 +78,14 @@ export default function Header({
     <header className="app-topbar">
       {/* Breadcrumb Path */}
       <div className="topbar-left">
+        <button
+          type="button"
+          className="topbar-menu-btn"
+          onClick={onToggleSidebar}
+          aria-label="Mở menu"
+        >
+          <Menu size={18} />
+        </button>
         <nav className="breadcrumb-path">
           <Layers size={15} className="text-emerald-700" />
           <span>EduAlert</span>
@@ -172,12 +188,21 @@ export default function Header({
         {/* Real User Profile Badge (No mock switcher) */}
         <div className="user-profile-badge">
           <div className="user-avatar-circle">
-            LH
+            {initialsOf(user?.name)}
           </div>
           <div className="user-details">
-            <span className="user-name">Lê Gia Hân</span>
-            <span className="user-role-title">Quản Trị Viên / CVHT</span>
+            <span className="user-name">{user?.name || 'Người dùng'}</span>
+            <span className="user-role-title">{ROLE_LABEL[user?.role] || ''}</span>
           </div>
+          <button
+            type="button"
+            onClick={onLogout}
+            className="p-2 text-slate-500 hover:text-red-600 hover:bg-slate-100 rounded-full transition-colors"
+            title="Đăng xuất"
+            aria-label="Đăng xuất"
+          >
+            <LogOut size={16} />
+          </button>
         </div>
       </div>
     </header>

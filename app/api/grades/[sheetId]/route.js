@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
+import { authorize } from '@/lib/session';
 import { connectDB } from '@/lib/mongodb';
 import { GradeSheet } from '@/models';
 
 export async function PUT(req, { params }) {
+  const auth = authorize(req, ['admin', 'lecturer']);
+  if (auth.error) return auth.error;
   try {
     const { sheetId } = await params;
     const sheetData = await req.json();

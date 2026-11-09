@@ -1,11 +1,20 @@
 // Tự động dùng Relative path (/api) khi deploy lên Vercel, hoặc dùng biến môi trường nếu có
 const API_BASE = '/api';
 
+// Gọi API; nếu phiên đăng nhập hết hạn (401) thì chuyển về trang đăng nhập
+async function apiFetch(url, options) {
+  const res = await fetch(url, options);
+  if (res.status === 401 && typeof window !== 'undefined') {
+    window.location.href = '/login';
+  }
+  return res;
+}
+
 export const eduAlertApi = {
   // Khoa
   async getFaculties(fallback) {
     try {
-      const res = await fetch(`${API_BASE}/faculties`);
+      const res = await apiFetch(`${API_BASE}/faculties`);
       if (res.ok) return await res.json();
     } catch (e) {
       console.warn('API error, using fallback:', e.message);
@@ -15,7 +24,7 @@ export const eduAlertApi = {
 
   async createFaculty(data) {
     try {
-      const res = await fetch(`${API_BASE}/faculties`, {
+      const res = await apiFetch(`${API_BASE}/faculties`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -29,7 +38,7 @@ export const eduAlertApi = {
 
   async updateFaculty(code, data) {
     try {
-      const res = await fetch(`${API_BASE}/faculties/${code}`, {
+      const res = await apiFetch(`${API_BASE}/faculties/${code}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -43,7 +52,7 @@ export const eduAlertApi = {
 
   async deleteFaculty(code) {
     try {
-      const res = await fetch(`${API_BASE}/faculties/${code}`, { method: 'DELETE' });
+      const res = await apiFetch(`${API_BASE}/faculties/${code}`, { method: 'DELETE' });
       if (res.ok) return await res.json();
     } catch (e) {
       console.error(e);
@@ -54,7 +63,7 @@ export const eduAlertApi = {
   // Ngành
   async getMajors(fallback) {
     try {
-      const res = await fetch(`${API_BASE}/majors`);
+      const res = await apiFetch(`${API_BASE}/majors`);
       if (res.ok) return await res.json();
     } catch (e) {
       console.warn('API error, using fallback');
@@ -64,7 +73,7 @@ export const eduAlertApi = {
 
   async createMajor(data) {
     try {
-      const res = await fetch(`${API_BASE}/majors`, {
+      const res = await apiFetch(`${API_BASE}/majors`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -78,7 +87,7 @@ export const eduAlertApi = {
 
   async updateMajor(code, data) {
     try {
-      const res = await fetch(`${API_BASE}/majors/${code}`, {
+      const res = await apiFetch(`${API_BASE}/majors/${code}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -92,7 +101,7 @@ export const eduAlertApi = {
 
   async deleteMajor(code) {
     try {
-      const res = await fetch(`${API_BASE}/majors/${code}`, { method: 'DELETE' });
+      const res = await apiFetch(`${API_BASE}/majors/${code}`, { method: 'DELETE' });
       if (res.ok) return await res.json();
     } catch (e) {
       console.error(e);
@@ -103,7 +112,7 @@ export const eduAlertApi = {
   // Sinh viên
   async getStudents(fallback) {
     try {
-      const res = await fetch(`${API_BASE}/students`);
+      const res = await apiFetch(`${API_BASE}/students`);
       if (res.ok) return await res.json();
     } catch (e) {
       console.warn('API error, using fallback');
@@ -113,7 +122,7 @@ export const eduAlertApi = {
 
   async addCounselingNote(maSV, note) {
     try {
-      const res = await fetch(`${API_BASE}/students/${maSV}/counseling`, {
+      const res = await apiFetch(`${API_BASE}/students/${maSV}/counseling`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(note),
@@ -125,10 +134,15 @@ export const eduAlertApi = {
     return null;
   },
 
+  // Lớp (chưa có API riêng: dùng dữ liệu dự phòng)
+  async getClasses(fallback) {
+    return fallback;
+  },
+
   // Bảng điểm
   async getCourseGrades(fallback) {
     try {
-      const res = await fetch(`${API_BASE}/grades`);
+      const res = await apiFetch(`${API_BASE}/grades`);
       if (res.ok) return await res.json();
     } catch (e) {
       console.warn('API error, using fallback');
@@ -138,7 +152,7 @@ export const eduAlertApi = {
 
   async saveCourseGradeSheet(sheetId, sheetData) {
     try {
-      const res = await fetch(`${API_BASE}/grades/${sheetId}`, {
+      const res = await apiFetch(`${API_BASE}/grades/${sheetId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(sheetData),

@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
+import { authorize } from '@/lib/session';
 import { connectDB } from '@/lib/mongodb';
 import { Major } from '@/models';
 
 export async function PUT(req, { params }) {
+  const auth = authorize(req, ['admin']);
+  if (auth.error) return auth.error;
   try {
     const { code } = await params;
     const updates = await req.json();
@@ -21,6 +24,8 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(req, { params }) {
+  const auth = authorize(req, ['admin']);
+  if (auth.error) return auth.error;
   try {
     const { code } = await params;
     const conn = await connectDB();

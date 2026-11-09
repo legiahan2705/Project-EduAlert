@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
+import { authorize, canAccessStudent } from '@/lib/session';
 
 export async function POST(req) {
+  const auth = authorize(req, ['admin', 'lecturer']);
+  if (auth.error) return auth.error;
   try {
     const { student, warningEval, levelText } = await req.json();
 
     if (!student) {
       return NextResponse.json({ error: 'Missing student data' }, { status: 400 });
+    }
+    if (!canAccessStudent(auth.session, student)) {
+      return NextResponse.json({ error: 'Không đủ quyền truy cập' }, { status: 403 });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;

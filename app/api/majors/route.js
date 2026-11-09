@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
+import { authorize } from '@/lib/session';
 import { connectDB } from '@/lib/mongodb';
 import { Major } from '@/models';
 import { MOCK_MAJORS } from '@/engine/mockData';
 
-export async function GET() {
+export async function GET(req) {
+  const auth = authorize(req, ['admin', 'lecturer', 'student']);
+  if (auth.error) return auth.error;
   try {
     const conn = await connectDB();
     if (!conn) return NextResponse.json(MOCK_MAJORS);
@@ -20,6 +23,8 @@ export async function GET() {
 }
 
 export async function POST(req) {
+  const auth = authorize(req, ['admin']);
+  if (auth.error) return auth.error;
   try {
     const data = await req.json();
     const conn = await connectDB();
