@@ -509,7 +509,7 @@ export default function UserManagementTab({
                   const isCurrent = u.username === currentUser?.username;
 
                   return (
-                    <tr key={u._id} className="hover:bg-slate-50/80 transition-colors">
+                    <tr key={u._id || u.username} className="hover:bg-slate-50/80 transition-colors">
                       {/* Name & Contact */}
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">

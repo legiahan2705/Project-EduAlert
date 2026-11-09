@@ -546,7 +546,7 @@ export default function CourseGradesTab({
                                   const isInProgress = sheet.trangThai === 'IN_PROGRESS';
 
                                   return (
-                                    <tr key={sheet.id}>
+                                    <tr key={sheet.id || sheet._id || sheet.code || `sheet-${sIdx}`}>
                                       <td className="text-slate-400 font-mono text-center text-xs">
                                         {sIdx + 1}
                                       </td>

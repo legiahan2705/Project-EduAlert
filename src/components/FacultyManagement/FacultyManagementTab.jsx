@@ -377,7 +377,7 @@ export default function FacultyManagementTab({
                   const canDelete = linkedMajorsCount === 0;
 
                   return (
-                    <tr key={faculty.id}>
+                    <tr key={faculty._id || faculty.id || faculty.code || `fac-${idx}`}>
                       <td className="text-slate-400 font-mono text-center text-xs">{idx + 1}</td>
                       <td>
                         <span className="font-mono text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">
@@ -760,8 +760,8 @@ export default function FacultyManagementTab({
                       </td>
                     </tr>
                   ) : (
-                    historyFaculty.auditLogs.map((log) => (
-                      <tr key={log.id}>
+                    historyFaculty.auditLogs.map((log, lIdx) => (
+                      <tr key={log.id || log._id || `${log.timestamp || 'log'}-${lIdx}`}>
                         <td className="font-mono text-xs text-slate-500 whitespace-nowrap">
                           {log.timestamp}
                         </td>

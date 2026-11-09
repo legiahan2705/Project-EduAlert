@@ -324,8 +324,8 @@ export default function MajorDetailWorkspace({
                     </td>
                   </tr>
                 ) : (
-                  major.auditLogs.map((log) => (
-                    <tr key={log.id}>
+                  major.auditLogs.map((log, lIdx) => (
+                    <tr key={log.id || log._id || `${log.timestamp || 'log'}-${lIdx}`}>
                       <td className="font-mono text-xs text-slate-500 whitespace-nowrap">
                         {log.timestamp}
                       </td>
