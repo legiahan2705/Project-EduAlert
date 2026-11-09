@@ -22,7 +22,7 @@ const ENV_KEYS = {
 export function passwordFor(role) {
   const fromEnv = process.env[ENV_KEYS[role]];
   if (fromEnv) return fromEnv;
-  return isProd ? null : DEV_DEFAULTS[role];
+  return DEV_DEFAULTS[role];
 }
 
 /**
