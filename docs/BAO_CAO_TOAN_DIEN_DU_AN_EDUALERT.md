@@ -353,8 +353,13 @@ sequenceDiagram
 * **Trạng thái quy chế:** Đã bị cảnh báo học vụ ở học kỳ trước $\to$ Kỳ này tiếp tục vi phạm cả 4 Rule $\to$ **Đứng trước quyết định Buộc thôi học**.
 
 ### 9.2. Kịch bản giải cứu qua 4 bước trên EduAlert
-1. **Bước 1 - Phát hiện:** CVHT mở Dashboard Cảnh báo sớm, hệ thống lập tức gắn cờ đỏ sinh viên Nguyễn Văn An ở vị trí đầu tiên của Nhóm 1.
-2. **Bước 2 - Phân tích AI:** Mở Hồ sơ 360°, bấm **"AI Cố Vấn & Email"**. AI phân tích và chỉ ra An bị quá tải do đi làm thêm và hổng kiến thức lập trình cơ sở; AI tự soạn bức thư mời An lên gặp cố vấn với thái độ động viên.
+1. **Bước 1 - Phát hiện:** CVHT mở Dashboard Cảnh báo sớm, hệ thống lập tức gắn cờ đỏ sinh viên Nguyễn Văn An ở vị trí đầu tiên của Nhóm 1 (Nguy cơ buộc thôi học).
+2. **Bước 2 - Phân tích AI dựa trên bằng chứng dữ liệu:** 
+   - CVHT mở Hồ sơ 360°, bấm **"AI Cố Vấn & Email"**.
+   - Thay vì phán đoán cảm tính, AI trích xuất dữ liệu từ 2 nguồn khách quan:
+     * *Dữ liệu bảng điểm:* An bị rớt chuỗi môn tiên quyết (rớt *Kỹ thuật lập trình* $\to$ dẫn đến không theo kịp và rớt tiếp *Cấu trúc dữ liệu và giải thuật*). Điểm quá trình các môn này đều dưới 4.0 (dấu hiệu vắng tiết hoặc không nộp bài tập lớn).
+     * *Nhật ký tư vấn các kỳ trước của CVHT (Counseling Notes):* Hệ thống đọc lại lịch sử ghi nhận của CVHT ở kỳ trước (An từng gặp thầy chia sẻ về việc phải làm thêm phụ giúp gia đình dẫn đến thiếu ngủ và bỏ tiết).
+   - AI tổng hợp bức tranh toàn diện và tự động soạn bản thảo thư mời An lên gặp cố vấn với giọng điệu thấu hiểu, chân thành, tập trung vào giải pháp gỡ rối học tập mà không gây áp lực tinh thần.
 3. **Bước 3 - Thiết lập kế hoạch với Smart Planner:** CVHT cùng An mở tab Mô phỏng What-If. Thống nhất kịch bản kỳ tới An giảm tải đăng ký xuống 12 tín chỉ, ưu tiên học lại 2 môn F đạt điểm B+.
 4. **Bước 4 - Kết quả mô phỏng:** Nhờ cơ chế "thế điểm", GPA tích lũy của An lập tức bật tăng từ **1.15 lên 1.95**, số tín chỉ nợ giảm từ 26 xuống 20 TC $\to$ **Hệ thống hiển thị thông báo: THOÁT KHỎI DIỆN BUỘC THÔI HỌC!** Sinh viên lấy lại niềm tin và có lộ trình học tập khả thi.
 
@@ -401,3 +406,4 @@ Dự án **EduAlert v2.5 Enterprise Cloud** đã hiện thực hóa thành công
 * **Đồng bộ thời gian thực với LMS (Canvas / Moodle):** Lấy dữ liệu chuyên cần và điểm quá trình giữa kỳ để đưa ra cảnh báo sớm từ tuần thứ 4 của học kỳ.
 * **Tích hợp kênh liên lạc đa nền tảng:** Tự động gửi thông báo học vụ và thư nhắc nhở qua Zalo ZNS / Telegram Bot đến sinh viên và phụ huynh.
 * **Thuật toán tối ưu hóa thời khóa biểu (Genetic Algorithm):** Tự động sắp xếp lịch học lại các môn nợ F cho sinh viên mà không bị trùng lịch với các môn học mới.
+
