@@ -12,6 +12,7 @@ import SmartPlannerTab from '@/components/SmartPlanner/SmartPlannerTab';
 import FacultyManagementTab from '@/components/FacultyManagement/FacultyManagementTab';
 import FacultyMajorManagement from '@/components/FacultyMajorManagement/FacultyMajorManagement';
 import CourseGradesTab from '@/components/CourseGrades/CourseGradesTab';
+import UserManagementTab from '@/components/UserManagement/UserManagementTab';
 
 import { eduAlertApi } from '@/services/api';
 import { TABS_BY_ROLE, DEFAULT_TAB } from '@/lib/roles';
@@ -282,6 +283,16 @@ export default function EduAlertApp() {
               faculties={faculties}
               classes={classes}
               students={students}
+            />
+          )}
+
+          {/* TAB 6: QUẢN LÝ TÀI KHOẢN (ADMIN ONLY) */}
+          {canUse('tab-users') && (
+            <UserManagementTab
+              faculties={faculties}
+              majors={majors}
+              classes={classes}
+              currentUser={user}
             />
           )}
         </div>

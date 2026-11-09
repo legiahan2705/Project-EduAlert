@@ -8,7 +8,8 @@ import {
   Compass, 
   ShieldCheck,
   GraduationCap,
-  User
+  User,
+  Users
 } from 'lucide-react';
 
 export default function Sidebar({
@@ -70,7 +71,17 @@ export default function Sidebar({
         </button>
 
         {/* NHÓM 2: QUẢN TRỊ ĐÀO TẠO */}
-        <div className="nav-section-title mt-4" style={['tab-faculties', 'tab-majors', 'tab-course-grades'].some((t) => allowedTabs.includes(t)) ? undefined : { display: 'none' }}>Quản Trị Đào Tạo</div>
+        <div className="nav-section-title mt-4" style={['tab-faculties', 'tab-majors', 'tab-course-grades', 'tab-users'].some((t) => allowedTabs.includes(t)) ? undefined : { display: 'none' }}>Quản Trị Đào Tạo</div>
+
+        <button
+          type="button"
+          onClick={() => onSelectTab('tab-users')}
+          style={hide('tab-users')}
+          className={`nav-item ${currentTab === 'tab-users' ? 'active' : ''}`}
+        >
+          <Users size={17} />
+          <span>Quản Lý Tài Khoản</span>
+        </button>
 
         <button
           type="button"

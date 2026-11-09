@@ -83,9 +83,32 @@ const CurriculumSchema = new mongoose.Schema({
   courses: [mongoose.Schema.Types.Mixed],
 }, { timestamps: true });
 
+// 6. Tài khoản người dùng (Admin, Giảng viên, Sinh viên)
+const UserSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  passwordHash: { type: String, required: true },
+  salt: { type: String, required: true },
+  role: { type: String, enum: ['admin', 'lecturer', 'student'], required: true },
+  name: { type: String, required: true, trim: true },
+  email: { type: String, trim: true, default: '' },
+  phone: { type: String, trim: true, default: '' },
+  // Giảng viên:
+  facultyCode: { type: String, default: '' },
+  facultyName: { type: String, default: '' },
+  classes: [{ type: String }], // Danh sách mã lớp phụ trách/nhập điểm/CVHT
+  // Sinh viên:
+  maSV: { type: String, trim: true, default: '' },
+  maLop: { type: String, trim: true, default: '' },
+  maNganh: { type: String, trim: true, default: '' },
+  tenNganh: { type: String, trim: true, default: '' },
+  status: { type: String, enum: ['ACTIVE', 'LOCKED'], default: 'ACTIVE' },
+  createdBy: { type: String, default: 'system' },
+}, { timestamps: true });
+
 export const Faculty = mongoose.models.Faculty || mongoose.model('Faculty', FacultySchema);
 export const Major = mongoose.models.Major || mongoose.model('Major', MajorSchema);
 export const Student = mongoose.models.Student || mongoose.model('Student', StudentSchema);
 export const GradeSheet = mongoose.models.GradeSheet || mongoose.model('GradeSheet', GradeSheetSchema);
 export const Curriculum = mongoose.models.Curriculum || mongoose.model('Curriculum', CurriculumSchema);
+export const User = mongoose.models.User || mongoose.model('User', UserSchema);
 

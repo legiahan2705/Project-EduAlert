@@ -163,4 +163,63 @@ export const eduAlertApi = {
     }
     return null;
   },
+
+  // Quản lý người dùng (Admin)
+  async getUsers(params = {}) {
+    try {
+      const query = new URLSearchParams();
+      if (params.role) query.append('role', params.role);
+      if (params.status) query.append('status', params.status);
+      if (params.search) query.append('search', params.search);
+      const url = `${API_BASE}/users?${query.toString()}`;
+      const res = await apiFetch(url);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.error('Lỗi getUsers:', e);
+    }
+    return [];
+  },
+
+  async createUser(userData) {
+    try {
+      const res = await apiFetch(`${API_BASE}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Lỗi khi tạo người dùng');
+      return data;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async updateUser(id, userData) {
+    try {
+      const res = await apiFetch(`${API_BASE}/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Lỗi khi cập nhật người dùng');
+      return data;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async deleteUser(id) {
+    try {
+      const res = await apiFetch(`${API_BASE}/users/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Lỗi khi xóa người dùng');
+      return data;
+    } catch (e) {
+      throw e;
+    }
+  },
 };
