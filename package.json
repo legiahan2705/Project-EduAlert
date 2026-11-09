@@ -1,0 +1,15 @@
+{
+  "name": "project-edualert-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EduAlert Monorepo Root",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run start:dev",
+    "start:dev": "npm --prefix backend run start:dev",
+    "build": "npm --prefix frontend run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:backend": "npm --prefix backend run build"
+  }
+}
