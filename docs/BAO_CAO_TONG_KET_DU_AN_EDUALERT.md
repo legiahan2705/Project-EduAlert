@@ -287,3 +287,4 @@ Dự án **EduAlert** đã giải quyết trọn vẹn bài toán nhức nhối 
 * Tích hợp đồng bộ dữ liệu trực tiếp với hệ thống LMS (Moodle / Canvas) của trường để theo dõi chuyên cần thời gian thực.
 * Phát triển chatbot tương tác đa kênh (Zalo OA / Telegram Bot) tự động gửi thông báo lịch thi và nhắc nhở học vụ đến từng sinh viên và phụ huynh.
 * Áp dụng thuật toán tối ưu hóa di truyền (Genetic Algorithm) để tự động sắp xếp thời khóa biểu cá nhân hóa không bị trùng lịch cho sinh viên trả nợ môn.
+
