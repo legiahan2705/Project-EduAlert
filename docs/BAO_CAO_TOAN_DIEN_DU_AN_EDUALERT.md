@@ -311,9 +311,9 @@ $$\text{GPA}_{\text{cần đạt}} = \frac{\text{GPA}_{\text{mục tiêu}} \time
 
 ---
 
-## 8. ỨNG DỤNG TRÍ TUỆ NHÂN TẠO (AI GENERATIVE & SENTIMENT CLUSTERING)
+## 8. ỨNG DỤNG TRÍ TUỆ NHÂN TẠO (AI GENERATIVE TRONG HỖ TRỢ CỐ VẤN)
 
-Hệ thống tích hợp mô hình **Google Gemini 1.5 Flash API** qua Endpoint `/api/ai-counseling` nhằm nâng cấp bài toán từ số học thuần túy lên mức thấu hiểu con người:
+Hệ thống tích hợp mô hình **Google Gemini 1.5 Flash API** qua Endpoint `/api/ai-counseling` nhằm tự động hóa công tác tư vấn học vụ:
 
 ```mermaid
 sequenceDiagram
@@ -326,21 +326,19 @@ sequenceDiagram
     CVHT->>UI: Bấm nút "AI Cố Vấn & Email"
     UI->>API: Gửi thông tin SV (GPA 1.15, nợ 26 TC, rớt CTDL, lịch sử 3 kỳ)
     API->>LLM: Gửi Prompt chuyên gia Cố vấn học vụ kèm bộ luật TT08
-    Note over LLM: Phân tích ngữ nghĩa & Phân cụm nguyên nhân sa sút
-    LLM-->>API: Trả về JSON: Nhận định, Nguyên nhân, Lộ trình 3 bước, Email
+    Note over LLM: Phân tích tiến độ học tập & Môn nghẽn tiên quyết
+    LLM-->>API: Trả về JSON: Nhận định, Phân loại học vụ, Lộ trình 3 bước, Email
     API-->>UI: Hiển thị Tab Trợ Lý AI
     CVHT->>UI: Bấm nút "Sao Chép Thư" gửi trực tiếp cho Sinh viên
 ```
 
-### 2 Năng lực AI cốt lõi:
-1. **AI Sentiment & Risk Clustering (Phân cụm nguyên nhân sa sút):**
-   - Phân tích tương quan giữa điểm số và lịch sử học tập để nhận diện:
-     * *Nhóm 1:* Mất cân bằng thời gian do đi làm thêm quá giờ.
-     * *Nhóm 2:* Hổng kiến thức nền tảng chuỗi môn tiên quyết (Lập trình $\to$ Cấu trúc dữ liệu).
-     * *Nhóm 3:* Mất phương hướng hoặc chọn nhầm ngành đại học.
-2. **AI Generative Action Plan & Email Draft (Lộ trình hành động & Soạn thư):**
-   - Tự động sinh kế hoạch can thiệp 3 bước thực tế (giảm tải số tín chỉ đăng ký, ghép nhóm bạn cùng tiến).
-   - Tự động soạn sẵn bản thảo email với văn phong ân cần, đồng cảm nhưng rõ ràng về tính pháp lý để CVHT gửi ngay cho sinh viên/phụ huynh.
+### 2 Năng lực AI phục vụ học vụ:
+1. **Phân tích học vụ tự động (Academic Risk Classification):**
+   - Tự động phát hiện các môn học gây nghẽn tiến độ (môn rớt nằm trong chuỗi môn tiên quyết: Lập trình $\to$ Cấu trúc dữ liệu).
+   - Đánh giá mức độ khẩn cấp theo số tín chỉ nợ đọng so với giới hạn 24 TC của quy chế Thông tư 08.
+2. **AI Generative Action Plan & Email Draft (Kế hoạch hành động & Soạn thư):**
+   - Đề xuất mức giảm tải số tín chỉ học kỳ tới (tối đa 12 – 14 TC) để tránh quá tải.
+   - Soạn sẵn bản thảo email thông báo học vụ trang trọng, ân cần để giảng viên gửi cho sinh viên.
 
 ---
 
@@ -354,12 +352,10 @@ sequenceDiagram
 
 ### 9.2. Kịch bản giải cứu qua 4 bước trên EduAlert
 1. **Bước 1 - Phát hiện:** CVHT mở Dashboard Cảnh báo sớm, hệ thống lập tức gắn cờ đỏ sinh viên Nguyễn Văn An ở vị trí đầu tiên của Nhóm 1 (Nguy cơ buộc thôi học).
-2. **Bước 2 - Phân tích AI dựa trên bằng chứng dữ liệu:** 
+2. **Bước 2 - Phân tích AI:** 
    - CVHT mở Hồ sơ 360°, bấm **"AI Cố Vấn & Email"**.
-   - Thay vì phán đoán cảm tính, AI trích xuất dữ liệu từ 2 nguồn khách quan:
-     * *Dữ liệu bảng điểm:* An bị rớt chuỗi môn tiên quyết (rớt *Kỹ thuật lập trình* $\to$ dẫn đến không theo kịp và rớt tiếp *Cấu trúc dữ liệu và giải thuật*). Điểm quá trình các môn này đều dưới 4.0 (dấu hiệu vắng tiết hoặc không nộp bài tập lớn).
-     * *Nhật ký tư vấn các kỳ trước của CVHT (Counseling Notes):* Hệ thống đọc lại lịch sử ghi nhận của CVHT ở kỳ trước (An từng gặp thầy chia sẻ về việc phải làm thêm phụ giúp gia đình dẫn đến thiếu ngủ và bỏ tiết).
-   - AI tổng hợp bức tranh toàn diện và tự động soạn bản thảo thư mời An lên gặp cố vấn với giọng điệu thấu hiểu, chân thành, tập trung vào giải pháp gỡ rối học tập mà không gây áp lực tinh thần.
+   - AI bóc tách dữ liệu học vụ khách quan: An bị rớt chuỗi môn tiên quyết (*Cấu trúc dữ liệu và giải thuật* và *Tiếng Anh 2*), đồng thời nợ 26 TC vượt trần quy định.
+   - AI tự động đưa ra kế hoạch can thiệp 3 bước và soạn sẵn bản thảo email mời An lên gặp cố vấn với giọng điệu trang trọng, ân cần, tập trung vào giải pháp đăng ký môn học kỳ mới.
 3. **Bước 3 - Thiết lập kế hoạch với Smart Planner:** CVHT cùng An mở tab Mô phỏng What-If. Thống nhất kịch bản kỳ tới An giảm tải đăng ký xuống 12 tín chỉ, ưu tiên học lại 2 môn F đạt điểm B+.
 4. **Bước 4 - Kết quả mô phỏng:** Nhờ cơ chế "thế điểm", GPA tích lũy của An lập tức bật tăng từ **1.15 lên 1.95**, số tín chỉ nợ giảm từ 26 xuống 20 TC $\to$ **Hệ thống hiển thị thông báo: THOÁT KHỎI DIỆN BUỘC THÔI HỌC!** Sinh viên lấy lại niềm tin và có lộ trình học tập khả thi.
 

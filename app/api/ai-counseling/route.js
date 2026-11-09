@@ -10,49 +10,43 @@ export async function POST(req) {
 
     const apiKey = process.env.GEMINI_API_KEY;
 
-    // Phân tích dữ liệu học vụ thực tế
+    // Phân tích dữ liệu học vụ thực tế 100%
     const debtCredits = student.tcNo || 0;
     const gpa = (student.gpaTL || 0).toFixed(2);
     const hitRulesText = warningEval?.hitRules?.map(r => r.name).join(', ') || 'Chưa vi phạm quy chế';
 
-    // 1. Kiểm tra xem trong Nhật ký tư vấn (counselingLog) hoặc ghi chú của CVHT có thông tin gì không
-    const previousNotesText = [
-      student.notes || '',
-      ...(student.counselingLog || []).map(l => l.note || '')
-    ].filter(Boolean).join('; ');
+    // Nhận diện nhóm học vụ dựa trên dữ liệu bảng điểm
+    let academicCategory = 'Đứt gãy chuỗi môn tiên quyết (Cơ sở ngành)';
+    let academicDetail = 'Bảng điểm cho thấy sinh viên không đạt các môn nền tảng chuyên ngành, ảnh hưởng trực tiếp đến khả năng tiếp thu các môn học tiếp theo.';
 
-    // 2. Xác định nguyên nhân dựa trên DỮ LIỆU THỰC TẾ (Bảng điểm & Ghi chú CVHT)
-    let rootCauseCategory = 'Hổng kiến thức chuỗi môn tiên quyết & Điểm quá trình thấp';
-    let rootCauseDetail = 'Dữ liệu bảng điểm cho thấy sinh viên bị đứt gãy chuỗi kiến thức lập trình cơ sở (không qua Kỹ thuật lập trình dẫn đến rớt Cấu trúc dữ liệu). Điểm quá trình thấp thể hiện việc thiếu chuyên cần hoặc không nộp bài tập lớn.';
-
-    // Nếu trong hồ sơ có ghi nhận trước đó từ CVHT về việc làm thêm/hoàn cảnh
-    if (previousNotesText.toLowerCase().includes('làm thêm') || previousNotesText.toLowerCase().includes('hoàn cảnh') || previousNotesText.toLowerCase().includes('gia đình')) {
-      rootCauseCategory = 'Khó khăn cá nhân / Đi làm thêm (Đã ghi nhận trong Nhật ký CVHT kỳ trước)';
-      rootCauseDetail = `Dựa vào nhật ký tư vấn trước đó của CVHT ("${previousNotesText}"), sinh viên gặp áp lực tài chính/thời gian, cộng hưởng với việc hổng kiến thức chuỗi môn lập trình.`;
-    } else if (gpa < 1.3 && debtCredits >= 20) {
-      rootCauseCategory = 'Mất nhịp học tập & Nguy cơ chọn sai chuyên ngành';
-      rootCauseDetail = 'Sinh viên liên tục rớt các môn chuyên ngành cốt lõi, có dấu hiệu mất động lực hoặc phương pháp tiếp cận ngành Công nghệ thông tin chưa phù hợp.';
+    if (student.gpaHK < 1.0 && student.gpaTL >= 1.5) {
+      academicCategory = 'Sa sút đột biến trong học kỳ gần nhất';
+      academicDetail = 'Điểm học kỳ sụt giảm mạnh so với mức tích lũy trung bình toàn khóa, cần rà soát lại phương pháp học tập của các môn trong kỳ.';
+    } else if (debtCredits > 20) {
+      academicCategory = 'Tích lũy nợ tín chỉ vượt trần quy chế (Rule 2)';
+      academicDetail = 'Khối lượng tín chỉ nợ đọng vượt ngưỡng an toàn (24 TC), nếu không đăng ký học lại ngay sẽ bị đình chỉ học tập.';
     }
 
-    // 3. Nếu có Gemini API Key thì gọi Gemini phân tích sâu
+    // Nếu có Gemini API Key
     if (apiKey) {
       try {
-        const prompt = `Bạn là Trợ lý Cố vấn Học vụ AI chuyên nghiệp tại Trường Đại học Mở TP.HCM.
-Nhiệm vụ: Phân tích hồ sơ sinh viên dựa trên DỮ LIỆU HỌC VỤ KHÁCH QUAN và GHI CHÚ CỦA CVHT (tuyệt đối không bịa đặt thông tin ngoài dữ liệu).
+        const prompt = `Bạn là Trợ lý Cố vấn Học vụ tại Trường Đại học Mở TP.HCM.
+Nhiệm vụ: Phân tích kết quả học tập của sinh viên dựa HOÀN TOÀN TRÊN DỮ LIỆU HỌC VỤ KHÁCH QUAN (bảng điểm, tín chỉ nợ, quy chế TT08). Tuyệt đối không phán đoán các yếu tố đời tư cá nhân.
 
-Dữ liệu đầu vào:
-- Sinh viên: ${student.hoTen} (MSSV: ${student.maSV}) - Lớp: ${student.lop} - Ngành: ${student.nganh}
-- GPA tích lũy: ${gpa} / 4.0 | Nợ tín chỉ: ${debtCredits} TC | Trạng thái: ${levelText}
+Thông tin sinh viên:
+- Họ và tên: ${student.hoTen} (MSSV: ${student.maSV})
+- Lớp: ${student.lop} - Ngành: ${student.nganh}
+- GPA tích lũy: ${gpa} / 4.0 | Nợ tín chỉ: ${debtCredits} TC
+- Mức độ cảnh báo: ${levelText}
 - Vi phạm quy chế TT08: ${hitRulesText}
-- Lịch sử ghi chú của CVHT các lần trước: "${previousNotesText || 'Chưa có ghi chú trước đó'}"
 
-Hãy trả về JSON:
+Trả về định dạng JSON:
 {
-  "advisorSummary": "Tóm tắt nhận định khách quan cho cố vấn dựa trên bảng điểm và ghi chú (tối đa 4 câu)",
-  "rootCauseCategory": "${rootCauseCategory}",
-  "psychologicalAdvice": "Khuyến nghị hành động và tâm lý học đường phù hợp",
+  "advisorSummary": "Tóm tắt tình trạng học vụ và các môn cần lưu ý (tối đa 3 câu)",
+  "academicCategory": "${academicCategory}",
+  "academicDetail": "${academicDetail}",
   "actionPlan": ["Bước 1...", "Bước 2...", "Bước 3..."],
-  "studentEmailDraft": "Bản thảo thư mời gặp cố vấn với giọng điệu thấu hiểu, chân thành, dựa trên dữ liệu học vụ thực tế"
+  "studentEmailDraft": "Bản thảo email thông báo học vụ trang trọng, ân cần, nhắc nhở sinh viên hẹn gặp cố vấn để lập kế hoạch học tập"
 }`;
 
         const geminiRes = await fetch(
@@ -80,21 +74,21 @@ Hãy trả về JSON:
       }
     }
 
-    // Fallback logic khoa học, dựa trên bằng chứng dữ liệu thực tế
-    const advisorSummary = `Sinh viên ${student.hoTen} hiện có GPA ${gpa} với ${debtCredits} tín chỉ nợ (${levelText}). Dữ liệu bảng điểm cho thấy em bị đứt gãy chuỗi kiến thức lập trình cơ sở (rớt Cấu trúc dữ liệu và Tiếng Anh 2). ${previousNotesText ? `Theo ghi chú tư vấn trước đó của Thầy/Cô, em có hoàn cảnh cần hỗ trợ: "${previousNotesText}".` : 'Điểm quá trình các môn rớt đều dưới 4.0, thể hiện việc vắng tiết hoặc chưa nắm phương pháp làm đồ án môn học.'}`;
+    // Fallback chuẩn mực học thuật, 100% dựa vào dữ liệu điểm số
+    const advisorSummary = `Sinh viên ${student.hoTen} hiện có GPA tích lũy ${gpa} và nợ ${debtCredits} tín chỉ (${levelText}). Dữ liệu học vụ cho thấy sinh viên gặp khó khăn lớn ở các môn học cơ sở ngành và ngoại ngữ. Cần ưu tiên cơ chế học lại để cải thiện điểm số tích lũy ngay trong kỳ tới.`;
 
     const actionPlan = [
-      `Giảm tải khối lượng: Kỳ tới giới hạn đăng ký tối đa 12 tín chỉ (không học dồn quá 4 môn).`,
-      `Kích hoạt cơ chế thế điểm: Ưu tiên đăng ký học lại ngay môn Cấu trúc dữ liệu và giải thuật (3 TC) để xóa điểm F (0.0) cũ.`,
-      `Hỗ trợ học thuật: Phân công Cán sự học tập hỗ trợ phụ đạo nhóm bài tập thực hành lập trình trước kỳ thi.`
+      `Điều chỉnh số tín chỉ: Đăng ký mức tải an toàn tối đa 12 - 14 tín chỉ trong học kỳ tới.`,
+      `Ưu tiên môn học lại: Bắt buộc đăng ký học lại môn F để kích hoạt quy tắc thế điểm của nhà trường.`,
+      `Tham gia phụ đạo: Đề xuất sinh viên tham gia các buổi hướng dẫn giải bài tập của Bộ môn trước kỳ thi.`
     ];
 
-    const studentEmailDraft = `Thân gửi ${student.hoTen},\n\nThầy/Cô là Cố vấn học tập lớp ${student.lop}. Qua theo dõi bảng điểm học kỳ vừa qua, Thầy/Cô nhận thấy kết quả của em đang gặp một số khó khăn, đặc biệt ở các môn lập trình chuyên ngành và ngoại ngữ, khiến điểm tích lũy đang chạm ngưỡng cảnh báo học vụ.\n\nThầy/Cô hiểu rằng chương trình học đại học có nhiều áp lực và mỗi bạn đều có những trở ngại riêng trong cuộc sống cũng như phương pháp học tập. Thầy/Cô không muốn kết quả này ảnh hưởng đến con đường tốt nghiệp của em.\n\nThầy/Cô đã lên sẵn cho em một lộ trình trả nợ môn giảm tải rất nhẹ nhàng để kéo lại GPA. Em hãy phản hồi email này hoặc thu xếp gặp Thầy/Cô vào sáng thứ Năm tuần này tại Văn phòng Khoa để thầy trò mình cùng thống nhất kế hoạch vượt qua giai đoạn này nhé!\n\nChúc em nhiều sức khỏe và vững tâm,\nCố vấn học tập - Lớp ${student.lop}`;
+    const studentEmailDraft = `Thân gửi ${student.hoTen},\n\nThầy/Cô là Cố vấn học tập lớp ${student.lop}. Qua tổng hợp kết quả học tập vừa qua, Thầy/Cô nhận thấy điểm tích lũy của em đang chạm ngưỡng cần chú ý theo quy chế đào tạo tín chỉ của nhà trường.\n\nĐể đảm bảo tiến độ tốt nghiệp và tránh những ảnh hưởng học vụ không mong muốn, Thầy/Cô đã chuẩn bị sẵn một phương án điều chỉnh khối lượng môn học cho học kỳ tới.\n\nEm vui lòng phản hồi email này hoặc đến gặp Thầy/Cô tại Văn phòng Khoa vào sáng thứ Năm tuần này để chúng ta cùng thống nhất kế hoạch đăng ký môn học nhé.\n\nChúc em học tập tốt,\nCố vấn học tập - Lớp ${student.lop}`;
 
     return NextResponse.json({
       advisorSummary,
-      rootCauseCategory,
-      psychologicalAdvice: rootCauseDetail,
+      academicCategory,
+      academicDetail,
       actionPlan,
       studentEmailDraft,
       isLiveAI: false

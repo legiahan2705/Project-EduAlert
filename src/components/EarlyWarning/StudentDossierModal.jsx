@@ -356,10 +356,10 @@ export default function StudentDossierModal({ student, isOpen, onClose, onSaveCo
                     </p>
 
                     <div style={{ background: '#ffffff', borderRadius: '6px', padding: '10px 12px', border: '1px solid #dcfce7', fontSize: '12px' }}>
-                      <span style={{ fontWeight: 700, color: '#047857' }}>Phân loại nguyên nhân cốt lõi (AI Sentiment): </span>
-                      <strong style={{ color: '#b91c1c' }}>{aiReport.rootCauseCategory}</strong>
+                      <span style={{ fontWeight: 700, color: '#047857' }}>Phân loại tình trạng học vụ: </span>
+                      <strong style={{ color: '#b91c1c' }}>{aiReport.academicCategory || aiReport.rootCauseCategory}</strong>
                       <div style={{ color: '#64748b', marginTop: '3px', fontSize: '11.5px' }}>
-                        {aiReport.psychologicalAdvice}
+                        {aiReport.academicDetail || aiReport.psychologicalAdvice}
                       </div>
                     </div>
                   </div>
