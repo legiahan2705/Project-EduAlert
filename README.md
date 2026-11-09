@@ -2,57 +2,79 @@
 
 > **Đơn vị đào tạo chuẩn:** Trường Đại học Mở TP.HCM (HCMCOU)  
 > **Quy chế áp dụng:** Thông tư 08/2021/TT-BGDĐT & Quy chế tín chỉ HCMCOU  
-> **Phiên bản:** v2.5 Enterprise Cloud  
-> **Deploy:** Vercel Serverless Platform & MongoDB Atlas Cloud  
+> **Kiến trúc:** Monorepo (Frontend Next.js + Backend NestJS + MongoDB Cloud)  
+> **Phiên bản:** v2.5 Enterprise  
 
 ---
 
-## 📌 Giới Thiệu Nhanh
-**EduAlert** là nền tảng quản lý học vụ thông minh giúp chuyển đổi mô hình từ **"xử lý kỷ luật bị động"** sang **"cảnh báo sớm chủ động"**. Hệ thống hỗ trợ Cố vấn học tập (CVHT) khoanh vùng sinh viên có nguy cơ bị buộc thôi học chỉ trong 3 giây, đồng thời tích hợp **Trợ lý AI (Google Gemini LLM)** để tự động phân tích tâm lý, đưa ra kế hoạch hành động và soạn sẵn email động viên sinh viên.
+## 📁 Cấu Trúc Dự Án (Monorepo)
 
----
-
-## 🚀 Tech Stack Chính
-- **Frontend:** Next.js 16 (App Router, Turbopack), React 19, TypeScript.
-- **UI/UX:** Enterprise ERP Clean System (Forest Emerald & Slate), Tailwind CSS v4, Lucide React Icons.
-- **Backend API:** Next.js Serverless API Routes (`/api/*`).
-- **Database:** MongoDB Atlas Cloud (Mongoose ODM).
-- **Artificial Intelligence:** Google Gemini 1.5 Flash API (Prompt Engineering, NLG, Sentiment & Risk Clustering).
-- **Hosting / CI-CD:** Vercel Cloud & GitHub.
-
----
-
-## 🛠️ Khởi Chạy Nhanh (Local Development)
-
-```bash
-# 1. Clone repository
-git clone https://github.com/legiahan2705/Project-EduAlert.git
-cd Project-EduAlert
-
-# 2. Cài đặt thư viện
-npm install
-
-# 3. Tạo file môi trường .env.local
-echo "MONGODB_URI=mongodb+srv://legiahancv_db_user:i0s1KKMnXuSQpUPz@edualert.378ybyw.mongodb.net/edualert?retryWrites=true&w=majority" > .env.local
-
-# 4. Khởi chạy dự án
-npm run dev
-# Mở trình duyệt tại: http://localhost:3000
+```text
+Project-EduAlert/
+├── frontend/                 # Giao diện người dùng & Web App (Next.js 16, React 19, Tailwind CSS)
+│   ├── app/                  # App Router, Trang Đăng nhập, API Route Handlers
+│   ├── src/                  # Components, Engine tính điểm OU, Model Mongoose, Services
+│   ├── package.json
+│   └── ...
+├── backend/                  # Máy chủ nghiệp vụ độc lập (NestJS Framework, TypeScript)
+│   ├── src/                  # Modules: faculties, majors, classes, students, grades
+│   ├── data/                 # JSON Database Persistence (data/db.json)
+│   ├── package.json
+│   └── ...
+├── docs/                     # Toàn bộ tài liệu báo cáo đề tài, đặc tả kỹ thuật, hướng dẫn
+│   ├── BAO_CAO_TOAN_DIEN_DU_AN_EDUALERT.md
+│   └── 00_Gioi_Thieu_Tong_Quan_Du_An_EduAlert.md
+├── .gitignore
+└── README.md
 ```
 
 ---
 
-## ☁️ Triển Khai Lên Vercel (Production)
-1. Đăng nhập [vercel.com](https://vercel.com) bằng tài khoản GitHub `legiahan2705`.
-2. Import repo `Project-EduAlert`.
-3. Thêm biến môi trường:
-   - `MONGODB_URI`: `mongodb+srv://legiahancv_db_user:i0s1KKMnXuSQpUPz@edualert.378ybyw.mongodb.net/edualert?retryWrites=true&w=majority`
-4. Bấm **Deploy**.
+## 🚀 Công Nghệ Sử Dụng (Tech Stack)
+
+* **Frontend:** Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4, Lucide React.
+* **Backend:** NestJS 11, Express, Node.js 22, TypeScript.
+* **Database:** MongoDB Atlas Cloud (Mongoose ODM) & JSON Data Persistence.
+* **Artificial Intelligence (AI):** Google Gemini 1.5/2.0 Flash API (Phân tích nguy cơ học vụ, soạn thảo kế hoạch can thiệp).
+* **Quy chế học vụ:** Động cơ luật TT 08/2021/TT-BGDĐT & Quy chuẩn thang điểm 4/10 Đại học Mở TP.HCM.
 
 ---
 
-## 📚 Bộ Tài Liệu Chi Tiết Dự Án
-- **Báo cáo tổng kết đồ án toàn diện:** [`docs/BAO_CAO_TONG_KET_DU_AN_EDUALERT.md`](docs/BAO_CAO_TONG_KET_DU_AN_EDUALERT.md)
-- **Tài liệu giới thiệu tổng quan:** [`docs/00_Gioi_Thieu_Tong_Quan_Du_An_EduAlert.md`](docs/00_Gioi_Thieu_Tong_Quan_Du_An_EduAlert.md)
-- **Quy tắc tính điểm & 4 Rule TT08:** [`docs/02_Quy_Tac_Tinh_Diem_OU.md`](docs/02_Quy_Tac_Tinh_Diem_OU.md)
-- **Bộ User Stories 5 phân hệ:** [`docs/user_stories/`](docs/user_stories/)
+## 🛠️ Hướng Dẫn Khởi Chạy Local (Quick Start)
+
+### 1. Khởi chạy Backend (NestJS - Port 5000)
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+> Server Backend sẵn sàng tại: `http://localhost:5000`
+
+### 2. Khởi chạy Frontend (Next.js - Port 3000)
+Mở một cửa sổ Terminal mới:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+> Web App sẵn sàng tại: `http://localhost:3000`
+
+---
+
+## 🔑 Tài Khoản Đăng Nhập Mẫu (Demo Accounts)
+
+| Vai trò | Tên đăng nhập (Username / MSSV) | Mật khẩu mặc định | Quyền hạn |
+| :--- | :--- | :--- | :--- |
+| **Quản trị viên (Admin)** | `admin` | `Admin@123` | Quản lý tài khoản, Khoa, Ngành, Bảng điểm, Toàn quyền hệ thống |
+| **Giảng viên / CVHT** | `gv.nam` | `Giangvien@123` | Cảnh báo sớm, Hồ sơ 360°, Nhập bảng điểm lớp phụ trách (`DH22CS01C`) |
+| **Sinh viên** | `2251050001` | `Sinhvien@123` | Xem Hồ sơ cá nhân, Smart Academic Planner (141 TC) |
+
+---
+
+## ☁️ Triển Khai Lên Vercel (Production)
+1. Đăng nhập [vercel.com](https://vercel.com).
+2. Import repository `legiahan2705/Project-EduAlert`.
+3. Cài đặt **Root Directory**: `frontend`.
+4. Thêm biến môi trường:
+   * `MONGODB_URI`: `mongodb+srv://legiahancv_db_user:i0s1KKMnXuSQpUPz@edualert.378ybyw.mongodb.net/edualert?retryWrites=true&w=majority`
+5. Bấm **Deploy**.
