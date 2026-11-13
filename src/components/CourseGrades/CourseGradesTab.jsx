@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { 
   Download, 
   Upload, 
@@ -22,6 +22,7 @@ import {
   Eye
 } from 'lucide-react';
 import { OUGradeEngine } from '@/engine/OUGradeEngine';
+import { eduAlertApi } from '@/services/api';
 
 // Danh sách bảng điểm mẫu khởi tạo (Có lớp trọng điểm DH22CS01C - 45 sinh viên)
 const INITIAL_GRADE_SHEETS = [
@@ -145,14 +146,25 @@ const INITIAL_GRADE_SHEETS = [
 ];
 
 export default function CourseGradesTab({
-  majors,
-  curriculumByMajor,
-  faculties,
-  classes,
-  students,
+  majors = [],
+  curriculumByMajor = {},
+  courseGrades = [],
+  setCourseGrades,
+  faculties = [],
+  classes = [],
+  students = [],
   currentUser = null
 }) {
-  const [gradeSheets, setGradeSheets] = useState(INITIAL_GRADE_SHEETS);
+  const [gradeSheets, setGradeSheets] = useState(
+    courseGrades && courseGrades.length > 0 ? courseGrades : INITIAL_GRADE_SHEETS
+  );
+
+  useEffect(() => {
+    if (courseGrades && courseGrades.length > 0) {
+      setGradeSheets(courseGrades);
+    }
+  }, [courseGrades]);
+
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'entry'
   const [activeSheet, setActiveSheet] = useState(null);
 
@@ -175,6 +187,7 @@ export default function CourseGradesTab({
   // Bộ lọc danh sách
   const [searchTerm, setSearchTerm] = useState('');
   const [filterFaculty, setFilterFaculty] = useState('ALL');
+  const [filterClass, setFilterClass] = useState('ALL');
   const [filterSemester, setFilterSemester] = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('ALL');
 
@@ -205,14 +218,15 @@ export default function CourseGradesTab({
     // Lọc các bảng điểm theo filter trước
     const filtered = gradeSheets.filter(sheet => {
       if (filterFaculty !== 'ALL' && sheet.maKhoa !== filterFaculty) return false;
+      if (filterClass !== 'ALL' && sheet.maLop !== filterClass) return false;
       if (filterSemester !== 'ALL' && sheet.hocKy !== filterSemester) return false;
       if (filterStatus !== 'ALL' && sheet.trangThai !== filterStatus) return false;
 
       if (searchTerm.trim()) {
         const q = searchTerm.toLowerCase();
-        const matchCourse = sheet.tenMon.toLowerCase().includes(q) || sheet.maMon.toLowerCase().includes(q);
-        const matchClass = sheet.maLop.toLowerCase().includes(q) || sheet.tenLop.toLowerCase().includes(q);
-        const matchLecturer = sheet.giangVien.toLowerCase().includes(q);
+        const matchCourse = (sheet.tenMon || '').toLowerCase().includes(q) || (sheet.maMon || '').toLowerCase().includes(q);
+        const matchClass = (sheet.maLop || '').toLowerCase().includes(q) || (sheet.tenLop || '').toLowerCase().includes(q);
+        const matchLecturer = (sheet.giangVien || '').toLowerCase().includes(q);
         if (!matchCourse && !matchClass && !matchLecturer) return false;
       }
       return true;
@@ -320,25 +334,34 @@ export default function CourseGradesTab({
     }));
   };
 
-  // 5. Lưu bảng điểm
-  const handleSaveGrades = () => {
+  // 5. Lưu bảng điểm (Đồng bộ MongoDB)
+  const handleSaveGrades = async () => {
     setSaveAlert(true);
-    // Cập nhật trạng thái bảng điểm sang Hoàn tất
-    setGradeSheets(prev => prev.map(s => {
-      if (s.id === activeSheet.id) {
-        return {
-          ...s,
-          trangThai: 'COMPLETED',
-          ngayCapNhat: new Date().toISOString().slice(0, 10)
-        };
-      }
-      return s;
-    }));
+    const updatedSheet = {
+      ...activeSheet,
+      trangThai: 'COMPLETED',
+      statusText: 'Đã hoàn tất',
+      progress: 100,
+      ngayCapNhat: new Date().toISOString().slice(0, 10),
+      grades: gradeRows
+    };
+
+    setGradeSheets(prev => prev.map(s => (s.id === activeSheet.id ? updatedSheet : s)));
+    if (setCourseGrades) {
+      setCourseGrades(prev => prev.map(s => (s.id === activeSheet.id ? updatedSheet : s)));
+    }
+
+    try {
+      await eduAlertApi.saveCourseGradeSheet(activeSheet.id, updatedSheet);
+    } catch (err) {
+      console.error('Lỗi khi lưu bảng điểm lên database:', err);
+    }
+
     setTimeout(() => setSaveAlert(false), 4000);
   };
 
   // 6. Xử lý Tạo Bảng Điểm Mới (Rule Simple Nhất: BD-[Lớp]-[Môn])
-  const handleCreateSheet = (e) => {
+  const handleCreateSheet = async (e) => {
     e.preventDefault();
     const autoCode = `BD-${newSheetData.maLop}-${newSheetData.maMon}`;
     
@@ -355,13 +378,14 @@ export default function CourseGradesTab({
     const newSheet = {
       id: autoCode,
       code: autoCode,
+      maBangDiem: autoCode,
       maLop: cls.maLop,
       tenLop: cls.tenLop,
       khoaHoc: cls.khoaHoc,
       maNganh: cls.maNganh || 'FIT2200001',
-      tenNganh: 'Khoa học máy tính',
-      maKhoa: 'FIT',
-      tenKhoa: 'Khoa Công nghệ thông tin',
+      tenNganh: cls.nganh || 'Khoa học máy tính',
+      maKhoa: crs.maKhoa || 'FIT',
+      tenKhoa: crs.maKhoa === 'FAAF' ? 'Khoa Kế toán - Kiểm toán' : crs.maKhoa === 'FECO' ? 'Khoa Kinh tế' : 'Khoa Công nghệ thông tin',
       maMon: crs.maMon,
       tenMon: crs.tenMon,
       soTC: crs.soTC,
@@ -370,15 +394,27 @@ export default function CourseGradesTab({
       emailGV: 'giangvien@ou.edu.vn',
       hocKy: newSheetData.hocKy,
       namHoc: newSheetData.namHoc,
-      siSo: cls.siSo || 45,
-      trangThai: 'PENDING',
+      siSo: cls.siSo || 0,
+      trangThai: 'NOT_STARTED',
+      statusText: 'Chưa nhập',
+      progress: 0,
+      grades: [],
       ngayCapNhat: new Date().toISOString().slice(0, 10)
     };
 
-    setGradeSheets([newSheet, ...gradeSheets]);
+    const nextSheets = [newSheet, ...gradeSheets];
+    setGradeSheets(nextSheets);
+    if (setCourseGrades) setCourseGrades(nextSheets);
+
+    try {
+      await eduAlertApi.saveCourseGradeSheet(newSheet.id, newSheet);
+    } catch (err) {
+      console.error('Lỗi lưu bảng điểm mới lên DB:', err);
+    }
+
     // Tự động mở rộng môn vừa tạo
     if (!expandedCourses.includes(crs.maMon)) {
-      setExpandedCourses([...expandedCourses, crs.maMon]);
+      setExpandedCourses(prev => [...prev, crs.maMon]);
     }
     setIsNewSheetModalOpen(false);
   };
@@ -441,7 +477,7 @@ export default function CourseGradesTab({
                 <select 
                   value={filterFaculty}
                   onChange={(e) => setFilterFaculty(e.target.value)}
-                  className="erp-input w-40"
+                  className="erp-input w-36"
                 >
                   <option value="ALL">-- Tất Cả Khoa --</option>
                   {faculties.map(f => (
@@ -452,15 +488,46 @@ export default function CourseGradesTab({
                 </select>
 
                 <select 
-                  value={filterSemester}
-                  onChange={(e) => setFilterSemester(e.target.value)}
+                  value={filterClass}
+                  onChange={(e) => setFilterClass(e.target.value)}
                   className="erp-input w-36"
                 >
-                  <option value="ALL">-- Tất Cả Học Kỳ --</option>
-                  <option value="HK1">Học kỳ 1</option>
-                  <option value="HK2">Học kỳ 2</option>
-                  <option value="HK3">Học kỳ 3</option>
-                  <option value="HK4">Học kỳ 4</option>
+                  <option value="ALL">-- Tất Cả Lớp --</option>
+                  {classes.map(c => {
+                    const cCode = c.maLop || c.id;
+                    return (
+                      <option key={cCode} value={cCode}>
+                        {cCode}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                <select 
+                  value={filterSemester}
+                  onChange={(e) => setFilterSemester(e.target.value)}
+                  className="erp-input w-44"
+                >
+                  <option value="ALL">-- Tất Cả Học Kỳ (HK1-8) --</option>
+                  <option value="HK1">HK1 (Năm 1)</option>
+                  <option value="HK2">HK2 (Năm 1)</option>
+                  <option value="HK3">HK3 (Năm 2)</option>
+                  <option value="HK4">HK4 (Năm 2)</option>
+                  <option value="HK5">HK5 (Năm 3)</option>
+                  <option value="HK6">HK6 (Năm 3)</option>
+                  <option value="HK7">HK7 (Năm 4)</option>
+                  <option value="HK8">HK8 (Tốt nghiệp)</option>
+                </select>
+
+                <select 
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="erp-input w-36"
+                >
+                  <option value="ALL">-- Trạng Thái --</option>
+                  <option value="COMPLETED">Đã hoàn tất</option>
+                  <option value="IN_PROGRESS">Đang nhập</option>
+                  <option value="NOT_STARTED">Chưa nhập</option>
                 </select>
               </div>
 
@@ -914,9 +981,18 @@ export default function CourseGradesTab({
                       className="erp-input font-medium"
                       required
                     >
-                      <option value="DH22CS01C">DH22CS01C - ĐH Khoa học máy tính 01C (45 SV)</option>
-                      <option value="DH22CS02C">DH22CS02C - ĐH Khoa học máy tính 02C (42 SV)</option>
-                      <option value="DH21IT01">DH21IT01 - ĐH Công nghệ thông tin 01 (38 SV)</option>
+                      {classes && classes.length > 0 ? (
+                        classes.map((c) => {
+                          const cCode = c.maLop || c.id;
+                          return (
+                            <option key={cCode} value={cCode}>
+                              {cCode} - {c.tenLop} ({c.siSo || 0} SV)
+                            </option>
+                          );
+                        })
+                      ) : (
+                        <option value="DH22CS01C">DH22CS01C - ĐH Khoa học máy tính 01C</option>
+                      )}
                     </select>
                   </div>
                 </div>
@@ -945,10 +1021,14 @@ export default function CourseGradesTab({
                       onChange={(e) => setNewSheetData({ ...newSheetData, hocKy: e.target.value })}
                       className="erp-input"
                     >
-                      <option value="HK1">Học kỳ 1 (2023 - 2024)</option>
-                      <option value="HK2">Học kỳ 2 (2023 - 2024)</option>
-                      <option value="HK3">Học kỳ 3 (2023 - 2024)</option>
-                      <option value="HK4">Học kỳ 4 (2023 - 2024)</option>
+                      <option value="HK1">Học kỳ 1 (Năm 1)</option>
+                      <option value="HK2">Học kỳ 2 (Năm 1)</option>
+                      <option value="HK3">Học kỳ 3 (Năm 2)</option>
+                      <option value="HK4">Học kỳ 4 (Năm 2)</option>
+                      <option value="HK5">Học kỳ 5 (Năm 3)</option>
+                      <option value="HK6">Học kỳ 6 (Năm 3)</option>
+                      <option value="HK7">Học kỳ 7 (Năm 4)</option>
+                      <option value="HK8">Học kỳ 8 (Tốt nghiệp)</option>
                     </select>
                   </div>
                 </div>

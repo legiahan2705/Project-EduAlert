@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import { Class, Student } from '@/models';
+import { Class, Student, GradeSheet } from '@/models';
 import { authorize } from '@/lib/session';
 
 export async function DELETE(req, { params }) {
@@ -30,6 +30,9 @@ export async function DELETE(req, { params }) {
     }
 
     await Class.findOneAndDelete({ maLop: cleanMaLop });
+    // Xóa các bảng điểm của lớp này
+    await GradeSheet.deleteMany({ maLop: cleanMaLop });
+
     return NextResponse.json({ success: true, message: `Đã xóa lớp ${cleanMaLop} thành công` });
   } catch (error) {
     console.error('Error deleting class:', error);
@@ -60,3 +63,4 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ error: error.message || 'Lỗi khi cập nhật lớp' }, { status: 500 });
   }
 }
+

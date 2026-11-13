@@ -303,40 +303,114 @@ export const MOCK_MAJORS = [
 
 // 3. KHUNG CHƯƠNG TRÌNH ĐÀO TẠO (CTĐT) THEO NGÀNH (Hỗ trợ nạp môn liên ngành)
 export const MOCK_MAJOR_CURRICULUM = {
-  // Ngành Khoa học máy tính (FIT2200001)
+  // Ngành Khoa học máy tính (FIT2200001) - 4 năm (8 học kỳ)
   'FIT2200001': [
+    // HỌC KỲ 1 (NĂM 1)
     { maMon: 'COSC1301', tenMon: 'Nhập môn lập trình', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'MATH1301', tenMon: 'Đại số tuyến tính', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'MATH1302', tenMon: 'Giải tích 1', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'ENGL1301', tenMon: 'Tiếng Anh 1', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FFL' },
+    { maMon: 'POLI1301', tenMon: 'Triết học Mác - Lênin', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FIT' },
     
+    // HỌC KỲ 2 (NĂM 1)
     { maMon: 'COSC1302', tenMon: 'Kỹ thuật lập trình', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: 'COSC1301', hkDuKien: 2, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'MATH1303', tenMon: 'Toán rời rạc', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 2, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'MATH1304', tenMon: 'Giải tích 2', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: 'MATH1302', hkDuKien: 2, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'COSC1303', tenMon: 'Kiến trúc máy tính', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 2, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'ENGL1302', tenMon: 'Tiếng Anh 2', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: 'ENGL1301', hkDuKien: 2, isTichLuy: true, maKhoa: 'FFL' },
 
+    // HỌC KỲ 3 (NĂM 2)
     { maMon: 'COSC2301', tenMon: 'Cấu trúc dữ liệu và giải thuật', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: 'COSC1302', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'COSC2302', tenMon: 'Cơ sở dữ liệu', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'COSC2303', tenMon: 'Lập trình hướng đối tượng', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: 'COSC1302', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
-    { maMon: 'POLI1301', tenMon: 'Triết học Mác - Lênin', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'POLI1202', tenMon: 'Kinh tế chính trị Mác - Lênin', soTC: 2, nhom: 'Đại cương', batBuoc: true, tienQuyet: 'POLI1301', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
 
+    // HỌC KỲ 4 (NĂM 2)
     { maMon: 'COSC2304', tenMon: 'Hệ quản trị cơ sở dữ liệu', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2302', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'COSC2305', tenMon: 'Hệ điều hành', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: 'COSC1303', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'COSC2306', tenMon: 'Mạng máy tính', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'COSC2307', tenMon: 'Công nghệ phần mềm', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2303', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
-    // Môn tự chọn liên ngành được thêm từ Khoa FAAF
     { maMon: 'ACCT1301', tenMon: 'Nguyên lý kế toán doanh nghiệp', soTC: 3, nhom: 'Tự chọn liên ngành', batBuoc: false, tienQuyet: '', hkDuKien: 4, isTichLuy: true, maKhoa: 'FAAF' },
 
+    // HỌC KỲ 5 (NĂM 3)
     { maMon: 'COSC3301', tenMon: 'Lập trình Web hiện đại', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2302', hkDuKien: 5, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'COSC3302', tenMon: 'Trí tuệ nhân tạo (AI)', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2301', hkDuKien: 5, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'COSC3304', tenMon: 'An toàn và bảo mật hệ thống', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2306', hkDuKien: 5, isTichLuy: true, maKhoa: 'FIT' },
-    // Môn tự chọn liên ngành được thêm từ Khoa FECO
-    { maMon: 'ECON1301', tenMon: 'Kinh tế vi mô', soTC: 3, nhom: 'Tự chọn liên ngành', batBuoc: false, tienQuyet: '', hkDuKien: 5, isTichLuy: true, maKhoa: 'FECO' }
+    { maMon: 'ECON1301', tenMon: 'Kinh tế vi mô', soTC: 3, nhom: 'Tự chọn liên ngành', batBuoc: false, tienQuyet: '', hkDuKien: 5, isTichLuy: true, maKhoa: 'FECO' },
+
+    // HỌC KỲ 6 (NĂM 3)
+    { maMon: 'COSC3305', tenMon: 'Học máy và ứng dụng (Machine Learning)', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC3302', hkDuKien: 6, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC3306', tenMon: 'Lập trình thiết bị di động', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2303', hkDuKien: 6, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'MGMT1301', tenMon: 'Quản trị học đại cương', soTC: 3, nhom: 'Tự chọn liên ngành', batBuoc: false, tienQuyet: '', hkDuKien: 6, isTichLuy: true, maKhoa: 'FBA' },
+
+    // HỌC KỲ 7 (NĂM 4)
+    { maMon: 'COSC4301', tenMon: 'Điện toán đám mây & DevOps', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2305', hkDuKien: 7, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC4302', tenMon: 'Phân tích dữ liệu lớn (Big Data)', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2304', hkDuKien: 7, isTichLuy: true, maKhoa: 'FIT' },
+
+    // HỌC KỲ 8 (NĂM 4 - TỐT NGHIỆP)
+    { maMon: 'COSC4401', tenMon: 'Thực tập doanh nghiệp tốt nghiệp', soTC: 4, nhom: 'Tốt nghiệp', batBuoc: true, tienQuyet: '', hkDuKien: 8, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC4601', tenMon: 'Khóa luận tốt nghiệp cử nhân', soTC: 6, nhom: 'Tốt nghiệp', batBuoc: true, tienQuyet: '', hkDuKien: 8, isTichLuy: true, maKhoa: 'FIT' }
   ],
+
+  // Ngành Công nghệ thông tin (FIT2200002) - 4 năm (8 học kỳ)
   'FIT2200002': [
     { maMon: 'COSC1301', tenMon: 'Nhập môn lập trình', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FIT' },
-    { maMon: 'MATH1301', tenMon: 'Đại số tuyến tính', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FIT' }
+    { maMon: 'MATH1301', tenMon: 'Đại số tuyến tính', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'ENGL1301', tenMon: 'Tiếng Anh 1', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FFL' },
+    { maMon: 'POLI1301', tenMon: 'Triết học Mác - Lênin', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FIT' },
+
+    { maMon: 'COSC1302', tenMon: 'Kỹ thuật lập trình', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: 'COSC1301', hkDuKien: 2, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC1303', tenMon: 'Kiến trúc máy tính', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 2, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'MATH1303', tenMon: 'Toán rời rạc', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 2, isTichLuy: true, maKhoa: 'FIT' },
+
+    { maMon: 'COSC2301', tenMon: 'Cấu trúc dữ liệu và giải thuật', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: 'COSC1302', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC2302', tenMon: 'Cơ sở dữ liệu', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC2306', tenMon: 'Mạng máy tính', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
+
+    { maMon: 'COSC2304', tenMon: 'Hệ quản trị cơ sở dữ liệu', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2302', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC2305', tenMon: 'Hệ điều hành', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: 'COSC1303', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC2307', tenMon: 'Công nghệ phần mềm', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2301', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
+
+    { maMon: 'COSC3301', tenMon: 'Lập trình Web hiện đại', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2302', hkDuKien: 5, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC3304', tenMon: 'An toàn và bảo mật hệ thống', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2306', hkDuKien: 5, isTichLuy: true, maKhoa: 'FIT' },
+
+    { maMon: 'COSC3306', tenMon: 'Lập trình thiết bị di động', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2301', hkDuKien: 6, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC4301', tenMon: 'Điện toán đám mây & DevOps', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2305', hkDuKien: 7, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC4401', tenMon: 'Thực tập doanh nghiệp tốt nghiệp', soTC: 4, nhom: 'Tốt nghiệp', batBuoc: true, tienQuyet: '', hkDuKien: 8, isTichLuy: true, maKhoa: 'FIT' }
+  ],
+
+  // Ngành Kỹ thuật phần mềm (FIT2200003) - 4 năm (8 học kỳ)
+  'FIT2200003': [
+    { maMon: 'COSC1301', tenMon: 'Nhập môn lập trình', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'MATH1301', tenMon: 'Đại số tuyến tính', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC1302', tenMon: 'Kỹ thuật lập trình', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: 'COSC1301', hkDuKien: 2, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC2301', tenMon: 'Cấu trúc dữ liệu và giải thuật', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: 'COSC1302', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC2303', tenMon: 'Lập trình hướng đối tượng', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: 'COSC1302', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC2307', tenMon: 'Công nghệ phần mềm', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2303', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC3301', tenMon: 'Lập trình Web hiện đại', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2302', hkDuKien: 5, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC3306', tenMon: 'Lập trình thiết bị di động', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2303', hkDuKien: 6, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC4301', tenMon: 'Điện toán đám mây & DevOps', soTC: 3, nhom: 'Chuyên ngành', batBuoc: true, tienQuyet: 'COSC2305', hkDuKien: 7, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC4601', tenMon: 'Đồ án tốt nghiệp phần mềm', soTC: 6, nhom: 'Tốt nghiệp', batBuoc: true, tienQuyet: '', hkDuKien: 8, isTichLuy: true, maKhoa: 'FIT' }
+  ],
+
+  // Ngành Kinh tế học (FECO2200001) - 4 năm (8 học kỳ)
+  'FECO2200001': [
+    { maMon: 'ECON1301', tenMon: 'Kinh tế vi mô', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FECO' },
+    { maMon: 'MATH1301', tenMon: 'Toán cao cấp cho kinh tế', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FECO' },
+    { maMon: 'ENGL1301', tenMon: 'Tiếng Anh thương mại 1', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 2, isTichLuy: true, maKhoa: 'FFL' },
+    { maMon: 'ACCT1301', tenMon: 'Nguyên lý kế toán doanh nghiệp', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 3, isTichLuy: true, maKhoa: 'FAAF' },
+    { maMon: 'MGMT1301', tenMon: 'Quản trị học đại cương', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 4, isTichLuy: true, maKhoa: 'FBA' },
+    { maMon: 'COSC1301', tenMon: 'Tin học ứng dụng trong kinh tế', soTC: 3, nhom: 'Tự chọn liên ngành', batBuoc: false, tienQuyet: '', hkDuKien: 5, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC4401', tenMon: 'Thực tập tốt nghiệp kinh tế', soTC: 4, nhom: 'Tốt nghiệp', batBuoc: true, tienQuyet: '', hkDuKien: 8, isTichLuy: true, maKhoa: 'FECO' }
+  ],
+
+  // Ngành Kế toán doanh nghiệp (FAAF2200001) - 4 năm (8 học kỳ)
+  'FAAF2200001': [
+    { maMon: 'ACCT1301', tenMon: 'Nguyên lý kế toán doanh nghiệp', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FAAF' },
+    { maMon: 'ECON1301', tenMon: 'Kinh tế vi mô', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 2, isTichLuy: true, maKhoa: 'FECO' },
+    { maMon: 'MGMT1301', tenMon: 'Quản trị học đại cương', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 3, isTichLuy: true, maKhoa: 'FBA' },
+    { maMon: 'COSC1301', tenMon: 'Hệ thống thông tin kế toán', soTC: 3, nhom: 'Tự chọn liên ngành', batBuoc: false, tienQuyet: '', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC4401', tenMon: 'Thực tập tốt nghiệp kế toán', soTC: 4, nhom: 'Tốt nghiệp', batBuoc: true, tienQuyet: '', hkDuKien: 8, isTichLuy: true, maKhoa: 'FAAF' }
   ]
 };
 

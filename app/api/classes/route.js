@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import { Class, Major } from '@/models';
+import { Class, Major, GradeSheet } from '@/models';
 import { authorize } from '@/lib/session';
 import { MOCK_CLASSES } from '@/engine/mockData';
+import { generateGradeSheetsForClass } from '@/lib/gradeSheets';
 
 export async function GET(req) {
   const auth = authorize(req, ['admin', 'lecturer', 'student']);
@@ -99,9 +100,20 @@ export async function POST(req) {
       ghiChu: data.ghiChu || '',
     });
 
+    // Tự động khởi tạo toàn bộ Bảng điểm cho lớp học mới theo CTĐT 4 năm (8 học kỳ)
+    try {
+      const generatedSheets = generateGradeSheetsForClass(newClass);
+      if (generatedSheets.length > 0) {
+        await GradeSheet.insertMany(generatedSheets, { ordered: false });
+      }
+    } catch (sheetErr) {
+      console.warn('Lưu bảng điểm tự động cho lớp mới:', sheetErr?.message);
+    }
+
     return NextResponse.json(newClass, { status: 201 });
   } catch (error) {
     console.error('Error creating class:', error);
     return NextResponse.json({ error: error.message || 'Lỗi khi tạo lớp mới' }, { status: 500 });
   }
 }
+
