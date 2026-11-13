@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Plus, Search, Building2, Layers } from 'lucide-react';
+import { eduAlertApi } from '@/services/api';
 import MajorsTable from './MajorsTable';
 import MajorDetailWorkspace from './MajorDetailWorkspace';
 import AddMajorModal from './AddMajorModal';
@@ -156,6 +157,93 @@ export default function FacultyMajorManagement({
     });
   };
 
+  // 1. Thêm lớp học mới
+  const handleAddClass = async (classData) => {
+    try {
+      const majorCode = activeMajor?.code || activeMajor?.id || activeMajor?.maNganh || '';
+      const majorName = activeMajor?.name || activeMajor?.tenNganh || '';
+      const payload = {
+        ...classData,
+        maNganh: majorCode,
+        nganh: majorName
+      };
+      const created = await eduAlertApi.createClass(payload);
+      setClasses((prev) => [created, ...prev]);
+      setSelectedClassCode(created.maLop || created.id);
+      setIsClassModalOpen(false);
+      alert(`Đã thêm lớp học "${created.maLop}" thành công!`);
+    } catch (err) {
+      alert(err.message || 'Lỗi khi thêm lớp học');
+    }
+  };
+
+  // 2. Xóa lớp học
+  const handleDeleteClass = async (maLop) => {
+    if (!confirm(`Bạn có chắc chắn muốn xóa lớp học "${maLop}"?`)) return;
+    try {
+      await eduAlertApi.deleteClass(maLop);
+      setClasses((prev) => prev.filter((c) => (c.maLop || c.id) !== maLop));
+      if (selectedClassCode === maLop) {
+        setSelectedClassCode('');
+      }
+      alert(`Đã xóa lớp "${maLop}" thành công!`);
+    } catch (err) {
+      alert(err.message || 'Lỗi khi xóa lớp');
+    }
+  };
+
+  // 3. Thêm sinh viên mới vào lớp
+  const handleAddStudent = async (studentData) => {
+    try {
+      const majorCode = activeMajor?.code || activeMajor?.id || activeMajor?.maNganh || '';
+      const majorName = activeMajor?.name || activeMajor?.tenNganh || '';
+      const payload = {
+        ...studentData,
+        maNganh: majorCode,
+        nganh: majorName
+      };
+      const created = await eduAlertApi.createStudent(payload);
+      setStudents((prev) => [created, ...prev]);
+      // Cập nhật tăng sĩ số lớp
+      setClasses((prev) =>
+        prev.map((c) =>
+          (c.maLop || c.id) === (created.lop || payload.lop)
+            ? { ...c, siSo: (c.siSo || 0) + 1 }
+            : c
+        )
+      );
+      setIsStudentModalOpen(false);
+      alert(`Đã thêm sinh viên "${created.hoTen}" (${created.maSV}) vào lớp ${created.lop} thành công!\n\nTài khoản sinh viên đã được khởi tạo tự động (Mật khẩu mặc định: Sinhvien@123).`);
+    } catch (err) {
+      alert(err.message || 'Lỗi khi thêm sinh viên');
+    }
+  };
+
+  // 4. Xóa sinh viên khỏi lớp
+  const handleRemoveStudent = async (maSV) => {
+    if (!confirm(`Bạn có chắc muốn xóa sinh viên "${maSV}" khỏi hệ thống?`)) return;
+    try {
+      const targetStudent = students.find((s) => s.maSV === maSV);
+      const studentLop = targetStudent?.lop;
+
+      await eduAlertApi.deleteStudent(maSV);
+      setStudents((prev) => prev.filter((s) => s.maSV !== maSV));
+      // Cập nhật giảm sĩ số lớp
+      if (studentLop) {
+        setClasses((prev) =>
+          prev.map((c) =>
+            (c.maLop || c.id) === studentLop
+              ? { ...c, siSo: Math.max(0, (c.siSo || 1) - 1) }
+              : c
+          )
+        );
+      }
+      alert(`Đã xóa sinh viên "${maSV}" thành công!`);
+    } catch (err) {
+      alert(err.message || 'Lỗi khi xóa sinh viên');
+    }
+  };
+
   return (
     <div className="space-y-4">
       {viewMode === 'list' ? (
@@ -290,9 +378,10 @@ export default function FacultyMajorManagement({
           }}
           onDeleteCourse={handleDeleteCourse}
           onOpenCreateClass={() => setIsClassModalOpen(true)}
+          onDeleteClass={handleDeleteClass}
           onOpenAddStudent={() => setIsStudentModalOpen(true)}
           onViewStudentDossier={onViewStudentDossier}
-          onRemoveStudent={() => {}}
+          onRemoveStudent={handleRemoveStudent}
           onBackToList={() => setViewMode('list')}
         />
       )}
@@ -331,6 +420,26 @@ export default function FacultyMajorManagement({
         courseToEdit={courseToEdit}
         editIndex={courseEditIndex}
         onSaveCourse={handleSaveCourse}
+      />
+
+      {/* MODAL THÊM LỚP HỌC MỚI */}
+      <ClassModal
+        isOpen={isClassModalOpen}
+        onClose={() => setIsClassModalOpen(false)}
+        majorName={activeMajor?.name || activeMajor?.tenNganh || ''}
+        onAddClass={handleAddClass}
+      />
+
+      {/* MODAL THÊM SINH VIÊN MỚI */}
+      <StudentModal
+        isOpen={isStudentModalOpen}
+        onClose={() => setIsStudentModalOpen(false)}
+        selectedClassCode={
+          selectedClassCode ||
+          (classes.find((c) => (c.maNganh || c.majorCode) === (activeMajor?.code || activeMajor?.id))?.maLop) ||
+          ''
+        }
+        onAddStudent={handleAddStudent}
       />
     </div>
   );

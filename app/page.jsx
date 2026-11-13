@@ -82,7 +82,7 @@ export default function EduAlertApp() {
     if (!user) return;
     let cancelled = false;
     async function loadBackendData() {
-      const canSeeGrades = user.role !== 'student';
+      const canSeeGrades = user.role === 'lecturer';
       const [facList, majList, stuList, clsList, grdList] = await Promise.all([
         eduAlertApi.getFaculties(MOCK_FACULTIES),
         eduAlertApi.getMajors(MOCK_MAJORS),

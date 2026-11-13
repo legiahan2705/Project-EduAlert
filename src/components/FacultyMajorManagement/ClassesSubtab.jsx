@@ -10,6 +10,7 @@ export default function ClassesSubtab({
   selectedClassCode,
   onSelectClass,
   onOpenCreateClass,
+  onDeleteClass,
   onOpenAddStudent,
   onViewStudentDossier,
   onRemoveStudent
@@ -96,6 +97,17 @@ export default function ClassesSubtab({
                 <span className="font-bold text-slate-900 text-sm">
                   {currentClass.tenLop}
                 </span>
+                {onDeleteClass && (
+                  <button
+                    type="button"
+                    onClick={() => onDeleteClass(currentClass.maLop || currentClass.id)}
+                    className="ml-2 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 px-2 py-0.5 rounded border border-red-200 transition-colors inline-flex items-center gap-1 font-medium"
+                    title="Xóa lớp học này"
+                  >
+                    <Trash2 size={12} />
+                    <span>Xóa Lớp</span>
+                  </button>
+                )}
               </div>
               <p className="text-xs text-slate-500">
                 Niên khóa: <strong>{currentClass.khoaHoc}</strong> • CVHT: <strong>{currentClass.cvht}</strong> • Phòng học: <strong>{currentClass.phongHoc || 'A302 - 371 Nguyễn Kiệm'}</strong>
@@ -124,7 +136,10 @@ export default function ClassesSubtab({
               <button
                 type="button"
                 className="btn-primary"
-                onClick={onOpenAddStudent}
+                onClick={() => {
+                  if (currentClass) onSelectClass(currentClass.maLop || currentClass.id);
+                  onOpenAddStudent();
+                }}
               >
                 <Plus size={14} />
                 + Thêm Sinh Viên

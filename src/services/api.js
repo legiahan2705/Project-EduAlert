@@ -134,9 +134,72 @@ export const eduAlertApi = {
     return null;
   },
 
-  // Lớp (chưa có API riêng: dùng dữ liệu dự phòng)
+  // Sinh viên
+  async createStudent(studentData) {
+    try {
+      const res = await apiFetch(`${API_BASE}/students`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(studentData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Lỗi khi thêm sinh viên');
+      return data;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async deleteStudent(maSV) {
+    try {
+      const res = await apiFetch(`${API_BASE}/students/${encodeURIComponent(maSV)}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Lỗi khi xóa sinh viên');
+      return data;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  // Lớp học vụ
   async getClasses(fallback) {
+    try {
+      const res = await apiFetch(`${API_BASE}/classes`);
+      if (res.ok) return await res.json();
+    } catch (e) {
+      console.warn('Lỗi getClasses, dùng fallback:', e.message);
+    }
     return fallback;
+  },
+
+  async createClass(classData) {
+    try {
+      const res = await apiFetch(`${API_BASE}/classes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(classData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Lỗi khi tạo lớp mới');
+      return data;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async deleteClass(maLop) {
+    try {
+      const res = await apiFetch(`${API_BASE}/classes/${encodeURIComponent(maLop)}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Lỗi khi xóa lớp');
+      return data;
+    } catch (e) {
+      throw e;
+    }
   },
 
   // Bảng điểm

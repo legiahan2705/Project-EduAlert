@@ -34,6 +34,7 @@ export default function MajorDetailWorkspace({
   onOpenEditCourse,
   onDeleteCourse,
   onOpenCreateClass,
+  onDeleteClass,
   onOpenAddStudent,
   onViewStudentDossier,
   onRemoveStudent,
@@ -49,9 +50,12 @@ export default function MajorDetailWorkspace({
   const isInactive = major.status === 'INACTIVE';
 
   const courses = curriculum || [];
-  const majorCode = major.code || major.id;
-  const majorClasses = classes.filter((c) => c.maNganh === majorCode);
-  const majorStudents = students.filter((s) => s.maNganh === majorCode);
+  const majorCode = major.code || major.id || major.maNganh;
+  const majorClasses = classes.filter((c) => (c.maNganh || c.majorCode) === majorCode);
+  const majorClassCodes = new Set(majorClasses.map((c) => c.maLop || c.id));
+  const majorStudents = students.filter(
+    (s) => (s.maNganh || s.majorCode) === majorCode || majorClassCodes.has(s.lop)
+  );
 
   return (
     <div className="space-y-4">
@@ -288,6 +292,7 @@ export default function MajorDetailWorkspace({
           selectedClassCode={selectedClassCode}
           onSelectClass={onSelectClass}
           onOpenCreateClass={onOpenCreateClass}
+          onDeleteClass={onDeleteClass}
           onOpenAddStudent={onOpenAddStudent}
           onViewStudentDossier={onViewStudentDossier}
           onRemoveStudent={onRemoveStudent}

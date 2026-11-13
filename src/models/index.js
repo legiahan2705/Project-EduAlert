@@ -106,10 +106,27 @@ const UserSchema = new mongoose.Schema({
   createdBy: { type: String, default: 'system' },
 }, { timestamps: true });
 
+// 7. Lớp học vụ / Lớp sinh hoạt
+const ClassSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  maLop: { type: String, required: true, unique: true, uppercase: true, trim: true },
+  tenLop: { type: String, required: true, trim: true },
+  maNganh: { type: String, required: true },
+  nganh: { type: String, default: '' },
+  khoaHoc: { type: String, default: '2022 - 2026' },
+  namHocThu: { type: Number, default: 1 },
+  siSo: { type: Number, default: 0 },
+  cvht: { type: String, default: '' },
+  emailCVHT: { type: String, default: '' },
+  phongHoc: { type: String, default: 'A302 - Cơ sở 371 Nguyễn Kiệm' },
+  ghiChu: { type: String, default: '' },
+}, { timestamps: true });
+
 export const Faculty = mongoose.models.Faculty || mongoose.model('Faculty', FacultySchema);
 export const Major = mongoose.models.Major || mongoose.model('Major', MajorSchema);
 export const Student = mongoose.models.Student || mongoose.model('Student', StudentSchema);
 export const GradeSheet = mongoose.models.GradeSheet || mongoose.model('GradeSheet', GradeSheetSchema);
 export const Curriculum = mongoose.models.Curriculum || mongoose.model('Curriculum', CurriculumSchema);
 export const User = mongoose.models.User || mongoose.model('User', UserSchema);
+export const Class = mongoose.models.Class || mongoose.model('Class', ClassSchema);
 

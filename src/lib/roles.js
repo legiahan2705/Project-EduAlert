@@ -6,7 +6,7 @@ export const ROLE_LABEL = {
 };
 
 export const TABS_BY_ROLE = {
-  admin: ['tab-warning', 'tab-planner', 'tab-faculties', 'tab-majors', 'tab-course-grades', 'tab-users'],
+  admin: ['tab-warning', 'tab-planner', 'tab-faculties', 'tab-majors', 'tab-users'],
   lecturer: ['tab-warning', 'tab-planner', 'tab-course-grades'],
   student: ['tab-me', 'tab-planner'],
 };
