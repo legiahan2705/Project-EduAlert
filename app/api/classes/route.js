@@ -14,22 +14,14 @@ export async function GET(req) {
     if (!conn) return NextResponse.json(MOCK_CLASSES);
 
     let classes = await Class.find().sort({ createdAt: -1 }).lean();
-    if (classes.length === 0) {
-      const initial = MOCK_CLASSES.map((c) => ({
-        id: c.maLop,
-        maLop: c.maLop,
-        tenLop: c.tenLop,
-        maNganh: c.maNganh,
-        nganh: c.nganh || '',
-        khoaHoc: c.khoaHoc || '2022 - 2026',
-        namHocThu: c.namHocThu || 2,
-        siSo: c.siSo || 45,
-        cvht: c.cvht || '',
-        emailCVHT: c.emailCVHT || '',
-        phongHoc: c.phongHoc || 'A302 - Cơ sở 371 Nguyễn Kiệm',
-        ghiChu: c.ghiChu || '',
-      }));
-      await Class.insertMany(initial);
+    if (classes.length < MOCK_CLASSES.length) {
+      for (const c of MOCK_CLASSES) {
+        await Class.findOneAndUpdate(
+          { maLop: c.maLop },
+          { $setOnInsert: c },
+          { upsert: true, new: true }
+        );
+      }
       classes = await Class.find().sort({ createdAt: -1 }).lean();
     }
     return NextResponse.json(classes);

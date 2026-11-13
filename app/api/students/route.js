@@ -14,8 +14,14 @@ export async function GET(req) {
     if (!conn) return NextResponse.json(scope(MOCK_STUDENTS));
 
     let students = await Student.find().lean();
-    if (students.length === 0) {
-      await Student.insertMany(MOCK_STUDENTS);
+    if (students.length < MOCK_STUDENTS.length) {
+      for (const s of MOCK_STUDENTS) {
+        await Student.findOneAndUpdate(
+          { maSV: s.maSV },
+          { $setOnInsert: s },
+          { upsert: true, new: true }
+        );
+      }
       students = await Student.find().lean();
     }
     return NextResponse.json(scope(students));

@@ -1,5 +1,5 @@
-import { MOCK_MAJOR_CURRICULUM } from '@/engine/mockData';
-import { GradeSheet, Class } from '@/models';
+import { MOCK_MAJOR_CURRICULUM } from '../engine/mockData.js';
+import { GradeSheet, Class } from '../models/index.js';
 
 // Danh sách giảng viên mặc định theo mã môn hoặc phân công tự động
 const LECTURER_ASSIGNMENTS = {
@@ -102,7 +102,11 @@ export function generateGradeSheetsForClass(classInfo, customCurriculum = null) 
       maNganh: majorCode,
       tenNganh: nganh,
       maKhoa: course.maKhoa || 'FIT',
-      tenKhoa: course.maKhoa === 'FAAF' ? 'Khoa Kế toán - Kiểm toán' : course.maKhoa === 'FECO' ? 'Khoa Kinh tế' : 'Khoa Công nghệ thông tin',
+      tenKhoa: 
+        course.maKhoa === 'FAAF' ? 'Khoa Kế toán - Kiểm toán' :
+        course.maKhoa === 'FECO' ? 'Khoa Kinh tế' :
+        course.maKhoa === 'FBA' ? 'Khoa Quản trị kinh doanh' :
+        course.maKhoa === 'FFL' ? 'Khoa Ngoại ngữ' : 'Khoa Công nghệ thông tin',
       maMon: course.maMon,
       tenMon: course.tenMon,
       soTC: course.soTC || 3,
@@ -120,3 +124,4 @@ export function generateGradeSheetsForClass(classInfo, customCurriculum = null) 
     };
   });
 }
+

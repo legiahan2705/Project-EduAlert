@@ -298,6 +298,40 @@ export const MOCK_MAJORS = [
     createdBy: 'ThS. Lê Gia Hân',
     createdAt: '2022-06-20 11:00:00',
     auditLogs: []
+  },
+  // Khoa Quản trị kinh doanh (FBA)
+  {
+    id: 'FBA2200001',
+    code: 'FBA2200001',
+    name: 'Quản trị kinh doanh',
+    nameEn: 'Business Administration',
+    facultyCode: 'FBA',
+    facultyId: 'OU261104004',
+    facultyName: 'Khoa Quản trị kinh doanh',
+    creditsStandard: 135,
+    degreeLevel: 'Cử nhân',
+    description: 'Đào tạo kỹ năng quản trị chiến lược, marketing số, nhân sự và chuỗi cung ứng hiện đại.',
+    status: 'ACTIVE',
+    createdBy: 'ThS. Lê Gia Hân',
+    createdAt: '2022-06-22 09:00:00',
+    auditLogs: []
+  },
+  // Khoa Ngoại ngữ (FFL)
+  {
+    id: 'FFL2200001',
+    code: 'FFL2200001',
+    name: 'Ngôn ngữ Anh',
+    nameEn: 'English Studies',
+    facultyCode: 'FFL',
+    facultyId: 'OU261104005',
+    facultyName: 'Khoa Ngoại ngữ',
+    creditsStandard: 135,
+    degreeLevel: 'Cử nhân',
+    description: 'Biên phiên dịch, tiếng Anh thương mại và phương pháp giảng dạy hiện đại.',
+    status: 'ACTIVE',
+    createdBy: 'ThS. Lê Gia Hân',
+    createdAt: '2022-06-22 09:30:00',
+    auditLogs: []
   }
 ];
 
@@ -411,10 +445,30 @@ export const MOCK_MAJOR_CURRICULUM = {
     { maMon: 'MGMT1301', tenMon: 'Quản trị học đại cương', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 3, isTichLuy: true, maKhoa: 'FBA' },
     { maMon: 'COSC1301', tenMon: 'Hệ thống thông tin kế toán', soTC: 3, nhom: 'Tự chọn liên ngành', batBuoc: false, tienQuyet: '', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
     { maMon: 'COSC4401', tenMon: 'Thực tập tốt nghiệp kế toán', soTC: 4, nhom: 'Tốt nghiệp', batBuoc: true, tienQuyet: '', hkDuKien: 8, isTichLuy: true, maKhoa: 'FAAF' }
+  ],
+
+  // Ngành Quản trị kinh doanh (FBA2200001) - 4 năm (8 học kỳ)
+  'FBA2200001': [
+    { maMon: 'MGMT1301', tenMon: 'Quản trị học đại cương', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FBA' },
+    { maMon: 'ECON1301', tenMon: 'Kinh tế vi mô', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FECO' },
+    { maMon: 'ENGL1301', tenMon: 'Tiếng Anh thương mại 1', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 2, isTichLuy: true, maKhoa: 'FFL' },
+    { maMon: 'ACCT1301', tenMon: 'Nguyên lý kế toán doanh nghiệp', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 2, isTichLuy: true, maKhoa: 'FAAF' },
+    { maMon: 'COSC1301', tenMon: 'Chuyển đổi số trong doanh nghiệp', soTC: 3, nhom: 'Tự chọn liên ngành', batBuoc: false, tienQuyet: '', hkDuKien: 3, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC4401', tenMon: 'Thực tập tốt nghiệp quản trị', soTC: 4, nhom: 'Tốt nghiệp', batBuoc: true, tienQuyet: '', hkDuKien: 8, isTichLuy: true, maKhoa: 'FBA' }
+  ],
+
+  // Ngành Ngôn ngữ Anh (FFL2200001) - 4 năm (8 học kỳ)
+  'FFL2200001': [
+    { maMon: 'ENGL1301', tenMon: 'Kỹ năng Nghe - Nói tiếng Anh 1', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FFL' },
+    { maMon: 'ENGL1302', tenMon: 'Kỹ năng Đọc - Viết tiếng Anh 1', soTC: 3, nhom: 'Cơ sở ngành', batBuoc: true, tienQuyet: '', hkDuKien: 1, isTichLuy: true, maKhoa: 'FFL' },
+    { maMon: 'POLI1301', tenMon: 'Triết học Mác - Lênin', soTC: 3, nhom: 'Đại cương', batBuoc: true, tienQuyet: '', hkDuKien: 2, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'MGMT1301', tenMon: 'Giao tiếp kinh doanh quốc tế', soTC: 3, nhom: 'Tự chọn liên ngành', batBuoc: false, tienQuyet: '', hkDuKien: 3, isTichLuy: true, maKhoa: 'FBA' },
+    { maMon: 'COSC1301', tenMon: 'Tin học ứng dụng văn phòng', soTC: 3, nhom: 'Tự chọn liên ngành', batBuoc: false, tienQuyet: '', hkDuKien: 4, isTichLuy: true, maKhoa: 'FIT' },
+    { maMon: 'COSC4401', tenMon: 'Thực tập biên phiên dịch', soTC: 4, nhom: 'Tốt nghiệp', batBuoc: true, tienQuyet: '', hkDuKien: 8, isTichLuy: true, maKhoa: 'FFL' }
   ]
 };
 
-// 4. DANH SÁCH LỚP HỌC (TẬP TRUNG LỚP TRỌNG ĐIỂM DH22CS01C)
+// 4. DANH SÁCH LỚP HỌC (ĐẦY ĐỦ CÁC NGÀNH)
 export const MOCK_CLASSES = [
   {
     id: 'DH22CS01C',
@@ -438,25 +492,95 @@ export const MOCK_CLASSES = [
     nganh: 'Khoa học máy tính',
     khoaHoc: '2022 - 2026',
     namHocThu: 2,
-    siSo: 42,
+    siSo: 15,
     cvht: 'TS. Trần Thị Bích',
     emailCVHT: 'bich.tt@ou.edu.vn',
     phongHoc: 'A304 - Cơ sở 371 Nguyễn Kiệm',
     ghiChu: 'Lớp chuẩn'
   },
   {
-    id: 'DH21IT01',
-    maLop: 'DH21IT01',
-    tenLop: 'ĐH CNTT Khóa 2021 - Lớp 01',
+    id: 'DH22IT01',
+    maLop: 'DH22IT01',
+    tenLop: 'ĐH Công nghệ thông tin Khóa 2022 - Lớp 01',
     maNganh: 'FIT2200002',
     nganh: 'Công nghệ thông tin',
-    khoaHoc: '2021 - 2025',
-    namHocThu: 3,
-    siSo: 38,
+    khoaHoc: '2022 - 2026',
+    namHocThu: 2,
+    siSo: 15,
     cvht: 'ThS. Lê Văn Dũng',
     emailCVHT: 'dung.lv@ou.edu.vn',
     phongHoc: 'B201 - Cơ sở 371 Nguyễn Kiệm',
-    ghiChu: ''
+    ghiChu: 'Lớp CNTT định hướng kỹ thuật phần mềm & mạng'
+  },
+  {
+    id: 'DH22SE01',
+    maLop: 'DH22SE01',
+    tenLop: 'ĐH Kỹ thuật phần mềm Khóa 2022 - Lớp 01',
+    maNganh: 'FIT2200003',
+    nganh: 'Kỹ thuật phần mềm',
+    khoaHoc: '2022 - 2026',
+    namHocThu: 2,
+    siSo: 15,
+    cvht: 'TS. Phạm Minh Tuấn',
+    emailCVHT: 'tuan.pm@ou.edu.vn',
+    phongHoc: 'A401 - Cơ sở 371 Nguyễn Kiệm',
+    ghiChu: 'Lớp kỹ sư phát triển ứng dụng'
+  },
+  {
+    id: 'DH22EC01',
+    maLop: 'DH22EC01',
+    tenLop: 'ĐH Kinh tế học Khóa 2022 - Lớp 01',
+    maNganh: 'FECO2200001',
+    nganh: 'Kinh tế học',
+    khoaHoc: '2022 - 2026',
+    namHocThu: 2,
+    siSo: 15,
+    cvht: 'PGS.TS. Nguyễn Văn Hùng',
+    emailCVHT: 'hung.nv@ou.edu.vn',
+    phongHoc: 'B102 - Cơ sở 97 Võ Văn Tần',
+    ghiChu: 'Lớp cử nhân kinh tế vĩ mô'
+  },
+  {
+    id: 'DH22AC01',
+    maLop: 'DH22AC01',
+    tenLop: 'ĐH Kế toán doanh nghiệp Khóa 2022 - Lớp 01',
+    maNganh: 'FAAF2200001',
+    nganh: 'Kế toán doanh nghiệp',
+    khoaHoc: '2022 - 2026',
+    namHocThu: 2,
+    siSo: 15,
+    cvht: 'TS. Phan Thị Thùy',
+    emailCVHT: 'thuy.pt@ou.edu.vn',
+    phongHoc: 'C301 - Cơ sở 97 Võ Văn Tần',
+    ghiChu: 'Lớp chuẩn kế toán IFRS'
+  },
+  {
+    id: 'DH22BA01',
+    maLop: 'DH22BA01',
+    tenLop: 'ĐH Quản trị kinh doanh Khóa 2022 - Lớp 01',
+    maNganh: 'FBA2200001',
+    nganh: 'Quản trị kinh doanh',
+    khoaHoc: '2022 - 2026',
+    namHocThu: 2,
+    siSo: 15,
+    cvht: 'PGS.TS. Trần Thị Lan',
+    emailCVHT: 'lan.tt@ou.edu.vn',
+    phongHoc: 'B205 - Cơ sở 97 Võ Văn Tần',
+    ghiChu: 'Lớp quản trị doanh nghiệp và chuỗi cung ứng'
+  },
+  {
+    id: 'DH22EN01',
+    maLop: 'DH22EN01',
+    tenLop: 'ĐH Ngôn ngữ Anh Khóa 2022 - Lớp 01',
+    maNganh: 'FFL2200001',
+    nganh: 'Ngôn ngữ Anh',
+    khoaHoc: '2022 - 2026',
+    namHocThu: 2,
+    siSo: 15,
+    cvht: 'ThS. Hoàng Thị Mai',
+    emailCVHT: 'mai.ht@ou.edu.vn',
+    phongHoc: 'D201 - Cơ sở 371 Nguyễn Kiệm',
+    ghiChu: 'Lớp cử nhân Anh ngữ thương mại'
   }
 ];
 
@@ -693,10 +817,154 @@ const generateDH22CS01CStudents = () => {
   return students;
 };
 
-// 5. TẬP HỢP TOÀN BỘ SINH VIÊN (45 SV Lớp DH22CS01C + SV lớp khác)
-// level / levelText / engineLevel do OUGradeEngine.classifyStudent tính từ dữ liệu (lịch sử học kỳ + warningCount),
-// không gán cứng. riskScore hiện vẫn là số mẫu cố định (xem tracking D5).
-export const MOCK_STUDENTS = generateDH22CS01CStudents().map((student) => {
+// Helper sinh 15 sinh viên chuẩn cho mỗi lớp của tất cả các ngành còn lại
+const generateStudentsForOtherClasses = () => {
+  const otherClasses = [
+    { lop: 'DH22CS02C', maNganh: 'FIT2200001', nganh: 'Khoa học máy tính', prefix: '22510502', startNum: 11 },
+    { lop: 'DH22IT01', maNganh: 'FIT2200002', nganh: 'Công nghệ thông tin', prefix: '22510600', startNum: 1 },
+    { lop: 'DH22SE01', maNganh: 'FIT2200003', nganh: 'Kỹ thuật phần mềm', prefix: '22510700', startNum: 1 },
+    { lop: 'DH22EC01', maNganh: 'FECO2200001', nganh: 'Kinh tế học', prefix: '22520100', startNum: 1 },
+    { lop: 'DH22AC01', maNganh: 'FAAF2200001', nganh: 'Kế toán doanh nghiệp', prefix: '22520200', startNum: 1 },
+    { lop: 'DH22BA01', maNganh: 'FBA2200001', nganh: 'Quản trị kinh doanh', prefix: '22520300', startNum: 1 },
+    { lop: 'DH22EN01', maNganh: 'FFL2200001', nganh: 'Ngôn ngữ Anh', prefix: '22530100', startNum: 1 }
+  ];
+
+  const namesPool = [
+    ['Nguyễn Văn Thành', 'Nam', '15/02/2004'],
+    ['Trần Thị Thảo', 'Nữ', '20/04/2004'],
+    ['Lê Minh Quân', 'Nam', '10/05/2004'],
+    ['Phạm Hoàng Nam', 'Nam', '18/06/2004'],
+    ['Hoàng Ngọc Bích', 'Nữ', '22/07/2004'],
+    ['Vũ Đức Thắng', 'Nam', '05/08/2004'],
+    ['Đặng Thu Hằng', 'Nữ', '14/09/2004'],
+    ['Bùi Quang Huy', 'Nam', '30/10/2004'],
+    ['Đỗ Phương Anh', 'Nữ', '12/11/2004'],
+    ['Hồ Tuấn Kiệt', 'Nam', '25/12/2004'],
+    ['Ngô Thanh Trúc', 'Nữ', '08/01/2004'],
+    ['Dương Gia Bảo', 'Nam', '17/02/2004'],
+    ['Lý Thảo My', 'Nữ', '03/03/2004'],
+    ['Phan Quốc Trung', 'Nam', '29/03/2004'],
+    ['Võ Khánh Linh', 'Nữ', '11/04/2004']
+  ];
+
+  const students = [];
+
+  for (const c of otherClasses) {
+    for (let i = 0; i < 15; i++) {
+      const idNum = String(c.startNum + i).padStart(2, '0');
+      const maSV = `${c.prefix}${idNum}`;
+      const [hoTen, gioiTinh, ngaySinh] = namesPool[i];
+
+      let gpaTL, gpaHK, tcTichLuy, tcNo, riskScore, hadPrevWarning, warningCount, drl, notes, dk, kd;
+
+      if (i === 0) {
+        // Sinh viên 1: Nguy cơ cao / Buộc thôi học (để kiểm tra cảnh báo học vụ TT08)
+        gpaTL = 1.18;
+        gpaHK = 0.85;
+        tcTichLuy = 28;
+        tcNo = 24;
+        riskScore = 94;
+        hadPrevWarning = true;
+        warningCount = 2;
+        drl = 46;
+        notes = 'Bị cảnh báo học vụ 2 học kỳ liên tiếp, nợ nhiều tín chỉ chuỗi tiên quyết.';
+        dk = [18, 18, 16];
+        kd = [6, 12, 6];
+      } else if (i === 1) {
+        // Sinh viên 2: Cảnh báo học vụ
+        gpaTL = 1.72;
+        gpaHK = 1.55;
+        tcTichLuy = 40;
+        tcNo = 12;
+        riskScore = 72;
+        hadPrevWarning = true;
+        warningCount = 1;
+        drl = 58;
+        notes = 'GPA dưới 2.0, cần theo dõi và hỗ trợ cải thiện điểm.';
+        dk = [18, 18, 16];
+        kd = [3, 6, 3];
+      } else if (i === 2) {
+        // Sinh viên 3: Cảnh báo sớm
+        gpaTL = 1.95;
+        gpaHK = 1.85;
+        tcTichLuy = 46;
+        tcNo = 6;
+        riskScore = 52;
+        hadPrevWarning = false;
+        warningCount = 0;
+        drl = 65;
+        notes = 'Điểm tiệm cận ngưỡng cảnh báo học vụ.';
+        dk = [18, 18, 16];
+        kd = [0, 3, 3];
+      } else if (i >= 13) {
+        // Sinh viên 14-15: Xuất sắc
+        gpaTL = Number((3.65 + (i - 13) * 0.15).toFixed(2));
+        gpaHK = Number((3.70 + (i - 13) * 0.15).toFixed(2));
+        tcTichLuy = 58;
+        tcNo = 0;
+        riskScore = 5;
+        hadPrevWarning = false;
+        warningCount = 0;
+        drl = 92;
+        notes = 'Sinh viên giỏi/xuất sắc, tiến độ đào tạo vượt chuẩn.';
+        dk = [20, 20, 18];
+        kd = [0, 0, 0];
+      } else {
+        // Sinh viên 4-13: Bình thường / Khá
+        const delta = ((i - 3) * 0.08);
+        gpaTL = Number((2.60 + delta).toFixed(2));
+        gpaHK = Number((2.65 + delta).toFixed(2));
+        tcTichLuy = 52 + (i % 4);
+        tcNo = 0;
+        riskScore = 15;
+        hadPrevWarning = false;
+        warningCount = 0;
+        drl = 78 + (i % 10);
+        notes = 'Tiến độ học tập bình thường.';
+        dk = [18, 18, tcTichLuy - 36];
+        kd = [0, 0, 0];
+      }
+
+      students.push({
+        maSV,
+        hoTen,
+        gioiTinh,
+        ngaySinh,
+        lop: c.lop,
+        maNganh: c.maNganh,
+        nganh: c.nganh,
+        namHoc: 2,
+        gpaTL,
+        gpaHK,
+        tcTichLuy,
+        tcNo,
+        riskScore,
+        hadPrevWarning,
+        warningCount,
+        drl,
+        email: `${maSV}@ou.edu.vn`,
+        sdt: `09${Math.floor(10000000 + Math.random() * 90000000)}`,
+        notes,
+        historySemesters: buildHistory({
+          dk,
+          kd,
+          gpaHK,
+          gpaTL,
+          flat: tcNo === 0
+        }),
+        counselingLog: []
+      });
+    }
+  }
+
+  return students;
+};
+
+// 5. TẬP HỢP TOÀN BỘ SINH VIÊN (45 SV Lớp DH22CS01C + 105 SV các ngành khác = 150 SV)
+export const MOCK_STUDENTS = [
+  ...generateDH22CS01CStudents(),
+  ...generateStudentsForOtherClasses()
+].map((student) => {
   const { warningEval, ...classification } = OUGradeEngine.classifyStudent(student);
   return { ...student, ...classification };
 });

@@ -54,70 +54,100 @@ export const INITIAL_LECTURERS = [
     name: 'TS. Lê Xuân Vĩnh',
     email: 'vinh.lx@ou.edu.vn',
     phone: '0912345001',
-    facultyCode: 'OU-FIT',
+    facultyCode: 'FIT',
     facultyName: 'Khoa Công nghệ thông tin',
-    classes: ['DH22CS01C'],
-    coursesTaught: ['COSC1301'], // Nhập môn lập trình
+    classes: ['DH22CS01C', 'DH22IT01', 'DH22SE01'],
+    coursesTaught: ['COSC1301', 'COSC3302', 'COSC4601'],
   },
   {
     username: 'gv.nam',
     name: 'ThS. Nguyễn Hoàng Nam',
     email: 'nam.nh@ou.edu.vn',
     phone: '0912345002',
-    facultyCode: 'OU-FIT',
+    facultyCode: 'FIT',
     facultyName: 'Khoa Công nghệ thông tin',
-    classes: ['DH22CS01C', 'DH22CS02C'], // CVHT DH22CS01C & dạy COSC1301 lớp DH22CS02C
-    coursesTaught: ['COSC1301'],
+    classes: ['DH22CS01C', 'DH22CS02C', 'DH22SE01'],
+    coursesTaught: ['COSC1301', 'COSC1302', 'COSC2307'],
   },
   {
     username: 'gv.tuan',
     name: 'TS. Phạm Minh Tuấn',
     email: 'tuan.pm@ou.edu.vn',
     phone: '0912345003',
-    facultyCode: 'OU-FIT',
+    facultyCode: 'FIT',
     facultyName: 'Khoa Công nghệ thông tin',
-    classes: ['DH22CS01C'],
-    coursesTaught: ['COSC2301'], // Cấu trúc dữ liệu và giải thuật
+    classes: ['DH22CS01C', 'DH22SE01'],
+    coursesTaught: ['COSC2301', 'COSC2305', 'COSC4301'],
   },
   {
     username: 'gv.quan',
     name: 'ThS. Đỗ Hồng Quân',
     email: 'quan.dh@ou.edu.vn',
     phone: '0912345004',
-    facultyCode: 'OU-FIT',
+    facultyCode: 'FIT',
     facultyName: 'Khoa Công nghệ thông tin',
-    classes: ['DH22CS01C'],
-    coursesTaught: ['COSC2302'], // Cơ sở dữ liệu
+    classes: ['DH22CS01C', 'DH22IT01'],
+    coursesTaught: ['COSC2302', 'COSC2304'],
   },
   {
     username: 'gv.thuy',
     name: 'TS. Phan Thị Thùy',
     email: 'thuy.pt@ou.edu.vn',
     phone: '0912345005',
-    facultyCode: 'OU-Econ',
-    facultyName: 'Khoa Kinh tế và Quản lý',
-    classes: ['DH22CS01C'],
-    coursesTaught: ['ACCT1301'], // Nguyên lý kế toán doanh nghiệp
+    facultyCode: 'FAAF',
+    facultyName: 'Khoa Kế toán - Kiểm toán',
+    classes: ['DH22AC01', 'DH22CS01C'],
+    coursesTaught: ['ACCT1301'],
+  },
+  {
+    username: 'gv.hung',
+    name: 'PGS.TS. Nguyễn Văn Hùng',
+    email: 'hung.nv@ou.edu.vn',
+    phone: '0912345008',
+    facultyCode: 'FECO',
+    facultyName: 'Khoa Kinh tế',
+    classes: ['DH22EC01'],
+    coursesTaught: ['ECON1301'],
+  },
+  {
+    username: 'gv.lan',
+    name: 'PGS.TS. Trần Thị Lan',
+    email: 'lan.tt@ou.edu.vn',
+    phone: '0912345009',
+    facultyCode: 'FBA',
+    facultyName: 'Khoa Quản trị kinh doanh',
+    classes: ['DH22BA01'],
+    coursesTaught: ['MGMT1301'],
+  },
+  {
+    username: 'gv.mai',
+    name: 'ThS. Hoàng Thị Mai',
+    email: 'mai.ht@ou.edu.vn',
+    phone: '0912345010',
+    facultyCode: 'FFL',
+    facultyName: 'Khoa Ngoại ngữ',
+    classes: ['DH22EN01'],
+    coursesTaught: ['ENGL1301', 'ENGL1302'],
   },
   {
     username: 'gv.bich',
     name: 'TS. Trần Thị Bích',
     email: 'bich.tt@ou.edu.vn',
     phone: '0912345006',
-    facultyCode: 'OU-FIT',
+    facultyCode: 'FIT',
     facultyName: 'Khoa Công nghệ thông tin',
-    classes: ['DH22CS02C'], // CVHT DH22CS02C
-    coursesTaught: [],
+    classes: ['DH22CS02C'],
+    coursesTaught: ['MATH1301', 'MATH1302', 'MATH1303'],
   },
   {
     username: 'gv.dung',
     name: 'ThS. Lê Văn Dũng',
     email: 'dung.lv@ou.edu.vn',
     phone: '0912345007',
-    facultyCode: 'OU-FIT',
+    facultyCode: 'FIT',
     facultyName: 'Khoa Công nghệ thông tin',
-    classes: ['DH22IT01C'], // CVHT DH22IT01C
-    coursesTaught: [],
+    classes: ['DH22IT01'],
+    coursesTaught: ['COSC2306', 'COSC3301', 'COSC3306'],
   },
 ];
 
@@ -192,10 +222,10 @@ export async function seedDefaultUsersIfEmpty() {
   if (!conn) return;
 
   const count = await User.countDocuments();
-  // Nếu chưa có hoặc chưa đủ sinh viên, thực hiện upsert toàn bộ
-  if (count < 10) {
-    console.log('🌱 Seeding 1 Admin, all Lecturers, and all 45 Students into MongoDB...');
-    const allUsers = buildAllInitialUsers();
+  const allUsers = buildAllInitialUsers();
+  // Nếu chưa có hoặc chưa đủ sinh viên, thực hiện upsert bổ sung toàn bộ
+  if (count < allUsers.length) {
+    console.log(`🌱 Seeding/syncing ${allUsers.length} users into MongoDB...`);
 
     for (const u of allUsers) {
       await User.findOneAndUpdate(
@@ -204,7 +234,7 @@ export async function seedDefaultUsersIfEmpty() {
         { upsert: true, new: true }
       );
     }
-    console.log(`✅ Seeded ${allUsers.length} users successfully into MongoDB!`);
+    console.log(`✅ Synced ${allUsers.length} users successfully into MongoDB!`);
   }
 }
 

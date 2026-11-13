@@ -12,8 +12,14 @@ export async function GET(req) {
     if (!conn) return NextResponse.json(MOCK_MAJORS);
 
     let majors = await Major.find().sort({ createdAt: -1 }).lean();
-    if (majors.length === 0) {
-      await Major.insertMany(MOCK_MAJORS);
+    if (majors.length < MOCK_MAJORS.length) {
+      for (const m of MOCK_MAJORS) {
+        await Major.findOneAndUpdate(
+          { code: m.code },
+          { $setOnInsert: m },
+          { upsert: true, new: true }
+        );
+      }
       majors = await Major.find().sort({ createdAt: -1 }).lean();
     }
     return NextResponse.json(majors);

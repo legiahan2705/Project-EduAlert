@@ -13,7 +13,7 @@ export async function GET(req) {
     if (!conn) return NextResponse.json(MOCK_COURSE_GRADES);
 
     let grades = await GradeSheet.find().sort({ hocKy: 1, maMon: 1 }).lean();
-    if (grades.length < 20) {
+    if (grades.length < 60) {
       // Tự động sinh bảng điểm cho toàn bộ các lớp theo CTĐT 4 năm (8 học kỳ)
       let allClasses = await Class.find().lean();
       if (!allClasses || allClasses.length === 0) {
