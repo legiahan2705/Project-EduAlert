@@ -290,13 +290,47 @@ export async function authenticateUser(role, username, password) {
   return fallbackAuthenticate(role, uname, password);
 }
 
+export const RUNTIME_PASSWORD_OVERRIDES = new Map();
+
+export async function resetUserPassword(username, newPassword) {
+  const uname = String(username || '').trim().toLowerCase();
+  if (!uname || !newPassword || newPassword.length < 6) {
+    throw new Error('Mật khẩu mới phải có tối thiểu 6 ký tự');
+  }
+
+  const { hash, salt } = hashNewPassword(newPassword);
+  RUNTIME_PASSWORD_OVERRIDES.set(uname, { passwordHash: hash, salt });
+
+  try {
+    const conn = await connectDB();
+    if (conn) {
+      await seedDefaultUsersIfEmpty();
+      await User.findOneAndUpdate(
+        { username: uname },
+        { $set: { passwordHash: hash, salt } },
+        { new: true }
+      );
+    }
+  } catch (err) {
+    console.warn('MongoDB password reset update failed:', err.message);
+  }
+
+  return { success: true };
+}
+
 /**
  * Fallback dự phòng cho toàn bộ Admin, Giảng viên và 45 Sinh viên
  */
 function fallbackAuthenticate(role, uname, password) {
-  const expectedPw = passwordFor(role);
-  if (!expectedPw || password !== expectedPw) {
-    return { success: false, error: 'Mật khẩu không chính xác' };
+  const override = RUNTIME_PASSWORD_OVERRIDES.get(uname);
+  if (override) {
+    const isMatch = verifyPassword(password, override.passwordHash, override.salt);
+    if (!isMatch) return { success: false, error: 'Mật khẩu không chính xác' };
+  } else {
+    const expectedPw = passwordFor(role);
+    if (!expectedPw || password !== expectedPw) {
+      return { success: false, error: 'Mật khẩu không chính xác' };
+    }
   }
 
   // 1. Admin

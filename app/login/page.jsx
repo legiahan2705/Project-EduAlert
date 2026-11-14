@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { GraduationCap, ShieldCheck, UserCog, BookOpen, Eye, EyeOff, LogIn } from 'lucide-react';
+import { GraduationCap, ShieldCheck, UserCog, BookOpen, Eye, EyeOff, LogIn, CheckCircle2 } from 'lucide-react';
+import ForgotPasswordModal from '@/components/Auth/ForgotPasswordModal';
 
 const ROLES = [
   { key: 'student', label: 'Sinh viên', icon: GraduationCap, userLabel: 'Mã số sinh viên', placeholder: 'VD: 2251050001' },
@@ -25,7 +26,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isForgotOpen, setIsForgotOpen] = useState(false);
 
   // Đã đăng nhập thì vào thẳng ứng dụng
   useEffect(() => {
@@ -39,6 +42,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMsg('');
     if (!username.trim() || !password) {
       setError('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu');
       return;
@@ -63,6 +67,16 @@ export default function LoginPage() {
     }
   };
 
+  const handleSuccessReset = ({ username: newU, password: newP, role: newRole }) => {
+    if (newRole && ['student', 'lecturer', 'admin'].includes(newRole)) {
+      setRole(newRole);
+    }
+    if (newU) setUsername(newU);
+    if (newP) setPassword(newP);
+    setError('');
+    setSuccessMsg('Mật khẩu mới đã được cập nhật thành công! Nhấn Đăng nhập để tiếp tục.');
+  };
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', background: 'linear-gradient(160deg, #064e3b 0%, #065f46 45%, #f0fdf4 45%)' }}>
       <div style={{ width: '100%', maxWidth: '420px' }}>
@@ -84,7 +98,7 @@ export default function LoginPage() {
                 <button
                   key={r.key}
                   type="button"
-                  onClick={() => { setRole(r.key); setError(''); }}
+                  onClick={() => { setRole(r.key); setError(''); setSuccessMsg(''); }}
                   aria-pressed={active}
                   style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
@@ -117,7 +131,7 @@ export default function LoginPage() {
           <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: '#334155', marginBottom: 4 }} htmlFor="password">
             Mật khẩu
           </label>
-          <div style={{ position: 'relative', marginBottom: 12 }}>
+          <div style={{ position: 'relative', marginBottom: 8 }}>
             <input
               id="password"
               type={showPw ? 'text' : 'password'}
@@ -136,9 +150,43 @@ export default function LoginPage() {
             </button>
           </div>
 
+          {/* QUÊN MẬT KHẨU LINK */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+            <button
+              type="button"
+              onClick={() => {
+                setError('');
+                setSuccessMsg('');
+                setIsForgotOpen(true);
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#047857',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                padding: '2px 0',
+                textDecoration: 'none',
+              }}
+              onMouseEnter={(e) => (e.target.style.textDecoration = 'underline')}
+              onMouseLeave={(e) => (e.target.style.textDecoration = 'none')}
+            >
+              Quên mật khẩu?
+            </button>
+          </div>
+
+          {/* THÔNG BÁO LỖI HOẶC THÀNH CÔNG */}
           {error && (
             <div role="alert" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', fontSize: 12.5, padding: '8px 10px', borderRadius: 8, marginBottom: 12 }}>
               {error}
+            </div>
+          )}
+
+          {successMsg && (
+            <div role="status" style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', fontSize: 12.5, padding: '8px 10px', borderRadius: 8, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <CheckCircle2 size={16} className="shrink-0" color="#059669" />
+              <span>{successMsg}</span>
             </div>
           )}
 
@@ -159,6 +207,14 @@ export default function LoginPage() {
           </p>
         </form>
       </div>
+
+      {/* MODAL QUÊN MẬT KHẨU */}
+      <ForgotPasswordModal
+        isOpen={isForgotOpen}
+        onClose={() => setIsForgotOpen(false)}
+        initialUsername={username}
+        onSuccessReset={handleSuccessReset}
+      />
     </div>
   );
 }
