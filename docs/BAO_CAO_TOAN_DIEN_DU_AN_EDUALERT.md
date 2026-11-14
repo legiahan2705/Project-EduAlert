@@ -160,39 +160,52 @@ flowchart TD
 
 ## 5. THIẾT KẾ CƠ SỞ DỮ LIỆU CLOUD (MONGODB SCHEMA & ERD)
 
-Dữ liệu học vụ được chuẩn hóa thành 5 Collection chính trong MongoDB:
+Dữ liệu học vụ được chuẩn hóa thành 7 Collection chính trong MongoDB Atlas, quản lý bởi Mongoose ORM:
 
 ```mermaid
 erDiagram
     FACULTY ||--o{ MAJOR : "chứa các ngành (1-n)"
-    MAJOR ||--o{ CLASS : "quản lý các lớp (1-n)"
-    MAJOR ||--|| CURRICULUM : "quy định khung 141 TC (1-1)"
-    CLASS ||--o{ STUDENT : "danh sách 45 sinh viên (1-n)"
-    STUDENT ||--o{ GRADE_RECORD : "lịch sử điểm học phần"
+    MAJOR ||--o{ CLASS : "quản lý các lớp sinh hoạt (1-n)"
+    MAJOR ||--|| CURRICULUM : "quy định khung 141 TC 8 học kỳ (1-1)"
+    CLASS ||--o{ STUDENT : "danh sách sinh viên từ Năm 1 (1-n)"
+    CLASS ||--o{ GRADE_SHEET : "các bảng điểm học phần theo CTĐT (1-n)"
+    USER ||--o{ STUDENT : "tài khoản đăng nhập sinh viên (1-1)"
+    USER ||--o{ CLASS : "giảng viên chủ nhiệm / CVHT (1-n)"
 
     FACULTY {
         string id PK "OU261104001"
         string code "Mã Khoa tự sinh"
         string name "Tên Khoa tiếng Việt"
         string nameEn "Tên Khoa tiếng Anh"
-        string shortCode "FIT, FECO..."
+        string shortCode "FIT, FECO, FAAF, FBA, FFL"
         string status "ACTIVE/INACTIVE"
         array auditLogs "Lịch sử chỉnh sửa"
     }
 
     MAJOR {
-        string id PK "FIT2200001"
-        string code "[Viết tắt]+YYMMXXX"
-        string name "Tên Ngành (Khoa học máy tính)"
+        string id PK "FIT2611001"
+        string code "[Ký hiệu Khoa] + YYMM + XXX"
+        string name "Tên Ngành tiếng Việt"
+        string nameEn "Tên Ngành tiếng Anh"
         string facultyCode "Mã Khoa (FIT)"
         number creditsStandard "141 TC"
         string status "ACTIVE/INACTIVE"
         array auditLogs "Lịch sử cập nhật"
     }
 
+    CLASS {
+        string id PK "DH22CS01C"
+        string maLop "DH22CS01C"
+        string tenLop "Lớp KHMT Khóa 2022"
+        string maNganh "FIT2200001"
+        number siSo "Sĩ số sinh viên"
+        string cvht "Cố vấn học tập"
+        string emailCVHT "Email CVHT"
+    }
+
     CURRICULUM {
         string majorCode PK "FIT2200001"
-        array courses "Danh mục 33 môn học và môn liên ngành"
+        array courses "Danh mục 33 môn học qua 8 học kỳ (kèm môn liên ngành)"
     }
 
     STUDENT {
@@ -200,22 +213,37 @@ erDiagram
         string hoTen "Nguyễn Văn An"
         string lop "DH22CS01C"
         string maNganh "FIT2200001"
-        number gpaTL "1.15"
-        number gpaHK "0.82"
-        number tcTichLuy "28"
-        number tcNo "26"
-        string level "DROP_OUT_RISK"
-        array historySemesters "Lịch sử HK1-HK3"
+        number namHoc "Năm 1, 2, 3, 4"
+        number gpaTL "Tự động tính từ bảng điểm các môn"
+        number gpaHK "GPA học kỳ gần nhất"
+        number tcTichLuy "Tổng TC các môn đạt (pass)"
+        number tcNo "Tổng TC môn rớt F (debt)"
+        string level "NORMAL/WARNING/HIGH_RISK/DROP_OUT_RISK"
+        array historySemesters "Lịch sử điểm các học kỳ"
         array counselingLog "Nhật ký tư vấn CVHT"
     }
 
-    GRADE_RECORD {
-        string sheetId PK "BD-DH22CS01C-COSC2301"
+    GRADE_SHEET {
+        string id PK "BD-DH22CS01C-COSC2301"
         string maLop "DH22CS01C"
         string maMon "COSC2301"
         string tenMon "Cấu trúc dữ liệu và giải thuật"
         number soTC "3"
-        array grades "Chi tiết điểm QT & Thi của sinh viên"
+        string hocKy "HK3"
+        string giangVien "TS. Phạm Minh Tuấn"
+        string trangThai "COMPLETED/IN_PROGRESS/NOT_STARTED"
+        array grades "Chi tiết điểm QT, Thi, TK10, Thang 4 của từng SV"
+    }
+
+    USER {
+        string username PK "2251050001 / gv.nam / admin"
+        string passwordHash "Băm bảo mật qua scryptSync"
+        string salt "Muối ngẫu nhiên 16 bytes"
+        string role "admin / lecturer / student"
+        string name "Họ và tên"
+        string email "Email trường OU"
+        string phone "Số điện thoại"
+        string status "ACTIVE / LOCKED"
     }
 ```
 
@@ -223,49 +251,71 @@ erDiagram
 
 ## 6. HỆ THỐNG CÁC TÍNH NĂNG VÀ USER STORIES (US)
 
-Dự án được phân rã thành 5 User Story nghiệp vụ tương ứng với 5 phân hệ giao diện:
+Dự án được phân rã thành 7 User Story nghiệp vụ tương ứng với các phân hệ giao diện:
 
 ### 6.1. User Story US-01: Quản Lý Danh Mục Khoa (Faculty Management)
 * **User Story:** *"Là Ban Quản lý Đào tạo, tôi muốn CRUD danh mục khoa với mã tự sinh theo cấu trúc quy định, lưu nhật ký sửa đổi và ngăn chặn việc xóa các khoa đã có ngành trực thuộc để bảo đảm toàn vẹn dữ liệu."*
 * **Tính năng:**
   * Mã Khoa tự sinh: `OU + YYMMDD + XXX` (Ví dụ: `OU261104001`).
-  * Khai báo tên tiếng Việt, tiếng Anh, ký hiệu viết tắt duy nhất (FIT, FECO, FAAF, FBA, FFL).
+  * Khai báo tên tiếng Việt, tiếng Anh, ký hiệu viết tắt duy nhất (`FIT`, `FECO`, `FAAF`, `FBA`, `FFL`).
   * Chặn xóa thông minh: Nếu khoa đã có ngành liên kết $\to$ Khóa nút xóa, chỉ cho phép Vô hiệu hóa / Kích hoạt.
   * Audit Trail: Xem lịch sử ai đã sửa, vào lúc nào, giá trị cũ và mới.
 
 ### 6.2. User Story US-02: Quản Lý Ngành & Khung CTĐT 141 Tín Chỉ
-* **User Story:** *"Là Ban Đào tạo, tôi muốn tạo ngành học mới với mã tự sinh theo ký hiệu khoa, cấu hình khung CTĐT chuẩn 141 tín chỉ gồm cả các môn liên ngành để phục vụ lộ trình học tập."*
+* **User Story:** *"Là Ban Đào tạo, tôi muốn tạo ngành học mới với mã tự sinh theo ký hiệu khoa kèm Live Preview trực quan, cấu hình khung CTĐT chuẩn 141 tín chỉ gồm 8 học kỳ và các môn liên ngành để phục vụ lộ trình học tập."*
 * **Tính năng:**
-  * Mã ngành tự sinh: `[Ký hiệu Khoa] + YYMM + XXX` (Ví dụ: `FIT2200001`).
+  * Mã ngành tự sinh: `[Ký hiệu Khoa] + YYMM + XXX` (Ví dụ: `FIT2611001`).
+  * Giao diện Modal hiện đại với Live Preview Badge: Hiển thị ngay mã ngành sẽ phát sinh theo thời gian thực và phân giải công thức cấu thành.
+  * Bố cục 2 cột cân xứng: Tên tiếng Việt, Tên tiếng Anh, Chuẩn tín chỉ (kèm badge `TC`), Hệ đào tạo.
   * Workspace 4 Subtabs:
     1. *Tổng quan:* Chuẩn 141 TC, văn bằng, quy mô đào tạo.
-    2. *Chương trình đào tạo:* Quản lý 33 môn học, cho phép thêm môn liên ngành từ Khoa Ngoại ngữ (Tiếng Anh 1, 2) hoặc Khoa Kinh tế (Kinh tế vi mô).
-    3. *Danh sách lớp:* Quản lý các lớp thuộc ngành và CVHT phụ trách.
-    4. *Lịch sử:* Nhật ký thay đổi chương trình.
+    2. *Chương trình đào tạo:* Quản lý khung 33 môn học qua 8 học kỳ, hỗ trợ môn liên ngành từ Khoa Ngoại ngữ (`ENGL1301`) hoặc Khoa Kinh tế (`ECON1301`).
+    3. *Danh sách lớp & Sinh viên:* Quản lý các lớp và sinh viên trực thuộc ngành.
+    4. *Lịch sử:* Nhật ký kiểm toán thay đổi chương trình.
 
-### 6.3. User Story US-03: Quản Lý Bảng Điểm & Nhập Điểm Học Phần
-* **User Story:** *"Là Giảng viên bộ môn, tôi muốn bảng điểm được gom nhóm theo môn học và mở rộng ra từng lớp, có thể nhập điểm quá trình và thi trực tiếp để hệ thống tự động tính điểm tổng kết."*
+### 6.3. User Story US-03: Quản Lý Lớp Học Vụ & Tiếp Nhận Sinh Viên Từ Năm 1
+* **User Story:** *"Là Giáo vụ / Ban Đào tạo, tôi muốn tạo lớp học và thêm sinh viên vào lớp theo đúng lộ trình Năm 1 (HK1), không cho phép nhập điểm GPA tích lũy tùy tiện mà hệ thống phải tự động tính toán từ bảng điểm các môn học trong CTĐT."*
 * **Tính năng:**
-  * Bố cục **Group by Course:** Gom nhóm theo mã môn $\to$ bung mở danh sách bảng điểm các lớp.
-  * Mã bảng điểm tự sinh: `BD-[Mã Lớp]-[Mã Môn]`.
-  * Nhập điểm tương tác: Nhập QT (40%) và Thi (60%), hệ thống tự tính TK10, tự quy đổi điểm chữ và thang điểm 4 tức thì.
+  * Thêm lớp học mới với mã lớp tự động, niên khóa 4 năm (Ví dụ: `DH22CS01C`, khóa `2022 - 2026`).
+  * Modal thêm sinh viên hiện đại: Nhập MSSV, Họ tên, Giới tính, Ngày sinh, Số điện thoại, Email sinh viên (tự gợi ý `[MSSV]@student.ou.edu.vn`).
+  * **Bỏ ô nhập GPA và tín chỉ ban đầu:** Mọi sinh viên đều xuất phát từ Năm 1 với trạng thái `Mới (Năm 1)`.
+  * **Tự động liên kết bảng điểm:** Khi sinh viên được thêm vào lớp, hệ thống tự động bổ sung sinh viên vào danh sách điểm của toàn bộ các bảng điểm môn học thuộc lớp đó.
+  * Tự động tạo tài khoản sinh viên đăng nhập hệ thống (`Sinhvien@123`).
 
-### 6.4. User Story US-04: Dashboard Giám Sát Cảnh Báo Sớm & Hồ Sơ 360°
-* **User Story:** *"Là Cố vấn học tập, tôi muốn có Dashboard theo dõi toàn bộ 45 sinh viên lớp DH22CS01C, tự động khoanh vùng các sinh viên có nguy cơ bị đuổi học và mở Hồ sơ 360° để nắm rõ các quy tắc vi phạm."*
+### 6.4. User Story US-04: Quản Lý Bảng Điểm & Tự Động Tái Tính GPA (Course Grades)
+* **User Story:** *"Là Giảng viên bộ môn / CVHT, tôi muốn bảng điểm được gom nhóm theo môn học và mở rộng ra từng lớp, có thể nhập điểm quá trình và thi trực tiếp để hệ thống tự động tính điểm tổng kết và tự động cập nhật kết quả học tập cho toàn bộ sinh viên trong lớp."*
+* **Tính năng:**
+  * **Phân định vai trò:** Quản trị viên (Admin) không trực tiếp quản lý bảng điểm; chỉ Giảng viên bộ môn được phân công mới có quyền mở và lưu điểm.
+  * Bố cục **Group by Course:** Gom nhóm theo môn học $\to$ bung mở danh sách bảng điểm các lớp.
+  * Nhập điểm tương tác: Nhập QT (40%) và Thi (60%), tự tính TK10, quy đổi điểm chữ và thang điểm 4.
+  * **Tự động tái tính toán GPA tích lũy:** Khi giảng viên lưu bảng điểm môn học (`PUT /api/grades/[sheetId]`), hệ thống tự động quét toàn bộ bảng điểm của lớp, tính tổng điểm nhân tín chỉ, cập nhật ngay `gpaTL`, `tcTichLuy`, `tcNo` và mức độ rủi ro học vụ cho từng sinh viên trong CSDL.
+
+### 6.5. User Story US-05: Dashboard Giám Sát Cảnh Báo Sớm & Hồ Sơ 360°
+* **User Story:** *"Là Cố vấn học tập, tôi muốn có Dashboard theo dõi sinh viên lớp phụ trách, tự động khoanh vùng các sinh viên có nguy cơ bị đuổi học và mở Hồ sơ 360° để nắm rõ các quy tắc vi phạm."*
 * **Tính năng:**
   * Phân tầng tự động 4 nhóm học vụ:
-    * 🔴 **Nhóm 1 - Nguy cơ Buộc thôi học (1 SV):** Vi phạm $\ge 2$ lần liên tiếp.
-    * 🟠 **Nhóm 2 - Cảnh báo học vụ Mức 1 (4 SV):** GPA dưới sàn, nợ từ 8 – 14 TC.
-    * 🟡 **Nhóm 3 - Tín hiệu sớm (4 SV):** GPA $1.25 - 1.68$, rải rác điểm D/F.
-    * 🟢 **Nhóm 4 - An toàn & Xuất sắc (36 SV):** Tích lũy tốt, đúng tiến độ.
-  * **Hồ Sơ Học Vụ 360°:** Bóc tách bài test 4 Rule của Bộ GD&ĐT, lịch sử điểm HK1–HK3, và Form ghi nhận nhật ký tư vấn lưu trực tiếp về CSDL đám mây.
+    * 🔴 **Nhóm 1 - Nguy cơ Buộc thôi học:** Vi phạm $\ge 2$ lần liên tiếp.
+    * 🟠 **Nhóm 2 - Cảnh báo học vụ Mức 1:** GPA dưới sàn, nợ từ 8 – 14 TC.
+    * 🟡 **Nhóm 3 - Tín hiệu sớm:** GPA $1.25 - 1.68$, rải rác điểm D/F.
+    * 🟢 **Nhóm 4 - An toàn & Xuất sắc:** Tích lũy tốt, đúng tiến độ.
+  * **Hồ Sơ Học Vụ 360°:** Bóc tách bài test 4 Rule của Bộ GD&ĐT, lịch sử điểm HK1–HK8, và Form ghi nhận nhật ký tư vấn lưu trực tiếp về CSDL đám mây.
 
-### 6.5. User Story US-05: Kế Hoạch Học Tập Thông Minh (Smart Academic Planner)
+### 6.6. User Story US-06: Kế Hoạch Học Tập Thông Minh (Smart Academic Planner)
 * **User Story:** *"Là Sinh viên, tôi muốn đối chiếu tiến độ tích lũy với chuẩn 141 tín chỉ, tính điểm cần đạt để tốt nghiệp loại Khá/Giỏi, và mô phỏng việc học lại môn F để thấy trước kết quả thoát khỏi diện đuổi học."*
 * **Tính năng:**
   * Thước đo hoàn thành CTĐT: Phân loại môn Đạt (🟢), môn Nợ F (🔴), môn Còn lại (🟡).
   * Công cụ Target GPA Calculator: Tính toán điểm trung bình cần đạt cho các tín chỉ còn lại.
   * Bộ mô phỏng What-If: Thử nghiệm kịch bản học lại môn rớt $\to$ Kích hoạt cơ chế thế điểm và hiển thị kết quả thoát khỏi diện cảnh báo học vụ.
+
+### 6.7. User Story US-07: Quản Lý Tài Khoản (RBAC) & Tự Khôi Phục Mật Khẩu
+* **User Story:** *"Là Người dùng hệ thống (Sinh viên, Giảng viên, Admin), nếu tôi quên mật khẩu, tôi muốn có thể tự xác thực và cập nhật mật khẩu mới ngay trên màn hình đăng nhập mà không cần chờ quản trị viên can thiệp."*
+* **Tính năng:**
+  * Quản trị người dùng (Admin): Tạo tài khoản, khóa/mở khóa tài khoản, phân công giảng dạy và CVHT.
+  * **Quên mật khẩu tự phục vụ (Self-Service Forgot Password):**
+    * Bước 1: Xác thực tài khoản qua Tên đăng nhập/MSSV + Email trường hoặc Số điện thoại hồ sơ.
+    * Bước 2: Nhập và xác nhận mật khẩu mới (tối thiểu 6 ký tự, có toggle xem mật khẩu).
+    * Bước 3: Đổi mật khẩu thành công và tự động điền thông tin để đăng nhập ngay chỉ với 1 click.
+  * Mã hóa an toàn bằng thuật toán `scryptSync` kèm muối ngẫu nhiên `salt`.
 
 ---
 
@@ -377,26 +427,29 @@ npm install
 # Bước 3: Cấu hình biến môi trường kết nối MongoDB Cloud (.env.local)
 echo "MONGODB_URI=mongodb+srv://legiahancv_db_user:i0s1KKMnXuSQpUPz@edualert.378ybyw.mongodb.net/edualert?retryWrites=true&w=majority" > .env.local
 
-# Bước 4: Khởi chạy môi trường phát triển
+# Bước 4: Nạp toàn diện dữ liệu mẫu (5 Khoa, tất cả Ngành, CTĐT 8 học kỳ, Bảng điểm 4 năm & Sinh viên)
+node --env-file=.env.local scripts/seedAll.mjs
+
+# Bước 5: Khởi chạy môi trường phát triển
 npm run dev
 
 # Mở trình duyệt truy cập: http://localhost:3000
 ```
 
 ### 10.2. Triển khai Production lên Vercel Serverless Platform
-1. Truy cập **[vercel.com](https://vercel.com)** và đăng nhập bằng tài khoản GitHub `legiahan2705`.
-2. Bấm nút **"Add New..."** $\to$ Chọn **"Project"** $\to$ Chọn repository **`Project-EduAlert`**.
-3. Tại mục **Environment Variables**, khai báo biến:
-   * **Key:** `MONGODB_URI`
-   * **Value:** `mongodb+srv://legiahancv_db_user:i0s1KKMnXuSQpUPz@edualert.378ybyw.mongodb.net/edualert?retryWrites=true&w=majority`
-4. Bấm **"Deploy"**. Vercel sẽ tự động build và cấp tên miền toàn cầu: `https://project-edualert.vercel.app`.
+1. Truy cập **[vercel.com](https://vercel.com)** và liên kết repository **`legiahan2705/Project-EduAlert`**.
+2. Tại mục **Environment Variables**, khai báo các biến môi trường:
+   * **`MONGODB_URI`**: `mongodb+srv://legiahancv_db_user:i0s1KKMnXuSQpUPz@edualert.378ybyw.mongodb.net/edualert?retryWrites=true&w=majority`
+   * **`AUTH_SECRET`**: Khóa bí mật bảo vệ Session Cookie HMAC-SHA256
+   * **`GEMINI_API_KEY`**: Khóa API Google Gemini AI
+3. Mỗi khi đẩy mã nguồn mới lên nhánh `main`, Vercel sẽ tự động build và triển khai liên tục không gián đoạn: `https://project-edualert.vercel.app`.
 
 ---
 
 ## 11. KẾT LUẬN & ĐỊNH HƯỚNG MỞ RỘNG ĐỀ TÀI
 
 ### 11.1. Kết luận
-Dự án **EduAlert v2.5 Enterprise Cloud** đã hiện thực hóa thành công một hệ sinh thái quản lý học vụ thông minh, khép kín từ khâu quản lý danh mục Khoa, Ngành, Bảng điểm đến khâu giám sát cảnh báo sớm và tư vấn cải thiện điểm số. Dự án chứng minh tính hiệu quả vượt trội khi kết hợp giữa **sự chuẩn xác của quy chế đào tạo** và **năng lực thấu hiểu, đồng cảm của Trí tuệ Nhân tạo Generative AI**.
+Dự án **EduAlert v2.6 Enterprise Cloud** đã hiện thực hóa thành công một hệ sinh thái quản lý học vụ thông minh, khép kín từ khâu quản lý danh mục Khoa, Ngành, Khung CTĐT chuẩn 4 năm, Bảng điểm từng môn học đến khâu giám sát cảnh báo sớm và tư vấn cải thiện điểm số. Dự án chứng minh tính hiệu quả vượt trội khi kết hợp giữa **sự chuẩn xác của quy chế đào tạo** và **năng lực thấu hiểu, đồng cảm của Trí tuệ Nhân tạo Generative AI**.
 
 ### 11.2. Định hướng mở rộng trong tương lai
 * **Đồng bộ thời gian thực với LMS (Canvas / Moodle):** Lấy dữ liệu chuyên cần và điểm quá trình giữa kỳ để đưa ra cảnh báo sớm từ tuần thứ 4 của học kỳ.

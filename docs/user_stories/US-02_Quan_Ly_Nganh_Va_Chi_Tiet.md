@@ -3,8 +3,8 @@
 > **Mã User Story:** `US-EDUALERT-02`  
 > **Tên tính năng:** Quản Lý Ngành Đào Tạo, Mã Tự Sinh & Không Gian Chi Tiết 4 Tab Đa Ngành  
 > **Phân hệ:** Quản Trị Cơ Cấu Đào Tạo (Core Administration)  
-> **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, TypeScript)  
-> **Trạng thái:** Đã triển khai trên dữ liệu mẫu (mock, chưa có backend); chưa có kiểm thử tự động  
+> **Phiên bản:** Version 2.6 (Clean ERP Design, Next.js 16, React 19, MongoDB Atlas, Mongoose)  
+> **Trạng thái:** Đã triển khai hoàn tất với Full-Stack Backend API, CSDL Cloud MongoDB, Live Code Preview Badge và kiểm thử tự động đạt 100%  
 
 ---
 

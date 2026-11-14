@@ -1,9 +1,9 @@
-# TÀI LIỆU TỔNG QUAN DỰ ÁN EDUALERT (VERSION 2.5 - ENTERPRISE SIS)
+# TÀI LIỆU TỔNG QUAN DỰ ÁN EDUALERT (VERSION 2.6 - ENTERPRISE SIS CLOUD)
 
 > **Tên dự án:** EduAlert - Hệ Thống Quản Lý Đào Tạo, Giám Sát Học Vụ & Cảnh Báo Sớm Nguy Cơ Sinh Viên  
 > **Đơn vị ứng dụng mẫu:** Trường Đại học Mở TP.HCM (HCMCOU)  
 > **Căn cứ pháp lý:** Quy chế Đào tạo Tín chỉ Đại học & Thông tư 08/2021/TT-BGDĐT  
-> **Kiến trúc công nghệ:** Next.js 16 (App Router), React 19, TypeScript, Clean ERP UI Theme, Tailwind/CSS Module  
+> **Kiến trúc công nghệ:** Next.js 16 (App Router + Turbopack), React 19, MongoDB Atlas Cloud Mongoose ORM, Tailwind CSS  
 
 ---
 

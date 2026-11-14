@@ -110,45 +110,57 @@ flowchart TD
 
 ## 5. THIẾT KẾ CƠ SỞ DỮ LIỆU (DATABASE SCHEMA - MONGODB)
 
-Database được tổ chức thành 5 Collection chính trong MongoDB Cloud:
+Database được tổ chức thành 7 Collection chính trong MongoDB Cloud:
 
 ```mermaid
 erDiagram
     FACULTY ||--o{ MAJOR : "trực thuộc (1-n)"
-    MAJOR ||--o{ CLASS : "quản lý lớp (1-n)"
-    CLASS ||--o{ STUDENT : "danh sách sinh viên (1-n)"
-    MAJOR ||--|| CURRICULUM : "khung 141 TC (1-1)"
-    STUDENT ||--o{ GRADE_SHEET : "kết quả học tập"
+    MAJOR ||--o{ CLASS : "quản lý lớp sinh hoạt (1-n)"
+    CLASS ||--o{ STUDENT : "danh sách sinh viên từ Năm 1 (1-n)"
+    MAJOR ||--|| CURRICULUM : "khung 141 TC 8 học kỳ (1-1)"
+    CLASS ||--o{ GRADE_SHEET : "bảng điểm môn học theo CTĐT (1-n)"
+    USER ||--o{ STUDENT : "tài khoản đăng nhập SV (1-1)"
+    USER ||--o{ CLASS : "giảng viên chủ nhiệm / CVHT (1-n)"
 
     FACULTY {
         string id PK
         string code "OU+YYMMDD+XXX"
         string name "Tên Khoa VN"
         string nameEn "Tên Khoa EN"
-        string shortCode "FIT, FECO..."
+        string shortCode "FIT, FECO, FAAF, FBA, FFL"
         string status "ACTIVE/INACTIVE"
         array auditLogs "Lịch sử chỉnh sửa"
     }
 
     MAJOR {
         string id PK
-        string code "[Viết tắt]+YYMMXXX"
+        string code "[Ký hiệu Khoa] + YYMM + XXX"
         string name "Tên Ngành"
         string facultyCode "Mã Khoa"
         number creditsStandard "141 TC"
         string status "ACTIVE/INACTIVE"
     }
 
+    CLASS {
+        string id PK "DH22CS01C"
+        string maLop "DH22CS01C"
+        string tenLop "Lớp KHMT Khóa 2022"
+        string maNganh "FIT2200001"
+        number siSo "Sĩ số sinh viên"
+        string cvht "Cố vấn học tập"
+    }
+
     STUDENT {
         string maSV PK "2251050001"
         string hoTen "Nguyễn Văn An"
         string lop "DH22CS01C"
-        number gpaTL "1.15"
-        number gpaHK "0.82"
-        number tcTichLuy "28"
-        number tcNo "26"
-        string level "DROP_OUT_RISK"
-        array historySemesters "Lịch sử HK1-HK3"
+        number namHoc "Năm 1, 2, 3, 4"
+        number gpaTL "Tính tự động từ bảng điểm các môn"
+        number gpaHK "GPA học kỳ gần nhất"
+        number tcTichLuy "Tổng tín chỉ đạt (pass)"
+        number tcNo "Tổng tín chỉ nợ F"
+        string level "NORMAL/WARNING/DROP_OUT_RISK"
+        array historySemesters "Lịch sử điểm các kỳ"
         array counselingLog "Nhật ký tư vấn CVHT"
     }
 
@@ -156,13 +168,26 @@ erDiagram
         string id PK "BD-DH22CS01C-COSC2301"
         string maLop "DH22CS01C"
         string maMon "COSC2301"
-        string tenMon "Cấu trúc dữ liệu"
-        array grades "Chi tiết điểm 45 SV"
+        string tenMon "Cấu trúc dữ liệu và giải thuật"
+        number soTC "3"
+        string giangVien "TS. Phạm Minh Tuấn"
+        string trangThai "COMPLETED/IN_PROGRESS/NOT_STARTED"
+        array grades "Chi tiết điểm QT, Thi, TK10, Thang 4"
     }
 
     CURRICULUM {
         string majorCode PK
-        array courses "33 môn học (141 TC)"
+        array courses "33 môn học qua 8 học kỳ (141 TC)"
+    }
+
+    USER {
+        string username PK "2251050001 / gv.nam / admin"
+        string passwordHash "Mã hóa bảo mật scryptSync"
+        string salt "Muối ngẫu nhiên"
+        string role "admin / lecturer / student"
+        string name "Họ và tên"
+        string email "Email trường OU"
+        string status "ACTIVE / LOCKED"
     }
 ```
 
@@ -172,12 +197,48 @@ erDiagram
 
 ### 6.1. Phân hệ 1: Quản lý Khoa (Faculty Management)
 * Mã Khoa tự sinh chuẩn hệ thống: `OU + YYMMDD + XXX` (Ví dụ: `OU261104001`).
-* Khai báo đầy đủ tên tiếng Việt, tiếng Anh, ký hiệu viết tắt không trùng lặp (FIT, FECO, FAAF, FBA, FFL).
+* Khai báo đầy đủ tên tiếng Việt, tiếng Anh, ký hiệu viết tắt không trùng lặp (`FIT`, `FECO`, `FAAF`, `FBA`, `FFL`).
 * **Ràng buộc an toàn:** Không cho phép xóa khoa khi khoa đã có ngành đào tạo liên kết; chỉ cho phép kích hoạt / vô hiệu hóa.
 * **Audit Trail:** Tra cứu lịch sử thao tác của người dùng (thời gian, người sửa, giá trị cũ, giá trị mới).
 
 ### 6.2. Phân hệ 2: Quản lý Ngành & Khung CTĐT 141 Tín Chỉ
-* Mã ngành tự sinh: `[Ký hiệu Khoa] + YYMM + XXX` (Ví dụ: `FIT2200001` - Ngành Khoa học máy tính).
+* **Mã ngành tự sinh theo chuẩn:** `[Ký hiệu Khoa] + YYMM + XXX` (Ví dụ: `FIT2611001`).
+* **Live Preview Card:** Hiển thị trực quan mã ngành tự sinh xem trước và phân giải công thức cấu thành.
+* **Bố cục 2 cột cân xứng:** Nhập tên tiếng Việt, tên tiếng Anh, chuẩn tín chỉ kèm hậu tố `TC`, hệ đào tạo.
+* **Không gian 4 Subtabs:**
+  1. *Tổng quan:* Chuẩn 141 TC, văn bằng, quy mô đào tạo.
+  2. *Chương trình đào tạo (CTĐT):* Quản lý lộ trình 8 học kỳ, nạp môn liên ngành từ Khoa Ngoại ngữ (`ENGL1301`) hoặc Khoa Kinh tế (`ECON1301`).
+  3. *Danh sách lớp & Sinh viên:* Quản lý các lớp và sinh viên thuộc ngành.
+  4. *Lịch sử:* Nhật ký kiểm toán thay đổi chương trình.
+
+### 6.3. Phân hệ 3: Quản lý Lớp học & Tiếp nhận Sinh viên từ Năm 1
+* **Lộ trình học vụ chuẩn:** Mọi sinh viên được tiếp nhận vào lớp từ đầu Năm 1 (HK1).
+* **Bỏ nhập thủ công GPA & Tín chỉ ban đầu:** Điểm tích lũy và số tín chỉ đạt sẽ được hệ thống tính tự động từ bảng điểm từng môn học trong chương trình đào tạo của lớp khi giảng viên nhập điểm.
+* **Tự động liên kết bảng điểm:** Khi thêm sinh viên vào lớp, sinh viên tự động được thêm vào danh sách điểm của toàn bộ các môn học thuộc lớp đó.
+* **Khởi tạo tài khoản tự động:** Hệ thống tự động cấp tài khoản đăng nhập cho sinh viên với mật khẩu mặc định `Sinhvien@123`.
+
+### 6.4. Phân hệ 4: Quản lý Bảng điểm môn học & Tự động tái tính điểm
+* **Phân định quyền Admin vs Giảng viên:** Quản trị viên (Admin) không trực tiếp quản lý/nhập bảng điểm; bảng điểm do Giảng viên bộ môn được phân công quản lý.
+* Gom nhóm bảng điểm thông minh theo từng môn học (`Group by Course`), bung mở danh sách các lớp.
+* Nhập điểm quá trình (40%) và điểm thi (60%), tự động tính điểm tổng kết TK10 và quy đổi thang điểm 4.
+* **Tự động tái tính kết quả học vụ:** Khi giảng viên lưu bảng điểm, hệ thống tự động cập nhật lại GPA tích lũy, số tín chỉ đạt và nợ môn cho tất cả sinh viên trong lớp.
+
+### 6.5. Phân hệ 5: Cảnh báo sớm rủi ro & Hồ sơ học vụ 360°
+* Phân loại tự động 4 nhóm rủi ro theo Thông tư 08/2021/TT-BGDĐT:
+  * 🔴 Nhóm 1: Nguy cơ Buộc thôi học.
+  * 🟠 Nhóm 2: Cảnh báo học vụ Mức 1.
+  * 🟡 Nhóm 3: Tín hiệu sớm (Nguy cơ rớt môn).
+  * 🟢 Nhóm 4: Học tập bình thường / An toàn.
+* Hồ sơ 360° bóc tách chi tiết kết quả 4 Quy tắc Bộ GD&ĐT, lịch sử điểm và form ghi nhận nhật ký tư vấn lưu đám mây.
+
+### 6.6. Phân hệ 6: Kế hoạch học tập thông minh (Smart Academic Planner)
+* Theo dõi tiến độ hoàn thành chuẩn 141 tín chỉ.
+* Công cụ tính điểm cần đạt để tốt nghiệp loại Khá/Giỏi (**Target GPA Calculator**).
+* Công cụ mô phỏng thế điểm học lại môn F để thoát cảnh báo (**What-If Simulation**).
+
+### 6.7. Phân hệ 7: Quản lý tài khoản (RBAC) & Tự phục hồi mật khẩu
+* Quản lý phân quyền 3 vai trò: Quản trị viên (Admin), Giảng viên (Lecturer), Sinh viên (Student).
+* **Quên mật khẩu tự phục vụ:** Xác thực 2 bước trên màn hình đăng nhập qua Email trường hoặc SĐT hồ sơ, cập nhật mật khẩu mã hóa an toàn qua thuật toán `scryptSync`.
 * Workspace chi tiết ngành gồm 4 Tab nghiệp vụ:
   * **Tab 1 - Tổng quan:** Thông tin chuẩn tín chỉ (141 TC), quy mô đào tạo.
   * **Tab 2 - Chương trình đào tạo:** Cho phép thêm/sửa/xóa môn học trong CTĐT, đặc biệt hỗ trợ nạp **môn liên ngành từ các khoa khác** (Toán, Ngoại ngữ, Kinh tế).

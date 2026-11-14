@@ -3,8 +3,8 @@
 > **Mã User Story:** `US-EDUALERT-03`  
 > **Tên tính năng:** Quản Lý Danh Sách Bảng Điểm Phân Cấp (Group By Môn $\to$ Expand Lớp) & Nhập Điểm Học Phần  
 > **Phân hệ:** Quản Lý Đào Tạo & Đánh Giá Điểm Số (Grading System)  
-> **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, TypeScript)  
-> **Trạng thái:** Đã triển khai trên dữ liệu mẫu (mock, chưa có backend); chưa có kiểm thử tự động  
+> **Phiên bản:** Version 2.6 (Clean ERP Design, Next.js 16, React 19, MongoDB Atlas, Mongoose)  
+> **Trạng thái:** Đã triển khai hoàn tất với Full-Stack Backend API, CSDL Cloud MongoDB, Phân quyền Giảng viên bộ môn (Admin không quản lý điểm), và tự động tái tính điểm toàn diện cho sinh viên  
 
 ---
 
