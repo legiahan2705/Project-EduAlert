@@ -231,7 +231,7 @@ export async function seedDefaultUsersIfEmpty() {
       await User.findOneAndUpdate(
         { username: u.username },
         { $setOnInsert: u },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: 'after' }
       );
     }
     console.log(`✅ Synced ${allUsers.length} users successfully into MongoDB!`);
@@ -308,7 +308,7 @@ export async function resetUserPassword(username, newPassword) {
       await User.findOneAndUpdate(
         { username: uname },
         { $set: { passwordHash: hash, salt } },
-        { new: true }
+        { returnDocument: 'after' }
       );
     }
   } catch (err) {

@@ -15,7 +15,7 @@ export async function PUT(req, { params }) {
     const updated = await Major.findOneAndUpdate(
       { $or: [{ code }, { id: code }] },
       updates,
-      { new: true }
+      { returnDocument: 'after' }
     );
     return NextResponse.json(updated);
   } catch (error) {

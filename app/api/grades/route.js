@@ -47,7 +47,7 @@ export async function GET(req) {
         await GradeSheet.findOneAndUpdate(
           { id: s.id },
           { $set: s },
-          { upsert: true, new: true }
+          { upsert: true, returnDocument: 'after' }
         );
       }
 

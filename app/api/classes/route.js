@@ -19,7 +19,7 @@ export async function GET(req) {
         await Class.findOneAndUpdate(
           { maLop: c.maLop },
           { $setOnInsert: c },
-          { upsert: true, new: true }
+          { upsert: true, returnDocument: 'after' }
         );
       }
       classes = await Class.find().sort({ createdAt: -1 }).lean();

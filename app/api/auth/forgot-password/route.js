@@ -3,7 +3,8 @@ import { connectDB } from '@/lib/mongodb';
 import { User } from '@/models';
 import {
   INITIAL_LECTURERS,
-  resetUserPassword,
+  hashNewPassword,
+  RUNTIME_PASSWORD_OVERRIDES,
   seedDefaultUsersIfEmpty,
 } from '@/lib/users';
 import { MOCK_STUDENTS } from '@/engine/mockData';
@@ -116,7 +117,24 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Xác nhận mật khẩu mới không khớp' }, { status: 400 });
     }
 
-    await resetUserPassword(uname, newPassword.trim());
+    // Cập nhật mật khẩu bảo mật scrypt
+    const { hash, salt } = hashNewPassword(newPassword.trim());
+    if (RUNTIME_PASSWORD_OVERRIDES) {
+      RUNTIME_PASSWORD_OVERRIDES.set(uname, { passwordHash: hash, salt });
+    }
+
+    try {
+      const conn = await connectDB();
+      if (conn) {
+        await User.findOneAndUpdate(
+          { username: uname },
+          { $set: { passwordHash: hash, salt } },
+          { returnDocument: 'after', upsert: true }
+        );
+      }
+    } catch (updateErr) {
+      console.warn('Lỗi lưu mật khẩu mới vào MongoDB:', updateErr.message);
+    }
 
     return NextResponse.json({
       success: true,
@@ -129,4 +147,3 @@ export async function POST(req) {
     return NextResponse.json({ error: error.message || 'Lỗi xử lý yêu cầu đặt lại mật khẩu' }, { status: 500 });
   }
 }
-

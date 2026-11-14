@@ -19,7 +19,7 @@ export async function GET(req) {
         await Student.findOneAndUpdate(
           { maSV: s.maSV },
           { $setOnInsert: s },
-          { upsert: true, new: true }
+          { upsert: true, returnDocument: 'after' }
         );
       }
       students = await Student.find().lean();

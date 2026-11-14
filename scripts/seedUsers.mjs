@@ -19,7 +19,7 @@ async function seed() {
       const res = await User.findOneAndUpdate(
         { username: u.username },
         { $set: u },
-        { upsert: true, new: true, rawResult: true }
+        { upsert: true, returnDocument: 'after', rawResult: true }
       );
       if (res.lastErrorObject?.updatedExisting) {
         updated++;

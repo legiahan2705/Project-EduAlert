@@ -17,7 +17,7 @@ export async function GET(req) {
         await Major.findOneAndUpdate(
           { code: m.code },
           { $setOnInsert: m },
-          { upsert: true, new: true }
+          { upsert: true, returnDocument: 'after' }
         );
       }
       majors = await Major.find().sort({ createdAt: -1 }).lean();

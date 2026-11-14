@@ -55,7 +55,7 @@ export async function PUT(req, { params }) {
     const updated = await Class.findOneAndUpdate(
       { maLop: cleanMaLop },
       { $set: data },
-      { new: true }
+      { returnDocument: 'after' }
     );
     return NextResponse.json(updated);
   } catch (error) {

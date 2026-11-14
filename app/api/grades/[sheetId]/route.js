@@ -30,7 +30,7 @@ export async function PUT(req, { params }) {
     const updated = await GradeSheet.findOneAndUpdate(
       { id: sheetId },
       sheetData,
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     );
 
     // Tự động tính toán lại GPA tích lũy, số tín chỉ đạt và nợ môn cho sinh viên từ bảng điểm các môn
