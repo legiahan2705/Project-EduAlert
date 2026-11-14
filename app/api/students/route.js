@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import { Student, Class, User } from '@/models';
+import { Student, Class, User, GradeSheet } from '@/models';
 import { authorize, canAccessStudent } from '@/lib/session';
 import { MOCK_STUDENTS } from '@/engine/mockData';
 import { hashNewPassword } from '@/lib/users';
@@ -71,38 +71,46 @@ export async function POST(req) {
       if (!nganh) nganh = classDoc.nganh;
     }
 
-    const gpaTL = parseFloat(data.gpaTL) || 2.5;
+    const gpaTL = parseFloat(data.gpaTL) || 0;
     const tcTichLuy = parseInt(data.tcTichLuy, 10) || 0;
     const tcNo = parseInt(data.tcNo, 10) || 0;
+    const namHoc = parseInt(data.namHoc, 10) || 1;
 
     // Đánh giá sơ bộ trạng thái học vụ
+    // Sinh viên mới vào lớp từ Năm 1 (HK1): chưa có điểm môn học, học tập bình thường
     let level = 'NORMAL';
-    let levelText = 'Học tập bình thường';
-    let riskScore = 15;
+    let levelText = 'Sinh viên mới (Năm 1)';
+    let riskScore = 0;
 
-    if (gpaTL < 1.0) {
-      level = 'DROP_OUT_RISK';
-      levelText = 'Nguy cơ buộc thôi học';
-      riskScore = 88;
-    } else if (gpaTL < 1.4 || tcNo >= 12) {
-      level = 'HIGH_RISK';
-      levelText = 'Rủi ro cao (Cảnh báo lần 2)';
-      riskScore = 72;
-    } else if (gpaTL < 2.0 || tcNo >= 6) {
-      level = 'WARNING';
-      levelText = 'Cảnh báo học vụ';
-      riskScore = 55;
+    if (tcTichLuy > 0 || tcNo > 0) {
+      if (gpaTL < 1.0) {
+        level = 'DROP_OUT_RISK';
+        levelText = 'Nguy cơ buộc thôi học';
+        riskScore = 88;
+      } else if (gpaTL < 1.4 || tcNo >= 12) {
+        level = 'HIGH_RISK';
+        levelText = 'Rủi ro cao (Cảnh báo lần 2)';
+        riskScore = 72;
+      } else if (gpaTL < 2.0 || tcNo >= 6) {
+        level = 'WARNING';
+        levelText = 'Cảnh báo học vụ';
+        riskScore = 55;
+      } else {
+        level = 'NORMAL';
+        levelText = 'Học tập bình thường';
+        riskScore = 15;
+      }
     }
 
     const newStudent = await Student.create({
       maSV,
       hoTen,
       gioiTinh: data.gioiTinh || 'Nam',
-      ngaySinh: data.ngaySinh || '01/01/2004',
+      ngaySinh: data.ngaySinh || '10/10/2005',
       lop,
       maNganh,
       nganh,
-      namHoc: parseInt(data.namHoc, 10) || 2,
+      namHoc,
       gpaTL,
       gpaHK: parseFloat(data.gpaHK) || gpaTL,
       tcTichLuy,
@@ -123,6 +131,30 @@ export async function POST(req) {
     // Cập nhật tăng sĩ số lớp
     if (classDoc) {
       await Class.findOneAndUpdate({ maLop: lop }, { $inc: { siSo: 1 } });
+    }
+
+    // Tự động bổ sung sinh viên mới vào danh sách bảng điểm của lớp này
+    try {
+      await GradeSheet.updateMany(
+        { maLop: lop, 'grades.maSV': { $ne: maSV } },
+        {
+          $push: {
+            grades: {
+              maSV,
+              hoTen,
+              diemQT: null,
+              diemThi: null,
+              diemTK10: null,
+              letter: '',
+              grade4: 0,
+              pass: false,
+            }
+          },
+          $inc: { soSV: 1 }
+        }
+      );
+    } catch (sheetSyncErr) {
+      console.warn('Lỗi đồng bộ sinh viên vào GradeSheet:', sheetSyncErr);
     }
 
     // Tự động tạo tài khoản đăng nhập cho sinh viên này (nếu chưa có)

@@ -233,30 +233,30 @@ export default function StudentDossierModal({ student, isOpen, onClose, onSaveCo
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
                 <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '8px' }}>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>GPA TÍCH LŨY</div>
-                  <div style={{ fontSize: '20px', fontWeight: 800, color: student.gpaTL < 1.6 ? '#b91c1c' : '#047857', marginTop: '2px' }}>
-                    {student.gpaTL.toFixed(2)}
+                  <div style={{ fontSize: '20px', fontWeight: 800, color: (!student.tcTichLuy && !student.gpaTL) ? '#64748b' : student.gpaTL < 1.6 ? '#b91c1c' : '#047857', marginTop: '2px' }}>
+                    {(!student.tcTichLuy && !student.gpaTL) ? 'Chưa có' : Number(student.gpaTL || 0).toFixed(2)}
                   </div>
                 </div>
 
                 <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '8px' }}>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>TÍN CHỈ ĐẠT</div>
                   <div style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
-                    {student.tcTichLuy} TC
+                    {student.tcTichLuy || 0} TC
                   </div>
                 </div>
 
                 <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '8px' }}>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>NỢ TÍN CHỈ</div>
                   <div style={{ fontSize: '20px', fontWeight: 800, color: student.tcNo > 10 ? '#b91c1c' : '#0f172a', marginTop: '2px' }}>
-                    {student.tcNo} TC
+                    {student.tcNo || 0} TC
                   </div>
                 </div>
 
                 <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '8px' }}>
                   <div style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>MỨC ĐỘ NGUY CƠ</div>
                   <div style={{ marginTop: '4px' }}>
-                    <span className={`badge-pill ${student.gpaTL < 1.6 ? 'danger' : 'success'}`} style={{ fontSize: '11px' }}>
-                      {levelText}
+                    <span className={`badge-pill ${(!student.tcTichLuy && !student.gpaTL) ? 'info' : student.gpaTL < 1.6 ? 'danger' : 'success'}`} style={{ fontSize: '11px' }}>
+                      {(!student.tcTichLuy && !student.gpaTL) ? 'Sinh viên mới (Năm 1)' : levelText}
                     </span>
                   </div>
                 </div>

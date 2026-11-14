@@ -30,13 +30,14 @@ export default function ClassesSubtab({
     );
   }
 
+  const gradedStudents = studentsOfClass.filter((s) => (s.tcTichLuy && s.tcTichLuy > 0) || (s.gpaTL && s.gpaTL > 0));
   const avgClassGPA =
-    studentsOfClass.length > 0
+    gradedStudents.length > 0
       ? (
-          studentsOfClass.reduce((sum, s) => sum + (s.gpaTL || 0), 0) /
-          studentsOfClass.length
+          gradedStudents.reduce((sum, s) => sum + (s.gpaTL || 0), 0) /
+          gradedStudents.length
         ).toFixed(2)
-      : '0.00';
+      : studentsOfClass.length > 0 ? 'Chưa có điểm' : '0.00';
 
   return (
     <div className="space-y-4">
@@ -192,20 +193,28 @@ export default function ClassesSubtab({
                           {s.gioiTinh || 'Nam'}
                         </td>
                         <td className="text-right font-mono font-bold text-xs">
-                          <span className={s.gpaTL < 1.4 ? 'text-red-600' : s.gpaTL < 2.0 ? 'text-amber-600' : 'text-emerald-700'}>
-                            {s.gpaTL.toFixed(2)}
-                          </span>
+                          {(!s.tcTichLuy || s.tcTichLuy === 0) && (!s.gpaTL || s.gpaTL === 0) ? (
+                            <span className="text-slate-400 font-normal">Chưa có điểm</span>
+                          ) : (
+                            <span className={s.gpaTL < 1.4 ? 'text-red-600' : s.gpaTL < 2.0 ? 'text-amber-600' : 'text-emerald-700'}>
+                              {Number(s.gpaTL || 0).toFixed(2)}
+                            </span>
+                          )}
                         </td>
                         <td className="text-right font-mono font-bold text-xs text-slate-800">
-                          {s.tcTichLuy} TC
+                          {s.tcTichLuy || 0} TC
                         </td>
                         <td className="text-right font-mono font-bold text-xs">
-                          <span className={s.tcNo > 0 ? 'text-red-600' : 'text-slate-400'}>
+                          <span className={(s.tcNo || 0) > 0 ? 'text-red-600' : 'text-slate-400'}>
                             {s.tcNo || 0} TC
                           </span>
                         </td>
                         <td>
-                          {isDropOut ? (
+                          {(!s.tcTichLuy || s.tcTichLuy === 0) && (!s.gpaTL || s.gpaTL === 0) ? (
+                            <span className="badge-pill info text-[11px] bg-slate-100 text-slate-700 border border-slate-200">
+                              Mới (Năm 1)
+                            </span>
+                          ) : isDropOut ? (
                             <span className="badge-pill danger font-bold text-[11px]">
                               Buộc thôi học
                             </span>
