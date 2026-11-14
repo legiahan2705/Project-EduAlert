@@ -132,7 +132,7 @@ export default function CurriculumModal({
                 <select
                   value={selectedPoolCode}
                   onChange={(e) => handleSelectFromPool(e.target.value)}
-                  className="erp-input font-medium"
+                  className="erp-input w-full font-medium"
                 >
                   {GLOBAL_COURSE_POOL.map((c) => (
                     <option key={c.maMon} value={c.maMon}>
@@ -153,7 +153,7 @@ export default function CurriculumModal({
                   type="text"
                   value={maMon}
                   onChange={(e) => setMaMon(e.target.value)}
-                  className="erp-input uppercase font-bold"
+                  className="erp-input w-full uppercase font-bold"
                   required
                 />
               </div>
@@ -166,7 +166,7 @@ export default function CurriculumModal({
                   max={10}
                   value={soTC}
                   onChange={(e) => setSoTC(e.target.value)}
-                  className="erp-input font-bold"
+                  className="erp-input w-full font-bold"
                   required
                 />
               </div>
@@ -178,7 +178,7 @@ export default function CurriculumModal({
                 type="text"
                 value={tenMon}
                 onChange={(e) => setTenMon(e.target.value)}
-                className="erp-input font-medium"
+                className="erp-input w-full font-medium"
                 required
               />
             </div>
@@ -189,7 +189,7 @@ export default function CurriculumModal({
                 <select
                   value={nhom}
                   onChange={(e) => setNhom(e.target.value)}
-                  className="erp-input"
+                  className="erp-input w-full"
                 >
                   <option value="Đại cương">Đại cương</option>
                   <option value="Cơ sở ngành">Cơ sở ngành</option>
@@ -208,7 +208,7 @@ export default function CurriculumModal({
                   max={8}
                   value={hkDuKien}
                   onChange={(e) => setHkDuKien(e.target.value)}
-                  className="erp-input font-bold"
+                  className="erp-input w-full font-bold"
                   required
                 />
               </div>
@@ -222,19 +222,19 @@ export default function CurriculumModal({
                   placeholder="VD: COSC1301"
                   value={tienQuyet}
                   onChange={(e) => setTienQuyet(e.target.value)}
-                  className="erp-input uppercase"
+                  className="erp-input w-full uppercase"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Phân Loại Môn</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Phân Loại Học Phần</label>
                 <select
                   value={batBuoc ? 'true' : 'false'}
                   onChange={(e) => setBatBuoc(e.target.value === 'true')}
-                  className="erp-input"
+                  className="erp-input w-full"
                 >
-                  <option value="true">Bắt buộc (Core)</option>
-                  <option value="false">Tự chọn (Elective)</option>
+                  <option value="true">Bắt buộc</option>
+                  <option value="false">Tự chọn</option>
                 </select>
               </div>
             </div>
