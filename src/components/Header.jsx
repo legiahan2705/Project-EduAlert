@@ -8,13 +8,24 @@ import {
   Bell,
   Menu,
   LogOut,
+  KeyRound,
+  ChevronDown,
   ChevronRight
 } from 'lucide-react';
 import { ROLE_LABEL, initialsOf } from '@/lib/roles';
 
 const MAX_NOTIFICATIONS_SHOWN = 6;
 
-const isDropOut = (level) => level === 'DROP_OUT_RISK' || level === 'HIGH_RISK';
+// Năm học / học kỳ theo ngày hiện tại: HK1 (T8–T12), HK2 (T1–T5), HK3 hè (T6–T7)
+function getCurrentTerm(now = new Date()) {
+  const m = now.getMonth() + 1;
+  const y = now.getFullYear();
+  if (m >= 8) return { year: `${y} - ${y + 1}`, semester: 'Học kỳ 1' };
+  if (m >= 6) return { year: `${y - 1} - ${y}`, semester: 'Học kỳ 3' };
+  return { year: `${y - 1} - ${y}`, semester: 'Học kỳ 2' };
+}
+
+const isDropOut =(level) => level === 'DROP_OUT_RISK' || level === 'HIGH_RISK';
 
 export default function Header({
   currentTab,
@@ -24,9 +35,30 @@ export default function Header({
   onViewAllNotifications,
   onToggleSidebar,
   user,
-  onLogout
+  onLogout,
+  onChangePassword
 }) {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const term = getCurrentTerm();
+  const userMenuRef = useRef(null);
+
+  // Đóng menu tài khoản khi bấm ra ngoài hoặc nhấn Escape
+  useEffect(() => {
+    if (!isUserMenuOpen) return undefined;
+    const handleClickOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setIsUserMenuOpen(false);
+    };
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setIsUserMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isUserMenuOpen]);
   const [hasUnread, setHasUnread] = useState(true);
   const notifRef = useRef(null);
 
@@ -99,7 +131,7 @@ export default function Header({
         {/* Term Badge */}
         <div className="topbar-term-badge">
           <Calendar size={13} className="text-emerald-700" />
-          <span>Năm học: <strong>2023 - 2024</strong> (Học kỳ 3)</span>
+          <span>Năm học: <strong>{term.year}</strong> ({term.semester})</span>
         </div>
 
         {/* Quick Guide Button */}
@@ -186,23 +218,53 @@ export default function Header({
         </div>
 
         {/* Real User Profile Badge (No mock switcher) */}
-        <div className="user-profile-badge">
-          <div className="user-avatar-circle">
-            {initialsOf(user?.name)}
-          </div>
-          <div className="user-details">
-            <span className="user-name">{user?.name || 'Người dùng'}</span>
-            <span className="user-role-title">{ROLE_LABEL[user?.role] || ''}</span>
-          </div>
+        <div className="user-profile-badge" ref={userMenuRef} style={{ position: 'relative' }}>
           <button
             type="button"
-            onClick={onLogout}
-            className="p-2 text-slate-500 hover:text-red-600 hover:bg-slate-100 rounded-full transition-colors"
-            title="Đăng xuất"
-            aria-label="Đăng xuất"
+            onClick={() => setIsUserMenuOpen((open) => !open)}
+            aria-haspopup="true"
+            aria-expanded={isUserMenuOpen}
+            title="Tài khoản"
+            className="user-menu-trigger"
           >
-            <LogOut size={16} />
+            <div className="user-avatar-circle">
+              {initialsOf(user?.name)}
+            </div>
+            <div className="user-details">
+              <span className="user-name">{user?.name || 'Người dùng'}</span>
+              <span className="user-role-title">{ROLE_LABEL[user?.role] || ''}</span>
+            </div>
+            <ChevronDown size={14} className="text-slate-400" />
           </button>
+
+          {isUserMenuOpen && (
+            <div role="menu" className="user-menu">
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setIsUserMenuOpen(false);
+                  if (onChangePassword) onChangePassword();
+                }}
+                className="user-menu-item"
+              >
+                <KeyRound size={15} />
+                <span>Đổi mật khẩu</span>
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setIsUserMenuOpen(false);
+                  if (onLogout) onLogout();
+                }}
+                className="user-menu-item danger"
+              >
+                <LogOut size={15} />
+                <span>Đăng xuất</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

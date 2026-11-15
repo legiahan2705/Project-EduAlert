@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { GraduationCap, ShieldCheck, UserCog, BookOpen, Eye, EyeOff, LogIn, CheckCircle2 } from 'lucide-react';
+import { GraduationCap, ShieldCheck, UserCog, BookOpen, Eye, EyeOff, LogIn, CheckCircle2, User, Lock } from 'lucide-react';
 import ForgotPasswordModal from '@/components/Auth/ForgotPasswordModal';
 
 const ROLES = [
@@ -78,17 +78,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', background: 'linear-gradient(160deg, #064e3b 0%, #065f46 45%, #f0fdf4 45%)' }}>
-      <div style={{ width: '100%', maxWidth: '420px' }}>
-        <div style={{ textAlign: 'center', color: '#ecfdf5', marginBottom: '18px' }}>
-          <div style={{ width: 52, height: 52, margin: '0 auto 10px', borderRadius: 14, background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <GraduationCap size={28} color="#fff" />
+    <div className="login-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <div style={{ width: '100%', maxWidth: '420px', position: 'relative', zIndex: 1 }}>
+        <div style={{ textAlign: 'center', color: '#ecfdf5', marginBottom: '24px' }}>
+          <div style={{ width: 56, height: 56, margin: '0 auto 12px', borderRadius: 16, background: 'linear-gradient(135deg, #34d399, #059669)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px rgba(0,0,0,.25)' }}>
+            <GraduationCap size={30} color="#fff" />
           </div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0 }}>EduAlert</h1>
-          <p style={{ fontSize: 13, margin: '4px 0 0', color: '#a7f3d0' }}>Hệ thống cảnh báo sớm học vụ · ĐH Mở TP.HCM</p>
+          <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0, letterSpacing: '-0.3px' }}>EduAlert</h1>
+          <p style={{ fontSize: 13.5, margin: '6px 0 0', color: '#d1fae5' }}>Hệ thống cảnh báo sớm học vụ · ĐH Mở TP.HCM</p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ background: '#fff', borderRadius: 14, padding: '22px 20px', boxShadow: '0 20px 40px rgba(15,23,42,.18)' }}>
+        <form onSubmit={handleSubmit} className="login-card">
           <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 8 }}>Đăng nhập với tư cách</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 16 }}>
             {ROLES.map((r) => {
@@ -100,14 +100,11 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => { setRole(r.key); setError(''); setSuccessMsg(''); }}
                   aria-pressed={active}
-                  style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                    padding: '10px 4px', borderRadius: 10, cursor: 'pointer', fontSize: 12, fontWeight: 700,
-                    border: `1.5px solid ${active ? '#064e3b' : '#e2e8f0'}`,
-                    background: active ? '#ecfdf5' : '#fff',
-                    color: active ? '#064e3b' : '#64748b',
-                  }}
+                  className={`login-role ${active ? 'active' : ''}`}
                 >
+                  {active && (
+                    <span className="login-role-check"><CheckCircle2 size={16} color="#059669" fill="#fff" /></span>
+                  )}
                   <Icon size={20} />
                   {r.label}
                 </button>
@@ -118,27 +115,31 @@ export default function LoginPage() {
           <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: '#334155', marginBottom: 4 }} htmlFor="username">
             {current.userLabel}
           </label>
-          <input
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder={current.placeholder}
-            autoComplete="username"
-            autoCapitalize="none"
-            style={{ width: '100%', padding: '10px 12px', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: 14, marginBottom: 12 }}
-          />
+          <div className="login-field">
+            <User size={16} className="field-icon" />
+            <input
+              id="username"
+              className="login-input"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder={current.placeholder}
+              autoComplete="username"
+              autoCapitalize="none"
+            />
+          </div>
 
           <label style={{ display: 'block', fontSize: 12.5, fontWeight: 600, color: '#334155', marginBottom: 4 }} htmlFor="password">
             Mật khẩu
           </label>
-          <div style={{ position: 'relative', marginBottom: 8 }}>
+          <div className="login-field" style={{ marginBottom: 8 }}>
+            <Lock size={16} className="field-icon" />
             <input
               id="password"
+              className="login-input"
               type={showPw ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
-              style={{ width: '100%', padding: '10px 40px 10px 12px', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: 14 }}
             />
             <button
               type="button"
@@ -163,7 +164,7 @@ export default function LoginPage() {
                 background: 'none',
                 border: 'none',
                 color: '#047857',
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
                 padding: '2px 0',
@@ -193,7 +194,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '11px', borderRadius: 8, border: 'none', background: loading ? '#6b9a8b' : '#064e3b', color: '#fff', fontWeight: 700, fontSize: 14, cursor: loading ? 'default' : 'pointer' }}
+            className="login-submit"
           >
             <LogIn size={16} />
             {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}

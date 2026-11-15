@@ -70,18 +70,21 @@ export default function Sidebar({
           <span className="nav-badge">141 TC</span>
         </button>
 
-        {/* NHÓM 2: QUẢN TRỊ ĐÀO TẠO */}
-        <div className="nav-section-title mt-4" style={['tab-faculties', 'tab-majors', 'tab-course-grades', 'tab-users'].some((t) => allowedTabs.includes(t)) ? undefined : { display: 'none' }}>Quản Trị Đào Tạo</div>
+        {/* NHÓM 2: BẢNG ĐIỂM (giảng viên) */}
+        <div className="nav-section-title mt-4" style={allowedTabs.includes('tab-course-grades') ? undefined : { display: 'none' }}>Giảng Dạy</div>
 
         <button
           type="button"
-          onClick={() => onSelectTab('tab-users')}
-          style={hide('tab-users')}
-          className={`nav-item ${currentTab === 'tab-users' ? 'active' : ''}`}
+          onClick={() => onSelectTab('tab-course-grades')}
+          style={hide('tab-course-grades')}
+          className={`nav-item ${currentTab === 'tab-course-grades' ? 'active' : ''}`}
         >
-          <Users size={17} />
-          <span>Quản Lý Tài Khoản</span>
+          <FileSpreadsheet size={17} />
+          <span>Nhập Bảng Điểm Môn</span>
         </button>
+
+        {/* NHÓM 3: QUẢN TRỊ HỆ THỐNG (admin) — xếp theo luồng Khoa → Ngành → Tài khoản */}
+        <div className="nav-section-title mt-4" style={['tab-faculties', 'tab-majors', 'tab-users'].some((t) => allowedTabs.includes(t)) ? undefined : { display: 'none' }}>Quản Trị Hệ Thống</div>
 
         <button
           type="button"
@@ -105,12 +108,12 @@ export default function Sidebar({
 
         <button
           type="button"
-          onClick={() => onSelectTab('tab-course-grades')}
-          style={hide('tab-course-grades')}
-          className={`nav-item ${currentTab === 'tab-course-grades' ? 'active' : ''}`}
+          onClick={() => onSelectTab('tab-users')}
+          style={hide('tab-users')}
+          className={`nav-item ${currentTab === 'tab-users' ? 'active' : ''}`}
         >
-          <FileSpreadsheet size={17} />
-          <span>Quản Lý Bảng Điểm</span>
+          <Users size={17} />
+          <span>Quản Lý Tài Khoản</span>
         </button>
       </nav>
 
