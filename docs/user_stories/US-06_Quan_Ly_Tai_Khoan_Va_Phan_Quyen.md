@@ -75,3 +75,4 @@ sequenceDiagram
 4. **AC-4:** Mật khẩu mới phải có ít nhất 6 ký tự; mật khẩu xác nhận phải trùng khớp.
 5. **AC-5:** Mật khẩu lưu trữ trên database phải được băm bảo mật bằng `scryptSync`, tuyệt đối không lưu plaintext.
 6. **AC-6:** Sau khi đổi mật khẩu, người dùng có thể đăng nhập ngay lập tức trên cả môi trường local và cloud.
+
