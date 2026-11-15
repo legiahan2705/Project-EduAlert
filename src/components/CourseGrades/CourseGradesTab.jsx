@@ -11,15 +11,16 @@ import {
   ArrowLeft, 
   CheckCircle2, 
   XCircle, 
-  AlertCircle,
-  FolderKanban,
-  ChevronDown,
-  ChevronRight,
-  BookOpen,
-  Users,
-  FileSpreadsheet,
-  X,
-  Eye
+  AlertCircle, 
+  FolderKanban, 
+  ChevronDown, 
+  ChevronRight, 
+  BookOpen, 
+  Users, 
+  FileSpreadsheet, 
+  X, 
+  Eye,
+  UserCheck
 } from 'lucide-react';
 import { OUGradeEngine } from '@/engine/OUGradeEngine';
 import { eduAlertApi } from '@/services/api';
@@ -169,36 +170,26 @@ export default function CourseGradesTab({
   const [activeSheet, setActiveSheet] = useState(null);
 
   // Kiểm tra quyền chỉnh sửa bảng điểm của người dùng hiện tại
+  // Chỉ giảng viên được admin cấu hình phụ trách môn học đó của lớp mới được chỉnh sửa
   const canEditSheet = (sheet) => {
     if (!sheet) return false;
-    if (!currentUser) return true;
+    if (!currentUser) return false;
     if (currentUser.role === 'admin') return true;
     if (currentUser.role === 'lecturer') {
       const uName = (currentUser.name || '').trim().toLowerCase();
       const uUsername = (currentUser.username || '').trim().toLowerCase();
       const sTeacher = (sheet.giangVien || '').trim().toLowerCase();
+      const sUsername = (sheet.lecturerUsername || '').trim().toLowerCase();
       const sEmail = (sheet.emailGV || '').trim().toLowerCase();
       const uEmail = (currentUser.email || '').trim().toLowerCase();
 
-      // Giảng viên Demo hoặc tài khoản gv.han / gv.nam được phép toàn quyền chỉnh sửa và nhập điểm
-      if (uUsername === 'gv.han' || uUsername === 'gv.nam' || uName === 'demo' || uName.includes('demo') || uName.includes('hân')) {
-        return true;
-      }
-
-      // 1. Khớp tên hoặc email giảng viên phụ trách môn
-      const matchName = 
+      // Kiểm tra xem tài khoản giảng viên hiện tại có đúng là người được phân công phụ trách môn học của lớp này không
+      const isAssigned =
+        Boolean(sUsername && sUsername === uUsername) ||
         Boolean(sTeacher && uName && (sTeacher === uName || sTeacher.includes(uName) || uName.includes(sTeacher))) ||
         Boolean(sEmail && uEmail && sEmail === uEmail);
 
-      // 2. Khớp lớp phụ trách / lớp sinh hoạt
-      const userClasses = (currentUser.classes || []).map(c => String(c).trim().toUpperCase());
-      const matchClass = userClasses.includes(String(sheet.maLop || '').trim().toUpperCase());
-
-      // 3. Khớp mã môn giảng dạy
-      const userCourses = (currentUser.coursesTaught || []).map(c => String(c).trim().toUpperCase());
-      const matchCourse = userCourses.includes(String(sheet.maMon || '').trim().toUpperCase());
-
-      return matchName || matchClass || matchCourse;
+      return isAssigned;
     }
     return false;
   };
@@ -213,15 +204,83 @@ export default function CourseGradesTab({
   const [filterSemester, setFilterSemester] = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('ALL');
 
-  // Modal mở bảng điểm mới
-  const [isNewSheetModalOpen, setIsNewSheetModalOpen] = useState(false);
-  const [newSheetData, setNewSheetData] = useState({
-    maMon: 'COSC1301',
-    maLop: 'DH22CS01C',
-    giangVien: 'ThS. Nguyễn Hoàng Nam',
-    hocKy: 'HK3',
-    namHoc: '2023 - 2024'
-  });
+  // Cấu hình phân công giảng viên phụ trách môn học của lớp (Admin only)
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [sheetToAssign, setSheetToAssign] = useState(null);
+  const [assignedLecturerUsername, setAssignedLecturerUsername] = useState('');
+  const [isAssigning, setIsAssigning] = useState(false);
+  const [lecturersList, setLecturersList] = useState([]);
+
+  useEffect(() => {
+    if (currentUser?.role === 'admin') {
+      fetch('/api/users?role=lecturer')
+        .then(r => r.ok ? r.json() : [])
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            setLecturersList(data);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [currentUser]);
+
+  const defaultLecturers = [
+    { username: 'gv.han', name: 'Demo (ThS. Lê Gia Hân)', email: 'han.lg@ou.edu.vn' },
+    { username: 'gv.vinh', name: 'TS. Lê Xuân Vĩnh', email: 'vinh.lx@ou.edu.vn' },
+    { username: 'gv.nam', name: 'ThS. Nguyễn Hoàng Nam', email: 'nam.nh@ou.edu.vn' },
+    { username: 'gv.tuan', name: 'TS. Phạm Minh Tuấn', email: 'tuan.pm@ou.edu.vn' },
+    { username: 'gv.quan', name: 'ThS. Đỗ Hồng Quân', email: 'quan.dh@ou.edu.vn' },
+    { username: 'gv.thuy', name: 'TS. Phan Thị Thùy', email: 'thuy.pt@ou.edu.vn' },
+    { username: 'gv.hung', name: 'PGS.TS. Nguyễn Văn Hùng', email: 'hung.nv@ou.edu.vn' },
+    { username: 'gv.lan', name: 'PGS.TS. Trần Thị Lan', email: 'lan.tt@ou.edu.vn' },
+    { username: 'gv.mai', name: 'ThS. Hoàng Thị Mai', email: 'mai.ht@ou.edu.vn' },
+    { username: 'gv.bich', name: 'TS. Trần Thị Bích', email: 'bich.tt@ou.edu.vn' },
+    { username: 'gv.dung', name: 'ThS. Lê Văn Dũng', email: 'dung.lv@ou.edu.vn' }
+  ];
+
+  const allLecturers = lecturersList.length > 0 ? lecturersList : defaultLecturers;
+
+  const handleOpenAssignModal = (sheet) => {
+    setSheetToAssign(sheet);
+    const currentMatch = allLecturers.find(l => 
+      (sheet.lecturerUsername && l.username.toLowerCase() === sheet.lecturerUsername.toLowerCase()) ||
+      (sheet.giangVien && (l.name.toLowerCase() === sheet.giangVien.toLowerCase() || l.name.toLowerCase().includes(sheet.giangVien.toLowerCase())))
+    );
+    setAssignedLecturerUsername(currentMatch?.username || allLecturers[0]?.username || '');
+    setIsAssignModalOpen(true);
+  };
+
+  const handleSaveAssignment = async (e) => {
+    e.preventDefault();
+    if (!sheetToAssign || !assignedLecturerUsername) return;
+    const targetLecturer = allLecturers.find(l => l.username === assignedLecturerUsername);
+    if (!targetLecturer) return;
+
+    setIsAssigning(true);
+    try {
+      const updatedSheet = {
+        ...sheetToAssign,
+        giangVien: targetLecturer.name,
+        emailGV: targetLecturer.email || `${targetLecturer.username}@ou.edu.vn`,
+        lecturerUsername: targetLecturer.username,
+        lecturerId: targetLecturer._id || targetLecturer.id || targetLecturer.username
+      };
+
+      await eduAlertApi.saveCourseGradeSheet(sheetToAssign.id, updatedSheet);
+
+      setGradeSheets(prev => prev.map(s => s.id === sheetToAssign.id ? updatedSheet : s));
+      if (setCourseGrades) {
+        setCourseGrades(prev => prev.map(s => s.id === sheetToAssign.id ? updatedSheet : s));
+      }
+
+      setIsAssignModalOpen(false);
+      alert(`Đã phân công giảng viên "${targetLecturer.name}" (@${targetLecturer.username}) phụ trách môn ${sheetToAssign.maMon} cho lớp ${sheetToAssign.maLop} thành công!\n\nChỉ tài khoản giảng viên này (hoặc Admin) mới có quyền chỉnh sửa và nhập điểm môn này.`);
+    } catch (err) {
+      alert(err.message || 'Lỗi khi lưu phân công giảng viên');
+    } finally {
+      setIsAssigning(false);
+    }
+  };
 
   // State nhập điểm chi tiết
   const [gradeRows, setGradeRows] = useState([]);
@@ -390,65 +449,6 @@ export default function CourseGradesTab({
     setTimeout(() => setSaveAlert(false), 4000);
   };
 
-  // 6. Xử lý Tạo Bảng Điểm Mới (Rule Simple Nhất: BD-[Lớp]-[Môn])
-  const handleCreateSheet = async (e) => {
-    e.preventDefault();
-    const autoCode = `BD-${newSheetData.maLop}-${newSheetData.maMon}`;
-    
-    // Kiểm tra trùng
-    if (gradeSheets.some(s => s.code === autoCode || s.id === autoCode)) {
-      alert(`Bảng điểm của Lớp ${newSheetData.maLop} cho môn ${newSheetData.maMon} đã tồn tại!`);
-      return;
-    }
-
-    const cls = classes.find(c => c.maLop === newSheetData.maLop) || { maLop: newSheetData.maLop, tenLop: newSheetData.maLop, siSo: 45, khoaHoc: '2022-2026' };
-    const curList = Object.values(curriculumByMajor).flat();
-    const crs = curList.find(c => c.maMon === newSheetData.maMon) || { maMon: newSheetData.maMon, tenMon: newSheetData.maMon, soTC: 3, nhom: 'Chuyên ngành' };
-
-    const newSheet = {
-      id: autoCode,
-      code: autoCode,
-      maBangDiem: autoCode,
-      maLop: cls.maLop,
-      tenLop: cls.tenLop,
-      khoaHoc: cls.khoaHoc,
-      maNganh: cls.maNganh || 'FIT2200001',
-      tenNganh: cls.nganh || 'Khoa học máy tính',
-      maKhoa: crs.maKhoa || 'FIT',
-      tenKhoa: crs.maKhoa === 'FAAF' ? 'Khoa Kế toán - Kiểm toán' : crs.maKhoa === 'FECO' ? 'Khoa Kinh tế' : 'Khoa Công nghệ thông tin',
-      maMon: crs.maMon,
-      tenMon: crs.tenMon,
-      soTC: crs.soTC,
-      nhom: crs.nhom,
-      giangVien: newSheetData.giangVien.trim(),
-      emailGV: 'giangvien@ou.edu.vn',
-      hocKy: newSheetData.hocKy,
-      namHoc: newSheetData.namHoc,
-      siSo: cls.siSo || 0,
-      trangThai: 'NOT_STARTED',
-      statusText: 'Chưa nhập',
-      progress: 0,
-      grades: [],
-      ngayCapNhat: new Date().toISOString().slice(0, 10)
-    };
-
-    const nextSheets = [newSheet, ...gradeSheets];
-    setGradeSheets(nextSheets);
-    if (setCourseGrades) setCourseGrades(nextSheets);
-
-    try {
-      await eduAlertApi.saveCourseGradeSheet(newSheet.id, newSheet);
-    } catch (err) {
-      console.error('Lỗi lưu bảng điểm mới lên DB:', err);
-    }
-
-    // Tự động mở rộng môn vừa tạo
-    if (!expandedCourses.includes(crs.maMon)) {
-      setExpandedCourses(prev => [...prev, crs.maMon]);
-    }
-    setIsNewSheetModalOpen(false);
-  };
-
   return (
     <div className="space-y-4">
       {/* ============================================================ */}
@@ -479,13 +479,10 @@ export default function CourseGradesTab({
               </div>
             </div>
 
-            <button 
-              onClick={() => setIsNewSheetModalOpen(true)}
-              className="btn-primary"
-            >
-              <Plus size={16} />
-              + Mở Bảng Điểm Lớp Học Phần
-            </button>
+            <div className="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-900 font-semibold shadow-2xs">
+              <CheckCircle2 size={15} className="text-emerald-700 shrink-0" />
+              <span>Bảng điểm tự động khởi tạo theo CTĐT chuẩn</span>
+            </div>
           </div>
 
           {/* Card Bảng Điểm & Group By Accordion */}
@@ -666,9 +663,22 @@ export default function CourseGradesTab({
                                         </div>
                                       </td>
                                       <td>
-                                        <div className="text-xs">
-                                          <p className="font-semibold text-slate-800">{sheet.giangVien}</p>
-                                          <p className="text-slate-400">{sheet.emailGV}</p>
+                                        <div className="flex items-center justify-between gap-1.5 text-xs">
+                                          <div>
+                                            <p className="font-semibold text-slate-800">{sheet.giangVien || 'Chưa phân công'}</p>
+                                            <p className="text-slate-400 text-[11px]">{sheet.emailGV || (sheet.lecturerUsername ? `@${sheet.lecturerUsername}` : '-')}</p>
+                                          </div>
+                                          {currentUser?.role === 'admin' && (
+                                            <button
+                                              type="button"
+                                              onClick={() => handleOpenAssignModal(sheet)}
+                                              className="px-2 py-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded border border-emerald-200 transition-colors flex items-center gap-1 shrink-0 shadow-2xs"
+                                              title="Phân công tài khoản giảng viên phụ trách môn này"
+                                            >
+                                              <UserCheck size={12} />
+                                              <span>Phân công</span>
+                                            </button>
+                                          )}
                                         </div>
                                       </td>
                                       <td>
@@ -961,126 +971,95 @@ export default function CourseGradesTab({
       )}
 
       {/* ============================================================ */}
-      {/* MODAL MỞ BẢNG ĐIỂM MỚI (RULE SIMPLE NHẤT)                    */}
+      {/* MODAL CẤU HÌNH PHÂN CÔNG GIẢNG VIÊN PHỤ TRÁCH MÔN HỌC         */}
       {/* ============================================================ */}
-      {isNewSheetModalOpen && (
-        <div className="erp-modal-overlay">
-          <div className="erp-modal-content">
-            <div className="erp-modal-header">
-              <h3 className="erp-modal-title flex items-center gap-2">
-                <FileSpreadsheet size={18} className="text-emerald-700" />
-                Mở Bảng Điểm Lớp Học Phần Mới
-              </h3>
-              <button onClick={() => setIsNewSheetModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+      {isAssignModalOpen && sheetToAssign && (
+        <div className="erp-modal-overlay" onClick={() => setIsAssignModalOpen(false)}>
+          <div 
+            className="erp-modal-content max-w-lg w-[95%] shadow-2xl rounded-xl border border-slate-200 overflow-hidden" 
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="erp-modal-header bg-gradient-to-r from-slate-50 via-white to-emerald-50/30 px-6 py-4 border-b border-slate-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-emerald-900 text-white flex items-center justify-center shadow-sm">
+                  <UserCheck size={20} className="text-emerald-300" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    Phân Công Giảng Viên Phụ Trách
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Chỉ định tài khoản giảng viên được quyền nhập & sửa điểm môn này
+                  </p>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setIsAssignModalOpen(false)} 
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              >
                 <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateSheet}>
-              <div className="erp-modal-body space-y-4">
-                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded text-xs text-emerald-900">
-                  Mã bảng điểm sẽ tự sinh tự động theo quy chuẩn: <strong>BD-[Mã Lớp]-[Mã Môn]</strong>.
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      1. Chọn Học Phần / Môn Học (*)
-                    </label>
-                    <select
-                      value={newSheetData.maMon}
-                      onChange={(e) => setNewSheetData({ ...newSheetData, maMon: e.target.value })}
-                      className="erp-input font-medium"
-                      required
-                    >
-                      <option value="COSC1301">COSC1301 - Nhập môn lập trình (3 TC)</option>
-                      <option value="COSC2301">COSC2301 - Cấu trúc dữ liệu & giải thuật (3 TC)</option>
-                      <option value="COSC2302">COSC2302 - Cơ sở dữ liệu (3 TC)</option>
-                      <option value="COSC2303">COSC2303 - Lập trình hướng đối tượng (3 TC)</option>
-                      <option value="ACCT1301">ACCT1301 - Nguyên lý kế toán (3 TC - FAAF)</option>
-                    </select>
+            <form onSubmit={handleSaveAssignment}>
+              <div className="erp-modal-body p-6 space-y-4">
+                <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-xs text-slate-700">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Môn học:</span>
+                    <span className="font-bold text-slate-900">{sheetToAssign.tenMon} ({sheetToAssign.maMon})</span>
                   </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      2. Chọn Lớp Học Phần (*)
-                    </label>
-                    <select
-                      value={newSheetData.maLop}
-                      onChange={(e) => setNewSheetData({ ...newSheetData, maLop: e.target.value })}
-                      className="erp-input font-medium"
-                      required
-                    >
-                      {classes && classes.length > 0 ? (
-                        classes.map((c) => {
-                          const cCode = c.maLop || c.id;
-                          return (
-                            <option key={cCode} value={cCode}>
-                              {cCode} - {c.tenLop} ({c.siSo || 0} SV)
-                            </option>
-                          );
-                        })
-                      ) : (
-                        <option value="DH22CS01C">DH22CS01C - ĐH Khoa học máy tính 01C</option>
-                      )}
-                    </select>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Lớp học:</span>
+                    <span className="font-bold text-emerald-800 font-mono">{sheetToAssign.maLop}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Học kỳ:</span>
+                    <span className="font-medium text-slate-800">{sheetToAssign.hocKy} ({sheetToAssign.namHoc})</span>
+                  </div>
+                  <div className="flex justify-between border-t border-slate-200 pt-2 mt-1">
+                    <span className="text-slate-500">GV hiện tại:</span>
+                    <span className="font-semibold text-slate-800">{sheetToAssign.giangVien || 'Chưa phân công'}</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      3. Giảng Viên Phụ Trách (*)
-                    </label>
-                    <input 
-                      type="text"
-                      placeholder="VD: TS. Lê Xuân Vĩnh"
-                      value={newSheetData.giangVien}
-                      onChange={(e) => setNewSheetData({ ...newSheetData, giangVien: e.target.value })}
-                      className="erp-input"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      4. Học Kỳ Nhập Điểm
-                    </label>
-                    <select
-                      value={newSheetData.hocKy}
-                      onChange={(e) => setNewSheetData({ ...newSheetData, hocKy: e.target.value })}
-                      className="erp-input"
-                    >
-                      <option value="HK1">Học kỳ 1 (Năm 1)</option>
-                      <option value="HK2">Học kỳ 2 (Năm 1)</option>
-                      <option value="HK3">Học kỳ 3 (Năm 2)</option>
-                      <option value="HK4">Học kỳ 4 (Năm 2)</option>
-                      <option value="HK5">Học kỳ 5 (Năm 3)</option>
-                      <option value="HK6">Học kỳ 6 (Năm 3)</option>
-                      <option value="HK7">Học kỳ 7 (Năm 4)</option>
-                      <option value="HK8">Học kỳ 8 (Tốt nghiệp)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="p-2.5 bg-slate-100 rounded text-xs text-slate-600 font-mono">
-                  Mã dự kiến: <strong>BD-{newSheetData.maLop}-{newSheetData.maMon}</strong>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                    Chọn Tài Khoản Giảng Viên Phụ Trách (*)
+                  </label>
+                  <select
+                    value={assignedLecturerUsername}
+                    onChange={(e) => setAssignedLecturerUsername(e.target.value)}
+                    className="erp-input w-full font-semibold text-slate-800 bg-white shadow-2xs"
+                    required
+                  >
+                    {allLecturers.map((lec) => (
+                      <option key={lec.username} value={lec.username}>
+                        {lec.name} (@{lec.username} - {lec.email || `${lec.username}@ou.edu.vn`})
+                      </option>
+                    ))}
+                  </select>
+                  <span className="text-[11px] text-slate-500 mt-1.5 block">
+                    Sau khi phân công, chỉ tài khoản này khi đăng nhập mới có quyền bấm <strong>"Nhập Điểm"</strong> và lưu điểm số vào hệ thống.
+                  </span>
                 </div>
               </div>
 
-              <div className="erp-modal-footer">
+              <div className="erp-modal-footer px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end gap-2.5">
                 <button 
                   type="button" 
-                  onClick={() => setIsNewSheetModalOpen(false)}
-                  className="btn-outline"
+                  onClick={() => setIsAssignModalOpen(false)}
+                  className="btn-outline text-xs px-4 py-2"
+                  disabled={isAssigning}
                 >
                   Hủy Bỏ
                 </button>
                 <button 
                   type="submit"
-                  className="btn-primary"
+                  className="btn-primary text-xs px-4 py-2"
+                  disabled={isAssigning}
                 >
-                  Xác Nhận Mở Bảng Điểm
+                  {isAssigning ? 'Đang lưu...' : 'Xác Nhận Phân Công'}
                 </button>
               </div>
             </form>

@@ -72,7 +72,13 @@ const GradeSheetSchema = new mongoose.Schema({
   hocKy: String,
   namHoc: String,
   giangVien: String,
+  emailGV: String,
+  lecturerUsername: String,
+  lecturerId: String,
   soSV: Number,
+  trangThai: String,
+  statusText: String,
+  progress: Number,
   ngayCapNhat: String,
   grades: [mongoose.Schema.Types.Mixed],
 }, { timestamps: true });
