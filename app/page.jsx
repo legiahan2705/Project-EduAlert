@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import QuickGuideModal from '@/components/QuickGuideModal';
 import ChangePasswordModal from '@/components/Auth/ChangePasswordModal';
+import ResponsiveTables from '@/components/ResponsiveTables';
 
 import EarlyWarningTab from '@/components/EarlyWarning/EarlyWarningTab';
 import StudentDossierModal from '@/components/EarlyWarning/StudentDossierModal';
@@ -307,6 +308,8 @@ export default function EduAlertApp() {
           )}
         </div>
       </main>
+
+      <ResponsiveTables />
 
       {/* Bắt đổi mật khẩu ở lần đăng nhập đầu (hoặc sau khi admin đặt lại) */}
       {user.mustChangePassword && (

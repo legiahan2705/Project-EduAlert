@@ -1160,3 +1160,129 @@ body {
 /* Ô bảng gọn hơn để bảng nhiều cột không phải cuộn ngang */
 .erp-table th { padding: 10px 10px; }
 .erp-table td { padding: 11px 10px; }
+
+/* ================= MOBILE FIXES (điện thoại) ================= */
+@media (max-width: 900px) {
+  /* Khối tóm tắt: xếp dọc, lưới 2 cột, cụm nút/huy hiệu bên phải xuống dòng riêng */
+  .summary-banner { flex-direction: column; align-items: stretch; gap: 14px; }
+  .summary-banner > .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px 16px !important; }
+  .summary-banner > .border-l {
+    border-left: none;
+    border-top: 1px solid #e2e8f0;
+    padding-left: 0;
+    padding-top: 12px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .summary-banner > .border-l > button { width: 100%; justify-content: center; }
+  .summary-meta-val { overflow-wrap: break-word; flex-wrap: wrap; }
+
+  /* Thanh lọc / tìm kiếm: mỗi ô chiếm cả hàng */
+  .erp-card-header > div { flex-wrap: wrap; width: 100%; }
+  .erp-card-header .relative[class*="w-"],
+  .erp-card-header select { width: 100% !important; flex: 1 1 100%; }
+
+  /* Nút hành động chính không tràn khung */
+  .btn-primary, .btn-outline { max-width: 100%; }
+
+  /* Bảng: cuộn ngang trong khung thẻ, không đẩy cả trang */
+  .erp-card { overflow: hidden; }
+  .erp-table-wrapper { -webkit-overflow-scrolling: touch; }
+}
+
+/* Bảng dạng thẻ trên điện thoại (nhãn cột do ResponsiveTables gắn vào data-label) */
+@media (max-width: 900px) {
+  .erp-table-wrapper { overflow-x: visible; }
+  :is(.erp-table:not(.no-stack), .stack-table),
+  :is(.erp-table:not(.no-stack), .stack-table) tbody { display: block; width: 100%; }
+  :is(.erp-table:not(.no-stack), .stack-table) thead { display: none; }
+  :is(.erp-table:not(.no-stack), .stack-table) tr {
+    display: block;
+    margin: 10px 12px;
+    padding: 6px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+  }
+  :is(.erp-table:not(.no-stack), .stack-table) td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 7px 12px;
+    border: none;
+    text-align: right;
+  }
+  :is(.erp-table:not(.no-stack), .stack-table) td::before {
+    content: attr(data-label);
+    flex: 0 0 34%;
+    max-width: 34%;
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+  :is(.erp-table:not(.no-stack), .stack-table) td:not([data-label])::before,
+  :is(.erp-table:not(.no-stack), .stack-table) td[data-label=""]::before { display: none; }
+  :is(.erp-table:not(.no-stack), .stack-table) td[data-span] { display: block; text-align: center; }
+  :is(.erp-table:not(.no-stack), .stack-table) td[data-span]::before { display: none; }
+}
+@media (max-width: 900px) {
+  :is(.erp-table:not(.no-stack), .stack-table) td[data-label="STT"] { display: none; }
+}
+
+/* Khối tóm tắt dạng hàng ngang (flex) cũng phải xuống dòng trên điện thoại */
+@media (max-width: 900px) {
+  .summary-banner > div:first-child.flex { flex-wrap: wrap; align-items: flex-start; gap: 12px 20px !important; width: 100%; }
+  .summary-banner > div:first-child .summary-meta-item { flex: 1 1 140px; min-width: 0; }
+  .summary-banner .summary-meta-item.border-l { border-left: none; padding-left: 0 !important; }
+  .summary-banner > button { width: 100%; justify-content: center; }
+}
+
+/* Tab con, lưới cố định và thẻ chỉ số trên điện thoại */
+@media (max-width: 900px) {
+  .erp-tabs-bar { overflow-x: auto; flex-wrap: nowrap; padding: 0 8px; scrollbar-width: none; }
+  .erp-tabs-bar::-webkit-scrollbar { display: none; }
+  .erp-tab-btn { white-space: nowrap; flex-shrink: 0; padding: 11px 12px; }
+
+  .app-content-body [style*="repeat(4, 1fr)"] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .app-content-body [style*="1.1fr 1fr"],
+  .app-content-body [style*="1.2fr 1fr"] { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 900px) {
+  .summary-banner .badge-pill { white-space: normal; text-align: left; }
+}
+
+/* Hàng nút / tiêu đề dạng flex-between được xuống dòng; khối 2 cột rộng xếp thành 1 cột */
+@media (max-width: 900px) {
+  .app-content-body .flex.justify-between { flex-wrap: wrap; gap: 8px; }
+  .app-content-body .grid.grid-cols-2.gap-6 { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
+/* Khối mở rộng thụt lề lớn (vd. danh sách lớp trong bảng điểm) và cột # trong thẻ bảng */
+@media (max-width: 900px) {
+  .app-content-body .pl-12 { padding-left: 0.75rem !important; }
+  :is(.erp-table:not(.no-stack), .stack-table) td[data-label="#"] { display: none; }
+}
+
+/* Nhóm nút hành động xuống dòng khi không đủ chỗ */
+@media (max-width: 900px) {
+  .app-content-body .flex:has(> .btn-primary, > .btn-outline, > button) { flex-wrap: wrap; }
+}
+
+/* Trên điện thoại nhãn trạng thái được phép xuống dòng để không bị cắt */
+@media (max-width: 900px) {
+  .badge-pill, .badge { white-space: normal; text-align: left; }
+}
+
+/* Hàng lọc có ô chọn xuống dòng; ô chọn không vượt khung */
+@media (max-width: 900px) {
+  .app-content-body .flex:has(> select) { flex-wrap: wrap; }
+  .app-content-body .flex:has(> select) > .relative.flex-1 { flex: 1 1 100%; min-width: 0; }
+  .app-content-body select { max-width: 100%; }
+  .summary-banner > div { max-width: 100%; min-width: 0; }
+  .summary-banner > div > div { min-width: 0; }
+}
