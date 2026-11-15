@@ -103,6 +103,7 @@ const UserSchema = new mongoose.Schema({
   maNganh: { type: String, trim: true, default: '' },
   tenNganh: { type: String, trim: true, default: '' },
   status: { type: String, enum: ['ACTIVE', 'LOCKED'], default: 'ACTIVE' },
+  mustChangePassword: { type: Boolean, default: false }, // Bắt đổi mật khẩu ở lần đăng nhập kế tiếp
   createdBy: { type: String, default: 'system' },
 }, { timestamps: true });
 

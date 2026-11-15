@@ -128,7 +128,7 @@ export async function POST(req) {
       if (conn) {
         await User.findOneAndUpdate(
           { username: uname },
-          { $set: { passwordHash: hash, salt } },
+          { $set: { passwordHash: hash, salt, mustChangePassword: false } },
           { returnDocument: 'after', upsert: true }
         );
       }

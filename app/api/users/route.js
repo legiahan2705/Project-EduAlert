@@ -145,6 +145,7 @@ export async function POST(req) {
       maNganh: role === 'student' ? (maNganh || '') : '',
       tenNganh: role === 'student' ? (tenNganh || '') : '',
       status: 'ACTIVE',
+      mustChangePassword: true,
       createdBy: auth.session.username,
     });
 

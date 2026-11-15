@@ -55,6 +55,7 @@ export async function PUT(req, { params }) {
       const { hash, salt } = hashNewPassword(body.newPassword.trim());
       user.passwordHash = hash;
       user.salt = salt;
+      user.mustChangePassword = true; // Admin đặt lại thì người dùng phải tự đổi
     }
 
     await user.save();

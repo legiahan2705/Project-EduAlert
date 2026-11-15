@@ -275,6 +275,7 @@ export async function authenticateUser(role, username, password) {
               maLop: user.maLop,
               maNganh: user.maNganh,
               status: user.status,
+              mustChangePassword: !!user.mustChangePassword,
             },
           };
         } else {

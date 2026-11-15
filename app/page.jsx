@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import QuickGuideModal from '@/components/QuickGuideModal';
+import ChangePasswordModal from '@/components/Auth/ChangePasswordModal';
 
 import EarlyWarningTab from '@/components/EarlyWarning/EarlyWarningTab';
 import StudentDossierModal from '@/components/EarlyWarning/StudentDossierModal';
@@ -122,6 +123,7 @@ export default function EduAlertApp() {
 
   // Modals
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isChangePwOpen, setIsChangePwOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // ngăn kéo menu trên điện thoại
   const [dossierStudent, setDossierStudent] = useState(null);
   const [isDossierOpen, setIsDossierOpen] = useState(false);
@@ -200,6 +202,7 @@ export default function EduAlertApp() {
           onToggleSidebar={() => setIsSidebarOpen((v) => !v)}
           user={user}
           onLogout={handleLogout}
+          onChangePassword={() => setIsChangePwOpen(true)}
           notifications={notifications}
           onSelectNotification={handleOpenDossier}
           onViewAllNotifications={() => setCurrentTab('tab-warning')}
@@ -298,6 +301,23 @@ export default function EduAlertApp() {
           )}
         </div>
       </main>
+
+      {/* Bắt đổi mật khẩu ở lần đăng nhập đầu (hoặc sau khi admin đặt lại) */}
+      {user.mustChangePassword && (
+        <ChangePasswordModal
+          forced
+          onSuccess={() => setUser((prev) => ({ ...prev, mustChangePassword: false }))}
+        />
+      )}
+
+      {/* Đổi mật khẩu chủ động từ menu tài khoản */}
+      {isChangePwOpen && !user.mustChangePassword && (
+        <ChangePasswordModal
+          forced={false}
+          onClose={() => setIsChangePwOpen(false)}
+          onSuccess={() => setIsChangePwOpen(false)}
+        />
+      )}
 
       {/* Quick Guide Modal */}
       <QuickGuideModal

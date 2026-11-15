@@ -64,6 +64,7 @@ export async function POST(req) {
       maSV: user.maSV || null,
       classes: user.classes || [],
       facultyCode: user.facultyCode || null,
+      mustChangePassword: !!user.mustChangePassword,
     },
   });
 
