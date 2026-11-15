@@ -12,21 +12,25 @@ export default function ClassModal({ isOpen, onClose, majorName, onAddClass }) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onAddClass({
-      maLop: maLop.trim().toUpperCase(),
-      tenLop: tenLop.trim(),
-      khoaHoc: nienKhoa.trim(),
-      namHocThu: 1,
-      cvht: cvht.trim(),
-      emailCVHT: `${maLop.trim().toLowerCase()}@ou.edu.vn`,
-      phongHoc: phong.trim()
-    });
-    setMaLop('');
-    setTenLop('');
-    setCvht('');
-    onClose();
+    try {
+      await onAddClass({
+        maLop: maLop.trim().toUpperCase(),
+        tenLop: tenLop.trim(),
+        khoaHoc: nienKhoa.trim(),
+        namHocThu: 1,
+        cvht: cvht.trim(),
+        emailCVHT: `${maLop.trim().toLowerCase()}@ou.edu.vn`,
+        phongHoc: phong.trim()
+      });
+      setMaLop('');
+      setTenLop('');
+      setCvht('');
+      onClose();
+    } catch (err) {
+      // Giữ nguyên modal để người dùng điều chỉnh
+    }
   };
 
   return (

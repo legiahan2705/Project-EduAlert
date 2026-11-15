@@ -73,59 +73,92 @@ export default function FacultyMajorManagement({
     setViewMode('detail');
   };
 
-  const handleToggleStatus = (code) => {
-    setMajors((prev) =>
-      prev.map((m) => {
-        const mCode = m.code || m.id || m.maNganh;
-        if (mCode === code) {
-          const currentStatus = m.status || m.trangThai;
-          const nextStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-          return {
-            ...m,
-            status: nextStatus,
-            trangThai: nextStatus,
-            auditLogs: [
-              {
-                id: `LOG-M-${Date.now()}`,
-                timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
-                userId: 'ADMIN01',
-                userName: 'ThS. Lê Gia Hân',
-                action: 'STATUS_CHANGE',
-                field: 'Trạng thái',
-                oldValue: currentStatus,
-                newValue: nextStatus
-              },
-              ...(m.auditLogs || [])
-            ]
-          };
-        }
-        return m;
-      })
-    );
+  const handleToggleStatus = async (code) => {
+    const target = majors.find((m) => (m.code || m.id || m.maNganh) === code);
+    if (!target) return;
+    const currentStatus = target.status || target.trangThai || 'ACTIVE';
+    const nextStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    const auditLog = {
+      id: `LOG-M-${Date.now()}`,
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      userId: 'ADMIN01',
+      userName: 'ThS. Lê Gia Hân',
+      action: 'STATUS_CHANGE',
+      field: 'Trạng thái',
+      oldValue: currentStatus,
+      newValue: nextStatus
+    };
+
+    try {
+      const updated = await eduAlertApi.updateMajor(code, {
+        status: nextStatus,
+        trangThai: nextStatus,
+        auditLogs: [auditLog, ...(target.auditLogs || [])]
+      });
+
+      setMajors((prev) =>
+        prev.map((m) => {
+          const mCode = m.code || m.id || m.maNganh;
+          if (mCode === code) {
+            return {
+              ...m,
+              ...updated,
+              status: nextStatus,
+              trangThai: nextStatus,
+              auditLogs: [auditLog, ...(m.auditLogs || [])]
+            };
+          }
+          return m;
+        })
+      );
+    } catch (err) {
+      alert(err.message || 'Lỗi khi cập nhật trạng thái ngành');
+    }
   };
 
-  const handleDeleteMajor = (code) => {
+  const handleDeleteMajor = async (code) => {
     const target = majors.find((m) => (m.code || m.id || m.maNganh) === code);
     if (!target) return;
 
     // Kiểm tra lớp trực thuộc
     const linkedClasses = classes.filter((c) => (c.maNganh || c.majorCode) === code);
     if (linkedClasses.length > 0) {
-      alert(`KHÔNG THỂ XÓA NGÀNH!\n\nNgành "${target.name || target.tenNganh}" đang có ${linkedClasses.length} lớp học trực thuộc. Vui lòng chuyển hoặc xóa lớp trước.`);
+      alert(`KHÔNG THỂ XÓA NGÀNH!\n\nNgành "${target.name || target.tenNganh}" đang có ${linkedClasses.length} lớp học trực thuộc (${linkedClasses.map(c => c.maLop).join(', ')}).\n\nVui lòng chuyển hoặc xóa các lớp trực thuộc trước.`);
       return;
     }
 
-    if (confirm(`Bạn có chắc chắn muốn xóa ngành "${target.name || target.tenNganh}" (${code}) khỏi hệ thống?`)) {
-      setMajors((prev) => prev.filter((m) => (m.code || m.id || m.maNganh) !== code));
+    if (confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn ngành "${target.name || target.tenNganh}" (${code}) khỏi hệ thống?\nThao tác này không thể phục hồi.`)) {
+      try {
+        await eduAlertApi.deleteMajor(code);
+        setMajors((prev) => prev.filter((m) => (m.code || m.id || m.maNganh) !== code));
+        if (selectedMajorCode === code) {
+          const remaining = majors.filter((m) => (m.code || m.id || m.maNganh) !== code);
+          setSelectedMajorCode(remaining[0]?.code || '');
+        }
+        alert(`Đã xóa ngành "${target.name || target.tenNganh}" thành công!`);
+      } catch (err) {
+        alert(err.message || 'Lỗi khi xóa ngành');
+      }
     }
   };
 
-  const handleAddMajor = (newMajor) => {
-    setMajors([newMajor, ...majors]);
-    setCurriculumByMajor({
-      ...curriculumByMajor,
-      [newMajor.code]: []
-    });
+  const handleAddMajor = async (newMajor) => {
+    try {
+      const created = await eduAlertApi.createMajor(newMajor);
+      const createdCode = created.code || created.id || created.maNganh || newMajor.code;
+      setMajors((prev) => [created, ...prev]);
+      setCurriculumByMajor((prev) => ({
+        ...prev,
+        [createdCode]: []
+      }));
+      setSelectedMajorCode(createdCode);
+      setIsAddMajorOpen(false);
+      alert(`Đã tạo ngành đào tạo "${created.name || newMajor.name}" (${createdCode}) thành công!`);
+      return created;
+    } catch (err) {
+      alert(err.message || 'Lỗi khi tạo ngành mới');
+      throw err;
+    }
   };
 
   const handleSaveCourse = (courseObj, editIndex) => {
@@ -159,9 +192,14 @@ export default function FacultyMajorManagement({
 
   // 1. Thêm lớp học mới
   const handleAddClass = async (classData) => {
+    const majorCode = activeMajor?.code || activeMajor?.id || activeMajor?.maNganh || '';
+    const majorName = activeMajor?.name || activeMajor?.tenNganh || '';
+    if (!majorCode) {
+      alert('Vui lòng chọn hoặc tạo một ngành đào tạo trước khi thêm lớp!');
+      throw new Error('Chưa chọn ngành đào tạo');
+    }
+
     try {
-      const majorCode = activeMajor?.code || activeMajor?.id || activeMajor?.maNganh || '';
-      const majorName = activeMajor?.name || activeMajor?.tenNganh || '';
       const payload = {
         ...classData,
         maNganh: majorCode,
@@ -172,8 +210,10 @@ export default function FacultyMajorManagement({
       setSelectedClassCode(created.maLop || created.id);
       setIsClassModalOpen(false);
       alert(`Đã thêm lớp học "${created.maLop}" thành công!`);
+      return created;
     } catch (err) {
       alert(err.message || 'Lỗi khi thêm lớp học');
+      throw err;
     }
   };
 
@@ -401,15 +441,23 @@ export default function FacultyMajorManagement({
         onClose={() => setIsEditMajorOpen(false)}
         major={majorToEdit}
         faculties={faculties}
-        onUpdateMajor={(updated) => {
-          setMajors((prev) =>
-            prev.map((m) =>
-              (m.code || m.id || m.maNganh) === (updated.code || updated.id || updated.maNganh)
-                ? updated
-                : m
-            )
-          );
-          setIsEditMajorOpen(false);
+        onUpdateMajor={async (updated) => {
+          try {
+            const code = updated.code || updated.id || updated.maNganh;
+            const res = await eduAlertApi.updateMajor(code, updated);
+            setMajors((prev) =>
+              prev.map((m) =>
+                (m.code || m.id || m.maNganh) === code
+                  ? { ...m, ...res, ...updated }
+                  : m
+              )
+            );
+            setIsEditMajorOpen(false);
+            alert(`Đã cập nhật ngành "${updated.name || updated.tenNganh}" thành công!`);
+          } catch (err) {
+            alert(err.message || 'Lỗi khi cập nhật ngành');
+            throw err;
+          }
         }}
       />
 

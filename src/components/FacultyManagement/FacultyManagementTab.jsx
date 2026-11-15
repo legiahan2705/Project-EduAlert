@@ -15,6 +15,7 @@ import {
   X,
   School
 } from 'lucide-react';
+import { eduAlertApi } from '@/services/api';
 
 export default function FacultyManagementTab({
   faculties,
@@ -73,7 +74,7 @@ export default function FacultyManagementTab({
   };
 
   // 3. Xử lý Thêm Khoa Mới
-  const handleSaveAdd = (e) => {
+  const handleSaveAdd = async (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.nameEn.trim() || !formData.shortCode.trim()) {
       setFormError('Vui lòng điền đầy đủ Tên khoa (VN, EN) và Ký hiệu viết tắt.');
@@ -116,8 +117,14 @@ export default function FacultyManagementTab({
       ]
     };
 
-    setFaculties([newFaculty, ...faculties]);
-    setIsAddModalOpen(false);
+    try {
+      const created = await eduAlertApi.createFaculty(newFaculty);
+      setFaculties([created, ...faculties]);
+      setIsAddModalOpen(false);
+      alert(`Đã thêm Khoa "${created.name}" (${created.shortCode}) thành công vào hệ thống!`);
+    } catch (err) {
+      setFormError(err.message || 'Lỗi khi lưu khoa vào cơ sở dữ liệu');
+    }
   };
 
   // 4. Mở Modal Chỉnh Sửa
@@ -137,7 +144,7 @@ export default function FacultyManagementTab({
   };
 
   // 5. Xử lý Lưu Chỉnh Sửa Khoa
-  const handleSaveEdit = (e) => {
+  const handleSaveEdit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.nameEn.trim() || !formData.shortCode.trim()) {
       setFormError('Vui lòng điền đầy đủ Tên khoa (VN, EN) và Ký hiệu viết tắt.');
@@ -145,7 +152,7 @@ export default function FacultyManagementTab({
     }
 
     const shortCodeClean = formData.shortCode.trim().toUpperCase();
-    if (faculties.some(f => f.id !== currentFaculty.id && f.shortCode.toUpperCase() === shortCodeClean)) {
+    if (faculties.some(f => (f.id !== currentFaculty.id && f.code !== currentFaculty.code) && f.shortCode.toUpperCase() === shortCodeClean)) {
       setFormError(`Ký hiệu viết tắt "${shortCodeClean}" đã được sử dụng bởi khoa khác.`);
       return;
     }
@@ -170,28 +177,39 @@ export default function FacultyManagementTab({
       newValue: changes.join('; ') || 'Cập nhật thông tin liên hệ'
     };
 
-    setFaculties(faculties.map(f => {
-      if (f.id === currentFaculty.id) {
-        return {
-          ...f,
-          name: formData.name.trim(),
-          nameEn: formData.nameEn.trim(),
-          shortCode: shortCodeClean,
-          dean: formData.dean.trim(),
-          office: formData.office.trim(),
-          phone: formData.phone.trim(),
-          email: formData.email.trim(),
-          auditLogs: [newLog, ...(f.auditLogs || [])]
-        };
-      }
-      return f;
-    }));
+    const updatePayload = {
+      name: formData.name.trim(),
+      nameEn: formData.nameEn.trim(),
+      shortCode: shortCodeClean,
+      dean: formData.dean.trim(),
+      office: formData.office.trim(),
+      phone: formData.phone.trim(),
+      email: formData.email.trim(),
+      auditLogs: [newLog, ...(currentFaculty.auditLogs || [])]
+    };
 
-    setIsEditModalOpen(false);
+    try {
+      const code = currentFaculty.code || currentFaculty.id;
+      const updated = await eduAlertApi.updateFaculty(code, updatePayload);
+      setFaculties(faculties.map(f => {
+        if (f.id === currentFaculty.id || f.code === code) {
+          return {
+            ...f,
+            ...updated,
+            ...updatePayload
+          };
+        }
+        return f;
+      }));
+      setIsEditModalOpen(false);
+      alert(`Đã cập nhật thông tin Khoa "${updatePayload.name}" thành công!`);
+    } catch (err) {
+      setFormError(err.message || 'Lỗi khi cập nhật khoa');
+    }
   };
 
   // 6. Xử lý Đổi trạng thái Kích hoạt / Vô hiệu hóa
-  const handleToggleStatus = (faculty) => {
+  const handleToggleStatus = async (faculty) => {
     const newStatus = faculty.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
 
@@ -206,28 +224,46 @@ export default function FacultyManagementTab({
       newValue: newStatus
     };
 
-    setFaculties(faculties.map(f => {
-      if (f.id === faculty.id) {
-        return {
-          ...f,
-          status: newStatus,
-          auditLogs: [log, ...(f.auditLogs || [])]
-        };
-      }
-      return f;
-    }));
+    try {
+      const code = faculty.code || faculty.id;
+      const updated = await eduAlertApi.updateFaculty(code, {
+        status: newStatus,
+        auditLogs: [log, ...(faculty.auditLogs || [])]
+      });
+
+      setFaculties(faculties.map(f => {
+        if (f.id === faculty.id || f.code === code) {
+          return {
+            ...f,
+            ...updated,
+            status: newStatus,
+            auditLogs: [log, ...(f.auditLogs || [])]
+          };
+        }
+        return f;
+      }));
+    } catch (err) {
+      alert(err.message || 'Lỗi khi cập nhật trạng thái khoa');
+    }
   };
 
   // 7. Xử lý Xóa Khoa
-  const handleDeleteFaculty = (faculty) => {
+  const handleDeleteFaculty = async (faculty) => {
     const linkedMajors = majors.filter(m => (m.facultyCode || m.maKhoa) === faculty.shortCode || m.facultyId === faculty.id);
     if (linkedMajors.length > 0) {
       alert(`KHÔNG THỂ XÓA KHOA!\n\nKhoa "${faculty.name}" hiện đang có ${linkedMajors.length} ngành đào tạo liên kết (${linkedMajors.map(m => m.name || m.tenNganh).join(', ')}).\n\nTheo quy tắc toàn vẹn dữ liệu: Chỉ được phép xóa khi khoa mới tạo chưa có ngành nào. Nếu khoa không còn tuyển sinh, vui lòng chuyển sang "Vô hiệu hóa".`);
       return;
     }
 
-    if (window.confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn Khoa "${faculty.name}" (${faculty.code})?\nThao tác này không thể phục hồi.`)) {
-      setFaculties(faculties.filter(f => f.id !== faculty.id));
+    if (window.confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn Khoa "${faculty.name}" (${faculty.code || faculty.shortCode})?\nThao tác này không thể phục hồi.`)) {
+      try {
+        const code = faculty.code || faculty.id;
+        await eduAlertApi.deleteFaculty(code);
+        setFaculties(faculties.filter(f => f.id !== faculty.id && f.code !== code));
+        alert(`Đã xóa Khoa "${faculty.name}" thành công!`);
+      } catch (err) {
+        alert(err.message || 'Lỗi khi xóa khoa');
+      }
     }
   };
 

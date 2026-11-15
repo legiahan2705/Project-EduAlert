@@ -46,7 +46,7 @@ export default function EditMajorModal({
   const fac = faculties.find((f) => f.shortCode === fCode || f.id === fCode);
   const facName = fac ? fac.name : (major.facultyName || fCode);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const updated = {
       ...major,
@@ -63,8 +63,16 @@ export default function EditMajorModal({
     };
 
     const saveHandler = onUpdateMajor || onSaveMajor;
-    if (saveHandler) saveHandler(updated);
-    onClose();
+    if (saveHandler) {
+      try {
+        await saveHandler(updated);
+        onClose();
+      } catch (err) {
+        // Có lỗi thì giữ lại modal
+      }
+    } else {
+      onClose();
+    }
   };
 
   return (

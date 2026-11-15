@@ -8,12 +8,13 @@ export async function PUT(req, { params }) {
   if (auth.error) return auth.error;
   try {
     const { code } = await params;
+    const cleanCode = decodeURIComponent(code).trim();
     const updates = await req.json();
     const conn = await connectDB();
     if (!conn) return NextResponse.json(updates);
 
     const updated = await Faculty.findOneAndUpdate(
-      { $or: [{ code }, { id: code }] },
+      { $or: [{ code: cleanCode }, { id: cleanCode }, { shortCode: cleanCode }] },
       updates,
       { returnDocument: 'after' }
     );
@@ -28,10 +29,11 @@ export async function DELETE(req, { params }) {
   if (auth.error) return auth.error;
   try {
     const { code } = await params;
+    const cleanCode = decodeURIComponent(code).trim();
     const conn = await connectDB();
     if (!conn) return NextResponse.json({ success: true });
 
-    await Faculty.findOneAndDelete({ $or: [{ code }, { id: code }] });
+    await Faculty.findOneAndDelete({ $or: [{ code: cleanCode }, { id: cleanCode }, { shortCode: cleanCode }] });
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -37,8 +37,25 @@ export async function POST(req) {
       return NextResponse.json({ ...data, _mock: true });
     }
 
-    const created = await Faculty.create(data);
-    return NextResponse.json(created);
+    const code = String(data.code || data.id || '').trim();
+    const shortCode = String(data.shortCode || '').trim().toUpperCase();
+
+    if (!code) {
+      return NextResponse.json({ error: 'Mã khoa không được để trống' }, { status: 400 });
+    }
+
+    const existing = await Faculty.findOne({ $or: [{ code }, { id: code }, { shortCode }] });
+    if (existing) {
+      return NextResponse.json({ error: `Khoa với mã "${code}" hoặc ký hiệu "${shortCode}" đã tồn tại!` }, { status: 409 });
+    }
+
+    const created = await Faculty.create({
+      ...data,
+      id: code,
+      code,
+      shortCode,
+    });
+    return NextResponse.json(created, { status: 201 });
   } catch (error) {
     console.error('Error creating faculty:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });

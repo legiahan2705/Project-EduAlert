@@ -36,8 +36,23 @@ export async function POST(req) {
     const conn = await connectDB();
     if (!conn) return NextResponse.json({ ...data, _mock: true });
 
-    const created = await Major.create(data);
-    return NextResponse.json(created);
+    const code = String(data.code || data.maNganh || data.id || '').trim();
+    if (!code) {
+      return NextResponse.json({ error: 'Mã ngành không được để trống' }, { status: 400 });
+    }
+
+    const existing = await Major.findOne({ $or: [{ code }, { id: code }, { maNganh: code }] });
+    if (existing) {
+      return NextResponse.json({ error: `Mã ngành "${code}" đã tồn tại trên hệ thống!` }, { status: 409 });
+    }
+
+    const created = await Major.create({
+      ...data,
+      id: code,
+      code,
+      maNganh: code,
+    });
+    return NextResponse.json(created, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

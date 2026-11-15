@@ -29,35 +29,38 @@ export const eduAlertApi = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (res.ok) return await res.json();
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Lỗi khi tạo khoa mới');
+      return resData;
     } catch (e) {
-      console.error(e);
+      throw e;
     }
-    return null;
   },
 
   async updateFaculty(code, data) {
     try {
-      const res = await apiFetch(`${API_BASE}/faculties/${code}`, {
+      const res = await apiFetch(`${API_BASE}/faculties/${encodeURIComponent(code)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (res.ok) return await res.json();
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Lỗi khi cập nhật thông tin khoa');
+      return resData;
     } catch (e) {
-      console.error(e);
+      throw e;
     }
-    return null;
   },
 
   async deleteFaculty(code) {
     try {
-      const res = await apiFetch(`${API_BASE}/faculties/${code}`, { method: 'DELETE' });
-      if (res.ok) return await res.json();
+      const res = await apiFetch(`${API_BASE}/faculties/${encodeURIComponent(code)}`, { method: 'DELETE' });
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Lỗi khi xóa khoa');
+      return resData;
     } catch (e) {
-      console.error(e);
+      throw e;
     }
-    return null;
   },
 
   // Ngành
@@ -78,35 +81,38 @@ export const eduAlertApi = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (res.ok) return await res.json();
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Lỗi khi tạo ngành mới');
+      return resData;
     } catch (e) {
-      console.error(e);
+      throw e;
     }
-    return null;
   },
 
   async updateMajor(code, data) {
     try {
-      const res = await apiFetch(`${API_BASE}/majors/${code}`, {
+      const res = await apiFetch(`${API_BASE}/majors/${encodeURIComponent(code)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (res.ok) return await res.json();
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Lỗi khi cập nhật ngành');
+      return resData;
     } catch (e) {
-      console.error(e);
+      throw e;
     }
-    return null;
   },
 
   async deleteMajor(code) {
     try {
-      const res = await apiFetch(`${API_BASE}/majors/${code}`, { method: 'DELETE' });
-      if (res.ok) return await res.json();
+      const res = await apiFetch(`${API_BASE}/majors/${encodeURIComponent(code)}`, { method: 'DELETE' });
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Lỗi khi xóa ngành');
+      return resData;
     } catch (e) {
-      console.error(e);
+      throw e;
     }
-    return null;
   },
 
   // Sinh viên

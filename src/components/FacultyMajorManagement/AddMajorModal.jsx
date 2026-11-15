@@ -60,7 +60,7 @@ export default function AddMajorModal({
 
   const previewCode = generateMajorCode(currentFaculty.shortCode || selectedFacultyCode);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) {
       setError('Vui lòng nhập tên ngành đào tạo (Tiếng Việt).');
@@ -106,8 +106,12 @@ export default function AddMajorModal({
       ]
     };
 
-    onAddMajor(newMajor);
-    onClose();
+    try {
+      await onAddMajor(newMajor);
+      onClose();
+    } catch (err) {
+      setError(err.message || 'Lỗi khi tạo ngành mới');
+    }
   };
 
   return (
