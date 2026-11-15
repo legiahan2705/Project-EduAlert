@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { GraduationCap } from 'lucide-react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import QuickGuideModal from '@/components/QuickGuideModal';
@@ -160,8 +161,13 @@ export default function EduAlertApp() {
   // Đang kiểm tra đăng nhập
   if (!user) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', color: '#064e3b', fontWeight: 600 }}>
-        Đang kiểm tra phiên đăng nhập...
+      <div className="state-box" style={{ minHeight: '100vh', background: '#f8fafc' }}>
+        <div className="state-icon">
+          <GraduationCap size={26} />
+        </div>
+        <strong style={{ color: '#064e3b', fontSize: 16 }}>EduAlert</strong>
+        <div className="skeleton" style={{ width: 180, height: 8 }} />
+        <span>Đang kiểm tra phiên đăng nhập...</span>
       </div>
     );
   }

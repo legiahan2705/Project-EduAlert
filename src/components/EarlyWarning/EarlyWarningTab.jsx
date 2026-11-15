@@ -373,7 +373,7 @@ export default function EarlyWarningTab({
                 <th style={{ width: '80px', textAlign: 'right' }}>ĐRL</th>
                 <th style={{ width: '150px' }}>CHỈ SỐ RỦI RO</th>
                 <th style={{ width: '130px' }}>ĐÁNH GIÁ (TT 08)</th>
-                <th style={{ width: '130px' }}>XỬ LÝ</th>
+                <th style={{ width: '160px', minWidth: '160px' }}>XỬ LÝ</th>
                 <th style={{ width: '120px', textAlign: 'center' }}>THAO TÁC</th>
               </tr>
             </thead>
@@ -407,7 +407,7 @@ export default function EarlyWarningTab({
                         <div>
                           <p className="font-bold text-slate-900 text-xs">{s.hoTen}</p>
                           {s.notes && (
-                            <p className="text-[11px] text-slate-500 truncate max-w-[360px]" title={s.notes}>
+                            <p className="text-[11px] text-slate-500 truncate max-w-[230px]" title={s.notes}>
                               {s.notes}
                             </p>
                           )}

@@ -66,7 +66,7 @@ export default function Sidebar({
           className={`nav-item ${currentTab === 'tab-planner' ? 'active' : ''}`}
         >
           <Compass size={17} />
-          <span>Smart Academic Planner</span>
+          <span>Smart Planner</span>
           <span className="nav-badge">141 TC</span>
         </button>
 

@@ -99,6 +99,8 @@ export default function Header({
         return 'Quản Lý Khoa Trực Thuộc';
       case 'tab-majors':
         return 'Quản Lý Ngành Đào Tạo & Khung CTĐT 141 Tín Chỉ';
+      case 'tab-users':
+        return 'Quản Lý Tài Khoản & Phân Quyền';
       case 'tab-course-grades':
         return 'Quản Lý Bảng Điểm Lớp Học Phần (Group By Môn)';
       default:
