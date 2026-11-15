@@ -1,7 +1,7 @@
 # TÀI LIỆU TỔNG QUAN DỰ ÁN: EDUALERT
 ## Hệ Thống Giám Sát Cảnh Báo Sớm Học Vụ & Trợ Lý Học Tập Thông Minh Tích Hợp AI
 > **Phiên bản:** v2.5 Enterprise (Tích hợp Trợ lý Cố vấn AI)  
-> **Nền tảng công nghệ:** Next.js 16 (App Router), React 19, Tailwind CSS, TypeScript, Node.js, Google Gemini API  
+> **Nền tảng công nghệ:** Next.js 16 (App Router), React 19, Tailwind CSS, JavaScript (JSX), Node.js, Google Gemini API  
 > **Đơn vị áp dụng chuẩn:** Trường Đại học Mở TP.HCM (HCMCOU) theo **Thông tư 08/2021/TT-BGDĐT**
 
 ---

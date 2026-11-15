@@ -3,7 +3,7 @@
 > **Mã User Story:** `US-EDUALERT-04`  
 > **Tên tính năng:** Giám Sát Học Tập Theo Lớp Sinh Hoạt, Phân Tầng 4 Nhóm Rủi Ro (TT 08/2021) & Can Thiệp Cá Nhân Hóa  
 > **Phân hệ:** Giám Sát & Cảnh Báo Sớm Học Vụ (Early Warning System)  
-> **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, TypeScript)  
+> **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, JavaScript)  
 > **Trạng thái:** Đã triển khai trên dữ liệu mẫu (mock, chưa có backend); chưa có kiểm thử tự động  
 
 ---

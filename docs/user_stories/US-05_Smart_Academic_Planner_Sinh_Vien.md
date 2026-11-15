@@ -3,7 +3,7 @@
 > **Mã User Story:** `US-EDUALERT-05`  
 > **Tên tính năng:** Trợ Lý Kế Hoạch Học Tập Thông Minh, Đối Chiếu 141 Tín Chỉ & Mô Phỏng What-If Cho Sinh Viên  
 > **Phân hệ:** Trợ Lý Học Tập Sinh Viên (Student Self-Service)  
-> **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, TypeScript)  
+> **Phiên bản:** Version 2.5 (Clean ERP Design, Next.js 16, React 19, JavaScript)  
 > **Trạng thái:** Đã triển khai trên dữ liệu mẫu (mock, chưa có backend); chưa có kiểm thử tự động  
 
 ---

@@ -1,5 +1,7 @@
 # HƯỚNG DẪN KHỞI CHẠY HỆ THỐNG EDUALERT (FRONTEND & NESTJS BACKEND)
 
+> **Lưu ý (v2.6):** thư mục backend NestJS (`Project-EduAlert-Backend`) đã **không còn** trong repository này; backend hiện là các API Route của Next.js (`app/api/*`) chạy cùng giao diện. Tài liệu này chỉ giữ lại để tham khảo.
+
 Dự án gồm 2 phần độc lập:
 1. **Frontend:** Next.js 16 (App Router), React 19, TypeScript (`Project-EduAlert`) - Cổng `http://localhost:3000`
 2. **Backend:** NestJS, TypeScript, JSON Database Persistence (`Project-EduAlert-Backend`) - Cổng `http://localhost:5000`
