@@ -14,7 +14,7 @@ const ROLES = [
 // Gợi ý tài khoản demo — chỉ hiện khi chạy chế độ phát triển (không lộ trên bản deploy)
 const DEV_HINTS = {
   student: 'Demo: 2251050001 / Sinhvien@123',
-  lecturer: 'Demo: gv.nam / Giangvien@123',
+  lecturer: 'Demo: gv.han / 123456789 (hoặc gv.nam / Giangvien@123)',
   admin: 'Demo: admin / Admin@123',
 };
 const SHOW_HINT = process.env.NODE_ENV !== 'production';

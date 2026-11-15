@@ -50,6 +50,16 @@ export function verifyPassword(inputPw, storedHash, salt) {
 // 1. Danh sách giảng viên các môn học và CVHT hiện có trong hệ thống
 export const INITIAL_LECTURERS = [
   {
+    username: 'gv.han',
+    name: 'ThS. Lê Gia Hân',
+    email: 'han.lg@ou.edu.vn',
+    phone: '0912345000',
+    facultyCode: 'FIT',
+    facultyName: 'Khoa Công nghệ thông tin',
+    classes: ['DH22CS01C', 'DH22CS02C', 'DH21IT01', 'DH22IT01', 'DH22IT01C', 'DH22SE01'],
+    coursesTaught: ['COSC1301', 'COSC1302', 'COSC2301', 'COSC2302', 'COSC2304', 'COSC2307', 'COSC3302', 'ACCT1301', 'MATH1301'],
+  },
+  {
     username: 'gv.vinh',
     name: 'TS. Lê Xuân Vĩnh',
     email: 'vinh.lx@ou.edu.vn',

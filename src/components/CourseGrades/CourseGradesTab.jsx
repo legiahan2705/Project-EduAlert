@@ -170,13 +170,35 @@ export default function CourseGradesTab({
 
   // Kiểm tra quyền chỉnh sửa bảng điểm của người dùng hiện tại
   const canEditSheet = (sheet) => {
+    if (!sheet) return false;
     if (!currentUser) return true;
     if (currentUser.role === 'admin') return true;
     if (currentUser.role === 'lecturer') {
-      const matchName = sheet.giangVien === currentUser.name;
-      const matchClass = (currentUser.classes || []).includes(sheet.maLop);
-      const matchCourse = (currentUser.coursesTaught || []).includes(sheet.maMon);
-      return matchName || matchCourse;
+      const uName = (currentUser.name || '').trim().toLowerCase();
+      const uUsername = (currentUser.username || '').trim().toLowerCase();
+      const sTeacher = (sheet.giangVien || '').trim().toLowerCase();
+      const sEmail = (sheet.emailGV || '').trim().toLowerCase();
+      const uEmail = (currentUser.email || '').trim().toLowerCase();
+
+      // Giảng viên Demo hoặc tài khoản gv.han / gv.nam được phép toàn quyền chỉnh sửa và nhập điểm
+      if (uUsername === 'gv.han' || uUsername === 'gv.nam' || uName === 'demo' || uName.includes('demo') || uName.includes('hân')) {
+        return true;
+      }
+
+      // 1. Khớp tên hoặc email giảng viên phụ trách môn
+      const matchName = 
+        Boolean(sTeacher && uName && (sTeacher === uName || sTeacher.includes(uName) || uName.includes(sTeacher))) ||
+        Boolean(sEmail && uEmail && sEmail === uEmail);
+
+      // 2. Khớp lớp phụ trách / lớp sinh hoạt
+      const userClasses = (currentUser.classes || []).map(c => String(c).trim().toUpperCase());
+      const matchClass = userClasses.includes(String(sheet.maLop || '').trim().toUpperCase());
+
+      // 3. Khớp mã môn giảng dạy
+      const userCourses = (currentUser.coursesTaught || []).map(c => String(c).trim().toUpperCase());
+      const matchCourse = userCourses.includes(String(sheet.maMon || '').trim().toUpperCase());
+
+      return matchName || matchClass || matchCourse;
     }
     return false;
   };
@@ -255,6 +277,14 @@ export default function CourseGradesTab({
   // 3. Mở Workspace Nhập Điểm Cho 1 Bảng Điểm Của Lớp
   const handleOpenGradeEntry = (sheet) => {
     setActiveSheet(sheet);
+
+    // Ưu tiên nạp danh sách điểm đã được lưu trong cơ sở dữ liệu nếu có
+    if (Array.isArray(sheet.grades) && sheet.grades.length > 0) {
+      setGradeRows(sheet.grades);
+      setViewMode('entry');
+      setSaveAlert(false);
+      return;
+    }
 
     // Lấy danh sách sinh viên thuộc lớp của bảng điểm đó
     const classStudents = students.filter(s => s.lop === sheet.maLop);
