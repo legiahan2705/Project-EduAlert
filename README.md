@@ -2,7 +2,6 @@
 
 EduAlert là hệ thống hỗ trợ quản lý đào tạo và theo dõi tình hình học tập của sinh viên. Ứng dụng cung cấp cảnh báo sớm theo dữ liệu học vụ, hồ sơ sinh viên, công cụ lập kế hoạch học tập và các chức năng quản trị theo vai trò.
 
-> **Đơn vị tham chiếu:** Trường Đại học Mở TP.HCM (HCMCOU)  
 > **Nhóm thực hiện:** Lê Gia Hân, Vũ Hải Trung  
 > **Công nghệ:** Next.js 16, React 19, MongoDB Atlas và Mongoose  
 > **Triển khai:** Vercel
